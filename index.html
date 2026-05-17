@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Expired Control D&D - Pro</title>
+<title>Expired Control D&D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -32,27 +32,19 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
 body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  max-width: 430px;
-  margin: 0 auto;
-  min-height: 100vh;
-  position: relative;
+  font-family: var(--sans); background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; min-height: 100vh; position: relative;
 }
 
 /* HEADER */
 .header { background: var(--violet); padding: 52px 20px 0; position: sticky; top: 0; z-index: 50; }
 .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.header-title { color: #fff; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+.header-title { color: #fff; font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
 .header-date { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; }
 .sync-btn {
   background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px;
   padding: 8px 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;
 }
-.sync-btn:disabled { opacity: 0.5; }
 
 /* TABS */
 .tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 4px; }
@@ -62,9 +54,9 @@ body {
   border-radius: 9px 9px 0 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .tab-btn.active { background: var(--bg); color: var(--violet); }
-.tab-badge { background: var(--red); color: white; font-size: 10px; font-weight: 600; border-radius: 20px; padding: 1px 6px; min-width: 18px; }
+.tab-badge { background: var(--red); color: white; font-size: 10px; border-radius: 20px; padding: 1px 6px; margin-left: 4px; }
 
-/* MAIN CONTENT */
+/* MAIN */
 .main { flex: 1; overflow-y: auto; padding: 16px; }
 .panel { display: none; }
 .panel.active { display: block; }
@@ -78,82 +70,69 @@ body {
   width: 52px; height: 52px; background: var(--violet-light); border-radius: 14px;
   display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
 }
-.scan-icon svg { width: 26px; height: 26px; stroke: var(--violet); }
 
-/* FORM */
+/* FORM CARD */
 .form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
-.form-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; margin-bottom: 10px; display: block; }
 .form-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .inp {
   flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 11px 13px; font-size: 13px; color: var(--text); outline: none; width: 100%;
 }
-.inp.mono { font-family: var(--mono); font-size: 12px; }
+.inp:focus { border-color: var(--violet-mid); background: #fff; }
 .btn-primary {
   background: var(--violet); color: white; border: none; border-radius: var(--radius-sm);
   padding: 11px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.btn-primary:disabled { opacity: 0.7; }
 
-/* LIST & CARDS */
+/* ITEM LIST */
 .recent-item {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 11px 13px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px;
 }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dot-green { background: var(--green); }
-.dot-amber { background: var(--amber); }
-.dot-red { background: var(--red); }
 .ri-info { flex: 1; min-width: 0; }
-.ri-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ri-meta { font-size: 11px; color: var(--text-2); }
+.ri-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.ri-actions { display: flex; gap: 5px; }
+.icon-btn { width: 30px; height: 30px; border-radius: 6px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.icon-btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
 
-/* SEARCH */
-.search-wrap { position: relative; margin-bottom: 12px; }
-.search-bar { width: 100%; padding: 10px 10px 10px 36px; border-radius: 10px; border: 1px solid var(--border); outline: none; }
-.search-wrap svg { position: absolute; left: 12px; top: 11px; width: 16px; stroke: var(--text-3); }
-
-/* TAB TARIK - STATS */
-.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; }
-.stat-num { font-size: 22px; font-weight: 600; }
-.stat-lbl { font-size: 10px; color: var(--text-2); margin-top: 4px; }
-
-/* PULL CARDS */
-.pull-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  border-left: 4px solid var(--red); padding: 12px; margin-bottom: 8px; transition: opacity 0.2s;
-}
-.pull-card.amber { border-left-color: var(--amber); }
-.pull-card.aman-card { border-left-color: var(--green); }
-.pull-card.done { opacity: 0.35; filter: grayscale(1); }
-.pull-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.pull-name { font-size: 13px; font-weight: 600; }
-.badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-.badge-red { background: var(--red-light); color: var(--red); }
-.badge-amber { background: var(--amber-light); color: var(--amber); }
-.badge-green { background: var(--green-light); color: var(--green); }
-.check-box { width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.check-box.checked { background: var(--green); border-color: var(--green); }
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: white; width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px 20px 40px; }
 
 /* TOAST */
 .toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
-  background: #333; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px;
-  z-index: 1000; transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: #333; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; z-index: 1000; transition: 0.3s;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: var(--green); }
 .toast.error { background: var(--red); }
 
-/* SCANNER OVERLAY */
-.scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column; }
-.scanner-overlay.open { display: flex; }
-.scanner-header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; color: white; }
-#html5-qrcode-container { flex: 1; }
-.scanner-footer { padding: 20px; background: rgba(0,0,0,0.8); }
+/* STATS */
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 600; }
+.stat-lbl { font-size: 10px; color: var(--text-2); }
 
-/* SPIN ANIMATION */
+/* PULL CARD */
+.pull-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  border-left: 4px solid var(--red); padding: 12px; margin-bottom: 8px;
+}
+.pull-card.amber { border-left-color: var(--amber); }
+.pull-card.aman-card { border-left-color: var(--green); }
+.pull-card.done { opacity: 0.4; }
+.check-box { width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.check-box.checked { background: var(--green); border-color: var(--green); }
+
+/* SCANNER */
+.scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: none; flex-direction: column; }
+.scanner-overlay.open { display: flex; }
+#html5-qrcode-container { flex: 1; }
+
 .spin { animation: spin 1s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
@@ -162,16 +141,34 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<!-- SCANNER OVERLAY -->
+<!-- SCANNER -->
 <div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-header">
-    <div style="font-weight:600">Scan Barcode / QR</div>
+  <div style="padding: 50px 20px 15px; display: flex; justify-content: space-between; color: white;">
+    <div style="font-weight:600">Scan Barcode</div>
     <button onclick="closeScanner()" style="background:none; border:1px solid white; color:white; padding:5px 15px; border-radius:8px;">Tutup</button>
   </div>
   <div id="html5-qrcode-container"></div>
-  <div class="scanner-footer">
-    <input class="inp" id="scannerManualInput" placeholder="Input manual di sini..." style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:white;">
-    <button class="btn-primary" onclick="confirmManualScan()" style="width:100%; margin-top:10px;">Konfirmasi</button>
+  <div style="padding: 20px; background: #000;">
+    <input class="inp" id="scannerManualInput" placeholder="Atau ketik barcode manual..." style="background:#222; color:white; border:none;">
+    <button class="btn-primary" onclick="confirmManualScan()" style="width:100%; margin-top:10px;">OK</button>
+  </div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal-overlay" id="modalEdit">
+  <div class="modal-card">
+    <div style="font-weight:600; margin-bottom:15px;">Edit Data</div>
+    <input type="hidden" id="editRowIndex">
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <input class="inp" id="editBarcode" placeholder="Barcode">
+      <input class="inp" id="editDesc" placeholder="Nama Barang">
+      <input class="inp" id="editExp" type="date">
+      <input class="inp" id="editLokasi" placeholder="Lokasi">
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="inp" style="background:#eee" onclick="closeEditModal()">Batal</button>
+        <button class="btn-primary" style="flex:2" onclick="saveEdit()" id="btnSaveEdit">Simpan Perubahan</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -179,12 +176,10 @@ body {
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="header-title">Expired Tracker</div>
+      <div class="header-title">Expired Control D&D</div>
       <div class="header-date" id="headerDate"></div>
     </div>
-    <button class="sync-btn" onclick="loadAll()" id="syncBtn">
-      <span id="syncLabel">Sync</span>
-    </button>
+    <button class="sync-btn" onclick="loadAll()" id="syncBtn">Sync</button>
   </div>
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('input')" id="tabInput">Input</button>
@@ -196,34 +191,28 @@ body {
   <!-- TAB INPUT -->
   <div class="panel active" id="panelInput">
     <div class="scan-area" onclick="openScanner()">
-      <div class="scan-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7"/></svg>
-      </div>
-      <div style="font-weight:600; font-size:14px;">Tap untuk Scan Barcode</div>
+      <div class="scan-icon"><svg width="24" height="24" stroke="var(--violet)" fill="none" viewBox="0 0 24 24"><path stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7"/></svg></div>
+      <div style="font-weight:600; font-size:14px;">Tap untuk Scan</div>
     </div>
 
     <div class="form-card">
-      <span class="form-label">Input Data Barang</span>
-      <div class="form-row"><input class="inp mono" id="fBarcode" placeholder="Barcode / SKU" oninput="autoFillFromBarcode(this.value)"></div>
+      <div class="form-row"><input class="inp" id="fBarcode" placeholder="Barcode" oninput="autoFillFromBarcode(this.value)"></div>
       <div class="form-row"><input class="inp" id="fDesc" placeholder="Nama Barang"></div>
       <div class="form-row">
         <input class="inp" id="fExp" type="date">
-        <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)">
+        <input class="inp" id="fLokasi" placeholder="Lokasi">
       </div>
-      <button class="btn-primary" style="width:100%; margin-top:5px;" onclick="submitInput()" id="submitBtn">Simpan Ke Spreadsheet</button>
+      <button class="btn-primary" style="width:100%" onclick="submitInput()" id="submitBtn">Simpan Ke Spreadsheet</button>
     </div>
 
-    <div class="search-wrap">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input class="search-bar" id="searchInput" placeholder="Cari input hari ini..." oninput="renderRecent()">
-    </div>
+    <div style="font-size:12px; font-weight:600; color:var(--text-2); margin-bottom:10px;">INPUT HARI INI</div>
     <div id="recentList"></div>
   </div>
 
   <!-- TAB TARIK -->
   <div class="panel" id="panelTarik">
     <div class="stat-row">
-      <div class="stat-card"><div class="stat-num" id="statHarus" style="color:var(--red)">0</div><div class="stat-lbl">Harus Tarik</div></div>
+      <div class="stat-card"><div class="stat-num" id="statHarus" style="color:var(--red)">0</div><div class="stat-lbl">Harus</div></div>
       <div class="stat-card"><div class="stat-num" id="statMendekati" style="color:var(--amber)">0</div><div class="stat-lbl">Mendekati</div></div>
       <div class="stat-card"><div class="stat-num" id="statAman" style="color:var(--green)">0</div><div class="stat-lbl">Aman</div></div>
     </div>
@@ -232,73 +221,53 @@ body {
 </div>
 
 <script>
-// =============================================
-// KONFIGURASI
-// =============================================
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec"; 
-const API_TOKEN       = "RAHASIA_123"; // Token Keamanan
-const CACHE_DB        = "cache_db_exp";
-const CACHE_INPUT     = "cache_input_exp";
-const CACHE_CHECKED   = "cache_checked_items";
+const API_TOKEN       = "RAHASIA_123";
+const CACHE_DB        = "cache_db";
+const CACHE_INPUT     = "cache_input";
+const CACHE_CHECKED   = "cache_checked_rows";
 
-// =============================================
-// STATE
-// =============================================
 let dbItems      = JSON.parse(localStorage.getItem(CACHE_DB) || "[]");
 let inputItems   = JSON.parse(localStorage.getItem(CACHE_INPUT) || "[]");
 let checkedRows  = new Set(JSON.parse(localStorage.getItem(CACHE_CHECKED) || "[]"));
 let todayStr     = new Date().toISOString().split('T')[0];
 let html5QrScanner = null;
 
-// =============================================
-// INIT
-// =============================================
 window.onload = () => {
-  document.getElementById('headerDate').innerText = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('headerDate').innerText = formatDateIndo(todayStr);
   document.getElementById('fExp').value = todayStr;
-  
-  // Render awal dari cache agar cepat
   renderRecent();
   renderPullList();
-  
-  // Sync dengan server
   loadAll();
 };
 
 // =============================================
-// SOUND & VIBRATE (Scanner Effects)
+// UTILS
 // =============================================
-function playScanEffects() {
-  // Getar HP
-  if (navigator.vibrate) navigator.vibrate(50);
-  
-  // Bunyi Beep (Tanpa File External)
-  try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.frequency.value = 880; 
-    gain.gain.value = 0.1;
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
-  } catch(e) { console.log("Audio effects not supported"); }
+function formatDateIndo(isoDate) {
+  if (!isoDate) return "-";
+  const [y, m, d] = isoDate.split("-");
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  return `${d} ${months[parseInt(m)-1]} ${y}`;
 }
 
-// =============================================
-// API HELPER
-// =============================================
+function playScanEffects() {
+  if (navigator.vibrate) navigator.vibrate(50);
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880; gain.gain.value = 0.1;
+    osc.start(); osc.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+}
+
 async function callApi(params, body = null) {
   const url = new URL(APPS_SCRIPT_URL);
   params.token = API_TOKEN;
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
-  const options = {
-    method: body ? 'POST' : 'GET',
-    body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null
-  };
-
+  const options = { method: body ? 'POST' : 'GET', body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null };
   const res = await fetch(url, options);
   const json = await res.json();
   if (json.error) throw new Error(json.error);
@@ -306,31 +275,20 @@ async function callApi(params, body = null) {
 }
 
 // =============================================
-// CORE LOGIC
+// ACTIONS
 // =============================================
 async function loadAll() {
-  const lbl = document.getElementById('syncLabel');
-  lbl.innerText = "Syncing...";
+  const btn = document.getElementById('syncBtn');
+  btn.innerText = "Syncing...";
   try {
-    const [dbRes, inRes] = await Promise.all([
-      callApi({ action: "getDatabase" }),
-      callApi({ action: "getInputs" })
-    ]);
-    
-    dbItems = dbRes.data || [];
-    inputItems = inRes.data || [];
-    
+    const [dbRes, inRes] = await Promise.all([callApi({ action: "getDatabase" }), callApi({ action: "getInputs" })]);
+    dbItems = dbRes.data; inputItems = inRes.data;
     localStorage.setItem(CACHE_DB, JSON.stringify(dbItems));
     localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
-    
-    renderRecent();
-    renderPullList();
-    showToast("Data Sinkron", "success");
-  } catch(e) {
-    showToast("Mode Offline (Gagal Sync)", "error");
-  } finally {
-    lbl.innerText = "Sync";
-  }
+    renderRecent(); renderPullList();
+    showToast("Data diperbarui", "success");
+  } catch(e) { showToast("Gagal Sinkron", "error"); }
+  finally { btn.innerText = "Sync"; }
 }
 
 async function submitInput() {
@@ -338,213 +296,108 @@ async function submitInput() {
   const d = document.getElementById('fDesc').value.trim();
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
-
-  if(!b || !e) return showToast("Barcode & Tgl Exp wajib diisi!", "error");
+  if(!b || !e) return showToast("Barcode & Tanggal wajib!", "error");
 
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
+  btn.disabled = true; btn.innerHTML = `<span class="spin">↻</span>`;
 
   try {
     const res = await callApi({ action: "addInput" }, { barcode: b, description: d, expiredDate: e, lokasi: l });
-    
-    // OPTIMISTIC UPDATE: Langsung update tampilan tanpa tunggu reload total
-    const newItem = { 
-      rowIndex: res.rowIndex, 
-      barcode: b, 
-      description: d || (dbItems.find(x => x.barcode === b)?.description || ""), 
-      expiredDate: e, 
-      lokasi: l, 
-      timestamp: new Date().toISOString() 
-    };
-    
-    inputItems.push(newItem);
+    inputItems.push({ rowIndex: res.rowIndex, barcode: b, description: d, expiredDate: e, lokasi: l, timestamp: todayStr });
     localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
-    
-    renderRecent();
-    renderPullList();
-    showToast("Data Berhasil Disimpan", "success");
-    
-    // Reset Form
-    document.getElementById('fBarcode').value = "";
-    document.getElementById('fDesc').value = "";
+    renderRecent(); renderPullList();
+    document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = "";
     document.getElementById('fBarcode').focus();
-    
-  } catch(err) {
-    showToast("Gagal Simpan ke Spreadsheet", "error");
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "Simpan Ke Spreadsheet";
-  }
+    showToast("Tersimpan!", "success");
+  } catch(err) { showToast("Gagal Simpan", "error"); }
+  finally { btn.disabled = false; btn.innerText = "Simpan Ke Spreadsheet"; }
+}
+
+function openEditModal(idx) {
+  const item = inputItems.find(i => i.rowIndex === idx);
+  if(!item) return;
+  document.getElementById('editRowIndex').value = idx;
+  document.getElementById('editBarcode').value = item.barcode;
+  document.getElementById('editDesc').value = item.description;
+  document.getElementById('editExp').value = item.expiredDate;
+  document.getElementById('editLokasi').value = item.lokasi;
+  document.getElementById('modalEdit').classList.add('open');
+}
+
+function closeEditModal() { document.getElementById('modalEdit').classList.remove('open'); }
+
+async function saveEdit() {
+  const idx = document.getElementById('editRowIndex').value;
+  const b = document.getElementById('editBarcode').value;
+  const d = document.getElementById('editDesc').value;
+  const e = document.getElementById('editExp').value;
+  const l = document.getElementById('editLokasi').value;
+
+  const btn = document.getElementById('btnSaveEdit');
+  btn.disabled = true; btn.innerText = "Menyimpan...";
+  try {
+    await callApi({ action: "updateInput" }, { rowIndex: idx, barcode: b, description: d, expiredDate: e, lokasi: l });
+    const localIdx = inputItems.findIndex(i => i.rowIndex == idx);
+    if(localIdx !== -1) inputItems[localIdx] = { ...inputItems[localIdx], barcode: b, description: d, expiredDate: e, lokasi: l };
+    localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
+    renderRecent(); renderPullList();
+    closeEditModal();
+    showToast("Berhasil diubah", "success");
+  } catch(err) { showToast("Gagal Edit", "error"); }
+  finally { btn.disabled = false; btn.innerText = "Simpan Perubahan"; }
+}
+
+async function deleteItem(idx) {
+  if(!confirm("Hapus data ini?")) return;
+  try {
+    await callApi({ action: "deleteInput" }, { rowIndex: idx });
+    inputItems = inputItems.filter(i => i.rowIndex != idx);
+    localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
+    renderRecent(); renderPullList();
+    showToast("Dihapus", "success");
+  } catch(err) { showToast("Gagal Hapus", "error"); }
 }
 
 // =============================================
-// RENDERERS
+// RENDERING
 // =============================================
 function renderRecent() {
   const container = document.getElementById('recentList');
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  
-  const filtered = inputItems
-    .filter(i => i.timestamp && i.timestamp.split('T')[0] === todayStr)
-    .filter(i => (i.description||'').toLowerCase().includes(q) || (i.barcode||'').includes(q))
-    .reverse();
+  const filtered = inputItems.filter(i => i.timestamp && i.timestamp.startsWith(todayStr)).reverse();
 
-  if(!filtered.length) {
-    container.innerHTML = `<div style="text-align:center; padding:30px; color:#999; font-size:13px;">Belum ada input hari ini</div>`;
-    return;
-  }
+  if(!filtered.length) { container.innerHTML = `<div style="text-align:center; padding:20px; color:#999">Belum ada input</div>`; return; }
 
-  let html = "";
-  for(let item of filtered) {
-    html += `
+  container.innerHTML = filtered.map(item => `
     <div class="recent-item">
-      <div class="dot dot-green"></div>
+      <div class="dot" style="background:var(--violet)"></div>
       <div class="ri-info">
         <div class="ri-name">${esc(item.description || item.barcode)}</div>
-        <div class="ri-meta">${esc(item.barcode)} · ${item.lokasi || '-'}</div>
+        <div class="ri-meta">Exp: ${formatDateIndo(item.expiredDate)}</div>
       </div>
-      <div style="font-size:12px; font-weight:600; color:var(--violet)">${item.expiredDate.split('-').reverse().slice(0,2).join('/')}</div>
-    </div>`;
-  }
-  container.innerHTML = html;
+      <div class="ri-actions">
+        <button class="icon-btn" onclick="openEditModal(${item.rowIndex})"><svg stroke="var(--violet)" fill="none" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+        <button class="icon-btn" onclick="deleteItem(${item.rowIndex})"><svg stroke="var(--red)" fill="none" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+      </div>
+    </div>
+  `).join('');
 }
 
 function renderPullList() {
   const container = document.getElementById('pullList');
   let h = 0, m = 0, a = 0;
-  let html = "";
-
-  const enriched = inputItems.map(item => {
+  
+  const list = inputItems.map(item => {
     const dbRef = dbItems.find(d => d.barcode === item.barcode);
     const hMin = dbRef ? dbRef.hMinus : 0;
-    
-    // Hitung selisih hari
     const diff = Math.round((new Date(item.expiredDate) - new Date(todayStr)) / 86400000);
     const daysToPull = diff - hMin;
-    
     let status = 'aman';
-    if(daysToPull <= 0) { status = 'harus'; h++; }
-    else if(daysToPull <= 3) { status = 'mendekati'; m++; }
-    else a++;
-
-    return { ...item, status, daysToPull, hMinus: hMin };
+    if(daysToPull <= 0) { status = 'harus'; h++; } else if(daysToPull <= 3) { status = 'mendekati'; m++; } else a++;
+    return { ...item, status, daysToPull };
   }).sort((x, y) => x.daysToPull - y.daysToPull);
 
   document.getElementById('statHarus').innerText = h;
   document.getElementById('statMendekati').innerText = m;
   document.getElementById('statAman').innerText = a;
-  
-  const badge = document.getElementById('tarikBadge');
-  badge.innerText = h;
-  badge.style.display = h > 0 ? 'block' : 'none';
-
-  for(let item of enriched) {
-    const isDone = checkedRows.has(item.rowIndex);
-    const cardCls = item.status === 'harus' ? '' : item.status === 'mendekati' ? 'amber' : 'aman-card';
-    const badgeCls = item.status === 'harus' ? 'badge-red' : item.status === 'mendekati' ? 'badge-amber' : 'badge-green';
-    const label = item.status === 'harus' ? 'TARIK SEKARANG' : item.daysToPull + ' hari lagi';
-
-    html += `
-    <div class="pull-card ${cardCls} ${isDone ? 'done' : ''}">
-      <div class="pull-top">
-        <div class="pull-name">${esc(item.description || item.barcode)}</div>
-        <div class="badge ${badgeCls}">${item.status === 'aman' ? 'AMAN' : label}</div>
-      </div>
-      <div style="font-size:11px; color:#666; margin-bottom:10px;">
-        Exp: ${item.expiredDate} · H-${item.hMinus} · Lok: ${item.lokasi || '-'}
-      </div>
-      <div style="display:flex; justify-content:flex-end;">
-        <div class="check-box ${isDone?'checked':''}" onclick="toggleCheck(${item.rowIndex})">
-          ${isDone ? '<svg width="14" height="14" stroke="white" fill="none" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
-        </div>
-      </div>
-    </div>`;
-  }
-  container.innerHTML = html || '<div style="text-align:center; padding:50px; color:#999;">Tidak ada data tarik</div>';
-}
-
-function toggleCheck(idx) {
-  if(checkedRows.has(idx)) checkedRows.delete(idx);
-  else checkedRows.add(idx);
-  
-  // Simpan status centang agar tidak hilang saat refresh
-  localStorage.setItem(CACHE_CHECKED, JSON.stringify([...checkedRows]));
-  renderPullList();
-}
-
-// =============================================
-// SCANNER ENGINE
-// =============================================
-function openScanner() {
-  document.getElementById('scannerOverlay').classList.add('open');
-  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-  html5QrScanner.start(
-    { facingMode: "environment" },
-    { fps: 20, qrbox: { width: 250, height: 150 } },
-    (text) => {
-      onScanSuccess(text);
-    },
-    () => {}
-  ).catch(() => {
-    showToast("Kamera tidak diizinkan", "error");
-    closeScanner();
-  });
-}
-
-function onScanSuccess(code) {
-  playScanEffects(); // Bunyi Beep & Getar
-  closeScanner();
-  
-  document.getElementById('fBarcode').value = code;
-  autoFillFromBarcode(code);
-  
-  // UX: Langsung arahkan user ke input tanggal
-  setTimeout(() => {
-    const el = document.getElementById('fExp');
-    el.focus();
-    if(el.showPicker) el.showPicker(); // Munculkan kalender otomatis
-  }, 400);
-}
-
-async function closeScanner() {
-  document.getElementById('scannerOverlay').classList.remove('open');
-  if(html5QrScanner) {
-    try { await html5QrScanner.stop(); } catch(e) {}
-    html5QrScanner = null;
-  }
-}
-
-function confirmManualScan() {
-  const val = document.getElementById('scannerManualInput').value.trim();
-  if(val) onScanSuccess(val);
-}
-
-// =============================================
-// UTILS
-// =============================================
-function autoFillFromBarcode(val) {
-  if(!val) return;
-  const found = dbItems.find(d => d.barcode === val);
-  if(found) document.getElementById('fDesc').value = found.description;
-}
-
-function switchTab(t) {
-  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
-  document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
-}
-
-function showToast(m, type) {
-  const t = document.getElementById('toast');
-  t.innerText = m;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-</script>
-</body>
-</html>
+  document.getElementById('tarikBadge').innerText = h;
+  document.g

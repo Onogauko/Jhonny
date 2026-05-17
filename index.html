@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Expired Control D&D</title>
+<title>Expired Control D&D - Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -44,614 +44,134 @@ body {
 }
 
 /* HEADER */
-.header {
-  background: var(--violet);
-  padding: 52px 20px 0;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
+.header { background: var(--violet); padding: 52px 20px 0; position: sticky; top: 0; z-index: 50; }
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
 .header-title { color: #fff; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
 .header-date { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; }
 .sync-btn {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  color: white;
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-family: var(--sans);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.2s;
+  background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px;
+  padding: 8px 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;
 }
-.sync-btn:active { background: rgba(255,255,255,0.25); }
-.sync-btn svg { width: 14px; height: 14px; }
+.sync-btn:disabled { opacity: 0.5; }
 
 /* TABS */
-.tabs {
-  display: flex;
-  gap: 4px;
-  background: rgba(0,0,0,0.2);
-  border-radius: 12px 12px 0 0;
-  padding: 5px 5px 0;
-  margin-top: 4px;
-}
+.tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 4px; }
 .tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.55);
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px 0 12px;
-  border-radius: 9px 9px 0 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.2s;
+  flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.55);
+  font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 10px 0 12px;
+  border-radius: 9px 9px 0 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.tab-btn.active {
-  background: var(--bg);
-  color: var(--violet);
-}
-.tab-badge {
-  background: var(--red);
-  color: white;
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: 20px;
-  padding: 1px 6px;
-  min-width: 18px;
-  text-align: center;
-}
+.tab-btn.active { background: var(--bg); color: var(--violet); }
+.tab-badge { background: var(--red); color: white; font-size: 10px; font-weight: 600; border-radius: 20px; padding: 1px 6px; min-width: 18px; }
 
 /* MAIN CONTENT */
 .main { flex: 1; overflow-y: auto; padding: 16px; }
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* SCAN BUTTON */
+/* SCAN AREA */
 .scan-area {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1.5px dashed var(--border);
-  padding: 20px 16px;
-  text-align: center;
-  margin-bottom: 14px;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  background: var(--surface); border-radius: var(--radius); border: 1.5px dashed var(--border);
+  padding: 20px 16px; text-align: center; margin-bottom: 14px; cursor: pointer;
 }
-.scan-area:active { background: var(--violet-light); border-color: var(--violet-mid); }
 .scan-icon {
-  width: 52px; height: 52px;
-  background: var(--violet-light);
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 10px;
+  width: 52px; height: 52px; background: var(--violet-light); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
 }
 .scan-icon svg { width: 26px; height: 26px; stroke: var(--violet); }
-.scan-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.scan-sub { font-size: 12px; color: var(--text-2); }
 
-/* FORM INPUT */
-.form-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 16px;
-  margin-bottom: 14px;
-}
-.form-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: block; }
+/* FORM */
+.form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; margin-bottom: 10px; display: block; }
 .form-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.form-row:last-child { margin-bottom: 0; }
 .inp {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 11px 13px;
-  font-size: 13px;
-  font-family: var(--sans);
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s;
-  min-width: 0;
+  flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 11px 13px; font-size: 13px; color: var(--text); outline: none; width: 100%;
 }
-.inp:focus { border-color: var(--violet-mid); background: white; }
-.inp::placeholder { color: #c4b5fd; }
-.inp.mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.03em; }
+.inp.mono { font-family: var(--mono); font-size: 12px; }
 .btn-primary {
-  background: var(--violet);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 11px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--sans);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  transition: background 0.2s, transform 0.1s;
+  background: var(--violet); color: white; border: none; border-radius: var(--radius-sm);
+  padding: 11px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.btn-primary:active { transform: scale(0.97); }
-.btn-primary svg { width: 16px; height: 16px; }
-.btn-full { width: 100%; justify-content: center; }
-.btn-secondary {
-  background: var(--bg);
-  color: var(--violet);
-  border: 1.5px solid var(--violet-mid);
-  border-radius: var(--radius-sm);
-  padding: 9px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--sans);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: background 0.15s;
-}
-.btn-secondary:active { background: var(--violet-light); }
-.btn-danger {
-  background: var(--red-light);
-  color: var(--red);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--sans);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
+.btn-primary:disabled { opacity: 0.7; }
 
-/* SEARCH BAR */
-.search-bar {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 13px;
-  font-size: 13px;
-  font-family: var(--sans);
-  color: var(--text);
-  outline: none;
-  width: 100%;
-  margin-bottom: 10px;
-  transition: border-color 0.2s;
-}
-.search-bar:focus { border-color: var(--violet-mid); }
-.search-wrap { position: relative; margin-bottom: 10px; }
-.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: var(--text-3); pointer-events: none; }
-.search-bar { padding-left: 36px; }
-
-/* SECTION LABEL */
-.sec-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin: 16px 0 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* RECENT LIST */
+/* LIST & CARDS */
 .recent-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 11px 13px;
-  margin-bottom: 7px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 11px 13px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px;
 }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .dot-green { background: var(--green); }
 .dot-amber { background: var(--amber); }
 .dot-red { background: var(--red); }
 .ri-info { flex: 1; min-width: 0; }
-.ri-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-.ri-exp { font-size: 12px; font-weight: 600; color: var(--violet); flex-shrink: 0; }
-.ri-actions { display: flex; gap: 5px; flex-shrink: 0; }
-.icon-btn {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  border: none;
-  background: var(--bg);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-}
-.icon-btn:active { background: var(--violet-light); }
-.icon-btn svg { width: 14px; height: 14px; }
-.icon-btn.del svg { stroke: var(--red); }
-.icon-btn.edit svg { stroke: var(--violet); }
+.ri-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ri-meta { font-size: 11px; color: var(--text-2); }
 
-/* STAT ROW */
-.stat-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 10px;
-  text-align: center;
-}
-.stat-num { font-size: 26px; font-weight: 600; line-height: 1; }
-.stat-num.red { color: var(--red); }
-.stat-num.amber { color: var(--amber); }
-.stat-num.green { color: var(--green); }
-.stat-lbl { font-size: 10px; color: var(--text-2); margin-top: 4px; line-height: 1.3; }
+/* SEARCH */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-bar { width: 100%; padding: 10px 10px 10px 36px; border-radius: 10px; border: 1px solid var(--border); outline: none; }
+.search-wrap svg { position: absolute; left: 12px; top: 11px; width: 16px; stroke: var(--text-3); }
 
-/* FILTER CHIPS */
-.chips { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 5px 13px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-.chip.active { background: var(--violet); color: white; border-color: var(--violet); }
+/* TAB TARIK - STATS */
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 600; }
+.stat-lbl { font-size: 10px; color: var(--text-2); margin-top: 4px; }
 
 /* PULL CARDS */
 .pull-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  border-left: 3.5px solid var(--red);
-  padding: 12px 13px;
-  margin-bottom: 8px;
-  transition: opacity 0.3s;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  border-left: 4px solid var(--red); padding: 12px; margin-bottom: 8px; transition: opacity 0.2s;
 }
 .pull-card.amber { border-left-color: var(--amber); }
 .pull-card.aman-card { border-left-color: var(--green); }
-.pull-card.done { opacity: 0.4; }
-.pull-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
-.pull-name { font-size: 13px; font-weight: 600; line-height: 1.3; flex: 1; }
-.badge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 20px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+.pull-card.done { opacity: 0.35; filter: grayscale(1); }
+.pull-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.pull-name { font-size: 13px; font-weight: 600; }
+.badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
 .badge-red { background: var(--red-light); color: var(--red); }
 .badge-amber { background: var(--amber-light); color: var(--amber); }
 .badge-green { background: var(--green-light); color: var(--green); }
-.pull-meta { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
-.pull-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
-}
-.pull-exp { font-size: 11px; color: var(--text-2); }
-.pull-loc { font-size: 11px; font-weight: 500; color: var(--violet); }
-.check-box {
-  width: 24px; height: 24px;
-  border-radius: 7px;
-  border: 1.5px solid var(--border);
-  background: var(--bg);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
+.check-box { width: 26px; height: 26px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .check-box.checked { background: var(--green); border-color: var(--green); }
-.check-box svg { width: 14px; height: 14px; stroke: white; display: none; }
-.check-box.checked svg { display: block; }
-
-/* EMPTY STATE */
-.empty {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--text-2);
-}
-.empty svg { width: 40px; height: 40px; stroke: var(--border); margin: 0 auto 12px; display: block; }
-.empty p { font-size: 13px; }
-
-/* LOADING */
-.loading-bar {
-  height: 3px;
-  background: linear-gradient(90deg, var(--violet-light), var(--violet-mid), var(--violet-light));
-  background-size: 200% 100%;
-  animation: shimmer 1.2s infinite;
-  border-radius: 2px;
-  margin-bottom: 14px;
-}
-@keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
-
-/* OFFLINE BANNER */
-.offline-banner {
-  background: var(--amber);
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  padding: 6px;
-  display: none;
-}
-.offline-banner.show { display: block; }
 
 /* TOAST */
 .toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--text);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 999;
-  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  white-space: nowrap;
-  max-width: 90vw;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: #333; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px;
+  z-index: 1000; transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: var(--green); }
 .toast.error { background: var(--red); }
-.toast.warning { background: var(--amber); }
 
-/* SCANNER OVERLAY — AppSheet style */
-.scanner-overlay {
-  position: fixed; inset: 0;
-  background: #000;
-  z-index: 200;
-  display: none;
-  flex-direction: column;
-}
+/* SCANNER OVERLAY */
+.scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column; }
 .scanner-overlay.open { display: flex; }
-.scanner-header {
-  background: rgba(0,0,0,0.7);
-  padding: 52px 20px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.scanner-header-title { color: white; font-size: 16px; font-weight: 600; }
-.scanner-close-btn {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  color: white;
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-family: var(--sans);
-  cursor: pointer;
-}
+.scanner-header { padding: 50px 20px 15px; display: flex; justify-content: space-between; align-items: center; color: white; }
+#html5-qrcode-container { flex: 1; }
+.scanner-footer { padding: 20px; background: rgba(0,0,0,0.8); }
 
-#html5-qrcode-container {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Override html5-qrcode default styles */
-#html5-qrcode-container video {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-#html5-qrcode-container img { display: none !important; }
-#qr-shaded-region {
-  border-width: 40px !important;
-}
-
-.scanner-footer {
-  background: rgba(0,0,0,0.7);
-  padding: 16px 20px 36px;
-  text-align: center;
-}
-.scanner-hint-text { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px; }
-.scanner-manual-row { display: flex; gap: 8px; }
-.scanner-manual-inp {
-  flex: 1;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  padding: 11px 13px;
-  font-size: 14px;
-  font-family: var(--mono);
-  color: white;
-  outline: none;
-  letter-spacing: 0.05em;
-}
-.scanner-manual-inp::placeholder { color: rgba(255,255,255,0.35); }
-.scanner-manual-inp:focus { border-color: var(--violet-mid); background: rgba(255,255,255,0.15); }
-.scanner-confirm-btn {
-  background: var(--violet);
-  border: none;
-  color: white;
-  border-radius: 10px;
-  padding: 11px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--sans);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* MODAL EDIT */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 300;
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal-card {
-  background: white;
-  border-radius: 20px 20px 0 0;
-  padding: 20px 20px 36px;
-  width: 100%;
-  max-width: 430px;
-}
-.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-.modal-row { margin-bottom: 10px; }
-.modal-label { font-size: 11px; color: var(--text-2); margin-bottom: 4px; font-weight: 500; }
-.modal-inp {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 11px 13px;
-  font-size: 13px;
-  font-family: var(--sans);
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s;
-}
-.modal-inp:focus { border-color: var(--violet-mid); background: white; }
-.modal-btns { display: flex; gap: 8px; margin-top: 16px; }
-.modal-btns .btn-primary { flex: 1; justify-content: center; }
-.modal-cancel {
-  background: var(--bg);
-  color: var(--text-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 11px 18px;
-  font-size: 13px;
-  font-family: var(--sans);
-  cursor: pointer;
-}
-
-/* CONFIRM MODAL */
-.confirm-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 400;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.confirm-overlay.open { display: flex; }
-.confirm-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px 20px;
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
-}
-.confirm-icon { font-size: 32px; margin-bottom: 10px; }
-.confirm-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-.confirm-sub { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
-.confirm-btns { display: flex; gap: 8px; }
-.confirm-btns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: var(--sans); cursor: pointer; border: none; }
-.confirm-cancel { background: var(--bg); color: var(--text-2); border: 1px solid var(--border) !important; }
-.confirm-ok { background: var(--red); color: white; }
-
-/* SPINNER */
+/* SPIN ANIMATION */
 .spin { animation: spin 1s linear infinite; display: inline-block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<!-- OFFLINE BANNER -->
-<div class="offline-banner" id="offlineBanner">⚡ Offline — data dari cache lokal</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- SCANNER OVERLAY (AppSheet style) -->
+<!-- SCANNER OVERLAY -->
 <div class="scanner-overlay" id="scannerOverlay">
   <div class="scanner-header">
-    <div class="scanner-header-title">Scan Barcode / QR Code</div>
-    <button class="scanner-close-btn" onclick="closeScanner()">✕ Tutup</button>
+    <div style="font-weight:600">Scan Barcode / QR</div>
+    <button onclick="closeScanner()" style="background:none; border:1px solid white; color:white; padding:5px 15px; border-radius:8px;">Tutup</button>
   </div>
   <div id="html5-qrcode-container"></div>
   <div class="scanner-footer">
-    <div class="scanner-hint-text">Arahkan kamera ke barcode secara otomatis terdeteksi</div>
-    <div class="scanner-manual-row">
-      <input class="scanner-manual-inp" id="scannerManualInput" placeholder="Atau ketik barcode manual..." onkeydown="if(event.key==='Enter') confirmManualScan()">
-      <button class="scanner-confirm-btn" onclick="confirmManualScan()">OK</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDIT -->
-<div class="modal-overlay" id="modalEdit">
-  <div class="modal-card">
-    <div class="modal-title">Edit Data Input</div>
-    <input type="hidden" id="editRowIndex">
-    <div class="modal-row">
-      <div class="modal-label">Barcode / SKU</div>
-      <input class="modal-inp" id="editBarcode" placeholder="Barcode">
-    </div>
-    <div class="modal-row">
-      <div class="modal-label">Nama Barang</div>
-      <input class="modal-inp" id="editDesc" placeholder="Nama barang">
-    </div>
-    <div class="modal-row">
-      <div class="modal-label">Tanggal Expired</div>
-      <input class="modal-inp" id="editExp" type="date">
-    </div>
-    <div class="modal-row">
-      <div class="modal-label">Lokasi</div>
-      <input class="modal-inp" id="editLokasi" placeholder="Rak, area...">
-    </div>
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeEditModal()">Batal</button>
-      <button class="btn-primary" onclick="saveEdit()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-        Simpan
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- CONFIRM DELETE MODAL -->
-<div class="confirm-overlay" id="confirmDelete">
-  <div class="confirm-card">
-    <div class="confirm-icon">🗑️</div>
-    <div class="confirm-title">Hapus Data?</div>
-    <div class="confirm-sub">Data yang dihapus tidak bisa dikembalikan.</div>
-    <div class="confirm-btns">
-      <button class="confirm-cancel" onclick="closeConfirm()">Batal</button>
-      <button class="confirm-ok" onclick="doDelete()">Hapus</button>
-    </div>
+    <input class="inp" id="scannerManualInput" placeholder="Input manual di sini..." style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:white;">
+    <button class="btn-primary" onclick="confirmManualScan()" style="width:100%; margin-top:10px;">Konfirmasi</button>
   </div>
 </div>
 
@@ -663,596 +183,367 @@ body {
       <div class="header-date" id="headerDate"></div>
     </div>
     <button class="sync-btn" onclick="loadAll()" id="syncBtn">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
       <span id="syncLabel">Sync</span>
     </button>
   </div>
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('input')" id="tabInput">
-      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-      Input
-    </button>
-    <button class="tab-btn" onclick="switchTab('tarik')" id="tabTarik">
-      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-      Tarik
-      <span class="tab-badge" id="tarikBadge" style="display:none">0</span>
-    </button>
+    <button class="tab-btn active" onclick="switchTab('input')" id="tabInput">Input</button>
+    <button class="tab-btn" onclick="switchTab('tarik')" id="tabTarik">Tarik <span class="tab-badge" id="tarikBadge" style="display:none">0</span></button>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-  <!-- PANEL INPUT -->
+  <!-- TAB INPUT -->
   <div class="panel active" id="panelInput">
     <div class="scan-area" onclick="openScanner()">
       <div class="scan-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7M4 11h16M12 4v16"/></svg>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7"/></svg>
       </div>
-      <div class="scan-title">Tap untuk Scan Barcode / QR</div>
-      <div class="scan-sub">Deteksi otomatis — semua format barcode & QR didukung</div>
+      <div style="font-weight:600; font-size:14px;">Tap untuk Scan Barcode</div>
     </div>
 
     <div class="form-card">
-      <span class="form-label">Input Manual</span>
+      <span class="form-label">Input Data Barang</span>
+      <div class="form-row"><input class="inp mono" id="fBarcode" placeholder="Barcode / SKU" oninput="autoFillFromBarcode(this.value)"></div>
+      <div class="form-row"><input class="inp" id="fDesc" placeholder="Nama Barang"></div>
       <div class="form-row">
-        <input class="inp mono" id="fBarcode" placeholder="Barcode / SKU" oninput="autoFillFromBarcode(this.value)">
+        <input class="inp" id="fExp" type="date">
+        <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)">
       </div>
-      <div class="form-row">
-        <input class="inp" id="fDesc" placeholder="Nama barang" style="flex:2">
-      </div>
-      <div class="form-row">
-        <input class="inp" id="fExp" type="date" style="flex:1">
-        <input class="inp" id="fLokasi" placeholder="Lokasi (rak, area...)" style="flex:1.4">
-      </div>
-      <div class="form-row" style="margin-top:4px">
-        <button class="btn-primary btn-full" onclick="submitInput()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-          Simpan ke Spreadsheet
-        </button>
-      </div>
+      <button class="btn-primary" style="width:100%; margin-top:5px;" onclick="submitInput()" id="submitBtn">Simpan Ke Spreadsheet</button>
     </div>
 
-    <div class="sec-label">
-      <span>Input hari ini</span>
-      <span id="recentCount" style="font-size:11px;color:var(--text-3);font-weight:500"></span>
-    </div>
-
-    <!-- SEARCH BAR -->
     <div class="search-wrap">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"/></svg>
-      <input class="search-bar" id="searchInput" placeholder="Cari nama atau barcode..." oninput="renderRecent()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="search-bar" id="searchInput" placeholder="Cari input hari ini..." oninput="renderRecent()">
     </div>
-
-    <div id="loadingInput" class="loading-bar" style="display:none"></div>
     <div id="recentList"></div>
   </div>
 
-  <!-- PANEL TARIK -->
+  <!-- TAB TARIK -->
   <div class="panel" id="panelTarik">
     <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-num red" id="statHarus">-</div>
-        <div class="stat-lbl">Harus Ditarik</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num amber" id="statMendekati">-</div>
-        <div class="stat-lbl">Mendekati Expired</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num green" id="statAman">-</div>
-        <div class="stat-lbl">Aman</div>
-      </div>
+      <div class="stat-card"><div class="stat-num" id="statHarus" style="color:var(--red)">0</div><div class="stat-lbl">Harus Tarik</div></div>
+      <div class="stat-card"><div class="stat-num" id="statMendekati" style="color:var(--amber)">0</div><div class="stat-lbl">Mendekati</div></div>
+      <div class="stat-card"><div class="stat-num" id="statAman" style="color:var(--green)">0</div><div class="stat-lbl">Aman</div></div>
     </div>
-
-    <div class="chips">
-      <div class="chip active" onclick="setFilter('all',this)">Semua</div>
-      <div class="chip" onclick="setFilter('harus',this)">Harus Tarik</div>
-      <div class="chip" onclick="setFilter('mendekati',this)">Mendekati</div>
-      <div class="chip" onclick="setFilter('aman',this)">Aman</div>
-    </div>
-
-    <div id="loadingTarik" class="loading-bar" style="display:none"></div>
     <div id="pullList"></div>
   </div>
-
 </div>
 
 <script>
 // =============================================
 // KONFIGURASI
 // =============================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
-const CACHE_KEY_DB    = "expired_cache_db";
-const CACHE_KEY_INPUT = "expired_cache_input";
-const CACHE_TTL       = 5 * 60 * 1000; // 5 menit
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec"; 
+const API_TOKEN       = "RAHASIA_123"; // Token Keamanan
+const CACHE_DB        = "cache_db_exp";
+const CACHE_INPUT     = "cache_input_exp";
+const CACHE_CHECKED   = "cache_checked_items";
 
 // =============================================
 // STATE
 // =============================================
-let dbItems        = [];
-let inputItems     = [];
-let activeFilter   = "all";
-let checkedRows    = new Set();
+let dbItems      = JSON.parse(localStorage.getItem(CACHE_DB) || "[]");
+let inputItems   = JSON.parse(localStorage.getItem(CACHE_INPUT) || "[]");
+let checkedRows  = new Set(JSON.parse(localStorage.getItem(CACHE_CHECKED) || "[]"));
+let todayStr     = new Date().toISOString().split('T')[0];
 let html5QrScanner = null;
-let todayStr       = "";
-let deleteRowIndex = null;
 
 // =============================================
 // INIT
 // =============================================
 window.onload = () => {
-  const now = new Date();
-  todayStr = toISO(now);
-  document.getElementById('headerDate').innerText = now.toLocaleDateString('id-ID', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-  });
+  document.getElementById('headerDate').innerText = new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
   document.getElementById('fExp').value = todayStr;
-
-  // Offline detection
-  window.addEventListener('online',  () => { document.getElementById('offlineBanner').classList.remove('show'); loadAll(); });
-  window.addEventListener('offline', () => { document.getElementById('offlineBanner').classList.add('show'); });
-  if (!navigator.onLine) document.getElementById('offlineBanner').classList.add('show');
-
+  
+  // Render awal dari cache agar cepat
+  renderRecent();
+  renderPullList();
+  
+  // Sync dengan server
   loadAll();
 };
 
-function toISO(d) { return d.toISOString().split('T')[0]; }
-function addDays(iso, n) { const d = new Date(iso); d.setDate(d.getDate() + n); return toISO(d); }
-function diffDays(isoA, isoB) { return Math.round((new Date(isoA) - new Date(isoB)) / 86400000); }
-
 // =============================================
-// CACHE
+// SOUND & VIBRATE (Scanner Effects)
 // =============================================
-function saveCache(key, data) {
-  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
-}
-function loadCache(key) {
+function playScanEffects() {
+  // Getar HP
+  if (navigator.vibrate) navigator.vibrate(50);
+  
+  // Bunyi Beep (Tanpa File External)
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (Date.now() - obj.ts > CACHE_TTL) return null;
-    return obj.data;
-  } catch(e) { return null; }
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = 880; 
+    gain.gain.value = 0.1;
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+  } catch(e) { console.log("Audio effects not supported"); }
 }
 
 // =============================================
-// API CALLS
+// API HELPER
 // =============================================
-async function apiFetch(params, timeoutMs = 10000) {
-  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
-  const ctrl = new AbortController();
-  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
-  const res = await fetch(url, { signal: ctrl.signal });
-  clearTimeout(tid);
+async function callApi(params, body = null) {
+  const url = new URL(APPS_SCRIPT_URL);
+  params.token = API_TOKEN;
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+  const options = {
+    method: body ? 'POST' : 'GET',
+    body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null
+  };
+
+  const res = await fetch(url, options);
   const json = await res.json();
   if (json.error) throw new Error(json.error);
   return json;
 }
 
-async function apiPost(body, timeoutMs = 15000) {
-  const ctrl = new AbortController();
-  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(body),
-    signal: ctrl.signal
-  });
-  clearTimeout(tid);
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
-  return json;
-}
-
 // =============================================
-// LOAD DATA (dengan cache fallback)
+// CORE LOGIC
 // =============================================
 async function loadAll() {
-  const btn = document.getElementById('syncBtn');
   const lbl = document.getElementById('syncLabel');
-  btn.disabled = true;
   lbl.innerText = "Syncing...";
-
-  if (!navigator.onLine) {
-    const cachedDb    = loadCache(CACHE_KEY_DB);
-    const cachedInput = loadCache(CACHE_KEY_INPUT);
-    if (cachedDb)    dbItems    = cachedDb;
-    if (cachedInput) inputItems = cachedInput;
-    renderRecent();
-    renderPullList();
-    showToast("Offline — menampilkan data cache", "warning");
-    btn.disabled = false;
-    lbl.innerText = "Sync";
-    return;
-  }
-
   try {
-    const [dbRes, inputRes] = await Promise.all([
-      apiFetch({ action: "getDatabase" }),
-      apiFetch({ action: "getInputs" })
+    const [dbRes, inRes] = await Promise.all([
+      callApi({ action: "getDatabase" }),
+      callApi({ action: "getInputs" })
     ]);
-    dbItems    = dbRes.data    || [];
-    inputItems = inputRes.data || [];
-    saveCache(CACHE_KEY_DB,    dbItems);
-    saveCache(CACHE_KEY_INPUT, inputItems);
+    
+    dbItems = dbRes.data || [];
+    inputItems = inRes.data || [];
+    
+    localStorage.setItem(CACHE_DB, JSON.stringify(dbItems));
+    localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
+    
     renderRecent();
     renderPullList();
-  } catch (e) {
-    // Coba fallback ke cache
-    const cachedDb    = loadCache(CACHE_KEY_DB);
-    const cachedInput = loadCache(CACHE_KEY_INPUT);
-    if (cachedDb || cachedInput) {
-      if (cachedDb)    dbItems    = cachedDb;
-      if (cachedInput) inputItems = cachedInput;
-      renderRecent();
-      renderPullList();
-      showToast("Gagal sync, menampilkan data cache", "warning");
-    } else {
-      const msg = e.name === 'AbortError'
-        ? "Koneksi timeout — periksa jaringan Anda"
-        : "Gagal sync: " + e.message;
-      showToast(msg, "error");
-    }
+    showToast("Data Sinkron", "success");
+  } catch(e) {
+    showToast("Mode Offline (Gagal Sync)", "error");
   } finally {
-    btn.disabled = false;
     lbl.innerText = "Sync";
   }
 }
 
+async function submitInput() {
+  const b = document.getElementById('fBarcode').value.trim();
+  const d = document.getElementById('fDesc').value.trim();
+  const e = document.getElementById('fExp').value;
+  const l = document.getElementById('fLokasi').value.trim();
+
+  if(!b || !e) return showToast("Barcode & Tgl Exp wajib diisi!", "error");
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
+
+  try {
+    const res = await callApi({ action: "addInput" }, { barcode: b, description: d, expiredDate: e, lokasi: l });
+    
+    // OPTIMISTIC UPDATE: Langsung update tampilan tanpa tunggu reload total
+    const newItem = { 
+      rowIndex: res.rowIndex, 
+      barcode: b, 
+      description: d || (dbItems.find(x => x.barcode === b)?.description || ""), 
+      expiredDate: e, 
+      lokasi: l, 
+      timestamp: new Date().toISOString() 
+    };
+    
+    inputItems.push(newItem);
+    localStorage.setItem(CACHE_INPUT, JSON.stringify(inputItems));
+    
+    renderRecent();
+    renderPullList();
+    showToast("Data Berhasil Disimpan", "success");
+    
+    // Reset Form
+    document.getElementById('fBarcode').value = "";
+    document.getElementById('fDesc').value = "";
+    document.getElementById('fBarcode').focus();
+    
+  } catch(err) {
+    showToast("Gagal Simpan ke Spreadsheet", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Simpan Ke Spreadsheet";
+  }
+}
+
 // =============================================
-// RENDER: RECENT (Tab Input) + Search
+// RENDERERS
 // =============================================
 function renderRecent() {
-  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
-  const todayInputs = inputItems
-    .filter(i => i.timestamp && i.timestamp.startsWith(todayStr))
-    .filter(i => {
-      if (!searchVal) return true;
-      const name    = (i.description || '').toLowerCase();
-      const barcode = (i.barcode || '').toLowerCase();
-      return name.includes(searchVal) || barcode.includes(searchVal);
-    })
+  const container = document.getElementById('recentList');
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  
+  const filtered = inputItems
+    .filter(i => i.timestamp && i.timestamp.split('T')[0] === todayStr)
+    .filter(i => (i.description||'').toLowerCase().includes(q) || (i.barcode||'').includes(q))
     .reverse();
 
-  document.getElementById('recentCount').innerText = todayInputs.length > 0 ? `${todayInputs.length} item` : '';
-
-  const container = document.getElementById('recentList');
-  if (todayInputs.length === 0) {
-    container.innerHTML = `<div class="empty">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      <p>${searchVal ? 'Tidak ditemukan' : 'Belum ada input hari ini'}</p>
-    </div>`;
+  if(!filtered.length) {
+    container.innerHTML = `<div style="text-align:center; padding:30px; color:#999; font-size:13px;">Belum ada input hari ini</div>`;
     return;
   }
 
-  container.innerHTML = todayInputs.map(item => {
-    const diff     = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
-    const dotClass = diff === null ? 'dot-amber' : diff <= 0 ? 'dot-red' : diff <= 3 ? 'dot-amber' : 'dot-green';
-    const expLabel = item.expiredDate
-      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', { day:'2-digit', month:'short' })
-      : '-';
-    const time = item.timestamp ? item.timestamp.split(' ')[1] : '';
-    return `<div class="recent-item">
-      <div class="dot ${dotClass}"></div>
+  let html = "";
+  for(let item of filtered) {
+    html += `
+    <div class="recent-item">
+      <div class="dot dot-green"></div>
       <div class="ri-info">
         <div class="ri-name">${esc(item.description || item.barcode)}</div>
-        <div class="ri-meta">${esc(item.barcode)} · ${time}${item.lokasi ? ' · ' + esc(item.lokasi) : ''}</div>
+        <div class="ri-meta">${esc(item.barcode)} · ${item.lokasi || '-'}</div>
       </div>
-      <div class="ri-exp">${expLabel}</div>
-      <div class="ri-actions">
-        <button class="icon-btn edit" title="Edit" onclick="openEditModal(${item.rowIndex})">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-        </button>
-        <button class="icon-btn del" title="Hapus" onclick="confirmDeleteItem(${item.rowIndex})">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        </button>
-      </div>
+      <div style="font-size:12px; font-weight:600; color:var(--violet)">${item.expiredDate.split('-').reverse().slice(0,2).join('/')}</div>
     </div>`;
-  }).join('');
-}
-
-// =============================================
-// EDIT MODAL
-// =============================================
-function openEditModal(rowIndex) {
-  const item = inputItems.find(i => i.rowIndex === rowIndex);
-  if (!item) return;
-  document.getElementById('editRowIndex').value = rowIndex;
-  document.getElementById('editBarcode').value  = item.barcode || '';
-  document.getElementById('editDesc').value     = item.description || '';
-  document.getElementById('editExp').value      = item.expiredDate || '';
-  document.getElementById('editLokasi').value   = item.lokasi || '';
-  document.getElementById('modalEdit').classList.add('open');
-}
-
-function closeEditModal() {
-  document.getElementById('modalEdit').classList.remove('open');
-}
-
-async function saveEdit() {
-  const rowIndex = parseInt(document.getElementById('editRowIndex').value);
-  const barcode  = document.getElementById('editBarcode').value.trim();
-  const desc     = document.getElementById('editDesc').value.trim();
-  const exp      = document.getElementById('editExp').value;
-  const lokasi   = document.getElementById('editLokasi').value.trim();
-
-  if (!barcode || !exp) { showToast("Barcode & tanggal wajib diisi", "error"); return; }
-
-  const btn = document.querySelector('#modalEdit .btn-primary');
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
-
-  try {
-    await apiPost({ action: "updateInput", rowIndex, barcode, description: desc, expiredDate: exp, lokasi });
-    closeEditModal();
-    showToast("Berhasil diupdate!", "success");
-    await loadAll();
-  } catch(e) {
-    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal: " + e.message;
-    showToast(msg, "error");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan`;
   }
+  container.innerHTML = html;
 }
 
-// =============================================
-// DELETE
-// =============================================
-function confirmDeleteItem(rowIndex) {
-  deleteRowIndex = rowIndex;
-  document.getElementById('confirmDelete').classList.add('open');
-}
-function closeConfirm() {
-  document.getElementById('confirmDelete').classList.remove('open');
-  deleteRowIndex = null;
-}
-async function doDelete() {
-  if (deleteRowIndex === null) return;
-  const rowIndex = deleteRowIndex;
-  closeConfirm();
-
-  try {
-    await apiPost({ action: "deleteInput", rowIndex });
-    showToast("Data dihapus", "success");
-    await loadAll();
-  } catch(e) {
-    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal hapus: " + e.message;
-    showToast(msg, "error");
-  }
-}
-
-// =============================================
-// RENDER: PULL LIST (Tab Tarik)
-// =============================================
 function renderPullList() {
-  const enriched = inputItems.map(item => {
-    const dbRef     = dbItems.find(d => d.barcode === item.barcode);
-    const hMinus    = dbRef ? dbRef.hMinus : 0;
-    const pullDate  = item.expiredDate ? addDays(item.expiredDate, -hMinus) : null;
-    const daysToExp = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
-    const daysToPull = pullDate ? diffDays(pullDate, todayStr) : null;
-
-    let status = 'aman';
-    if (daysToPull !== null) {
-      if (daysToPull <= 0) status = 'harus';
-      else if (daysToPull <= 3) status = 'mendekati';
-    }
-    return { ...item, hMinus, pullDate, daysToExp, daysToPull, status };
-  });
-
-  const harus     = enriched.filter(i => i.status === 'harus').length;
-  const mendekati = enriched.filter(i => i.status === 'mendekati').length;
-  const aman      = enriched.filter(i => i.status === 'aman').length;
-
-  document.getElementById('statHarus').innerText     = harus;
-  document.getElementById('statMendekati').innerText = mendekati;
-  document.getElementById('statAman').innerText      = aman;
-
-  const badge = document.getElementById('tarikBadge');
-  badge.style.display = harus > 0 ? 'inline-block' : 'none';
-  badge.innerText = harus;
-
-  const filtered = activeFilter === 'all' ? enriched : enriched.filter(i => i.status === activeFilter);
-  filtered.sort((a, b) => {
-    const order = { harus: 0, mendekati: 1, aman: 2 };
-    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
-    return (a.pullDate || '').localeCompare(b.pullDate || '');
-  });
-
   const container = document.getElementById('pullList');
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      <p>Tidak ada barang di kategori ini</p>
-    </div>`;
-    return;
-  }
+  let h = 0, m = 0, a = 0;
+  let html = "";
 
-  container.innerHTML = filtered.map(item => {
-    const isHarus     = item.status === 'harus';
-    const isMendekati = item.status === 'mendekati';
-    const isAman      = item.status === 'aman';
-    const cardClass   = isHarus ? '' : isMendekati ? 'amber' : 'aman-card';
-    const isDone      = checkedRows.has(item.rowIndex);
+  const enriched = inputItems.map(item => {
+    const dbRef = dbItems.find(d => d.barcode === item.barcode);
+    const hMin = dbRef ? dbRef.hMinus : 0;
+    
+    // Hitung selisih hari
+    const diff = Math.round((new Date(item.expiredDate) - new Date(todayStr)) / 86400000);
+    const daysToPull = diff - hMin;
+    
+    let status = 'aman';
+    if(daysToPull <= 0) { status = 'harus'; h++; }
+    else if(daysToPull <= 3) { status = 'mendekati'; m++; }
+    else a++;
 
-    const badgeText = isHarus
-      ? (item.daysToExp === 0 ? 'Expired hari ini' : item.daysToExp < 0 ? 'Sudah expired' : 'Tarik hari ini')
-      : isAman ? 'Aman'
-      : `${item.daysToPull} hari lagi`;
-    const badgeClass = isHarus ? 'badge-red' : isMendekati ? 'badge-amber' : 'badge-green';
+    return { ...item, status, daysToPull, hMinus: hMin };
+  }).sort((x, y) => x.daysToPull - y.daysToPull);
 
-    const expLabel = item.expiredDate
-      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'})
-      : '-';
+  document.getElementById('statHarus').innerText = h;
+  document.getElementById('statMendekati').innerText = m;
+  document.getElementById('statAman').innerText = a;
+  
+  const badge = document.getElementById('tarikBadge');
+  badge.innerText = h;
+  badge.style.display = h > 0 ? 'block' : 'none';
 
-    return `<div class="pull-card ${cardClass} ${isDone ? 'done' : ''}" id="pc-${item.rowIndex}">
+  for(let item of enriched) {
+    const isDone = checkedRows.has(item.rowIndex);
+    const cardCls = item.status === 'harus' ? '' : item.status === 'mendekati' ? 'amber' : 'aman-card';
+    const badgeCls = item.status === 'harus' ? 'badge-red' : item.status === 'mendekati' ? 'badge-amber' : 'badge-green';
+    const label = item.status === 'harus' ? 'TARIK SEKARANG' : item.daysToPull + ' hari lagi';
+
+    html += `
+    <div class="pull-card ${cardCls} ${isDone ? 'done' : ''}">
       <div class="pull-top">
         <div class="pull-name">${esc(item.description || item.barcode)}</div>
-        <span class="badge ${badgeClass}">${badgeText}</span>
+        <div class="badge ${badgeCls}">${item.status === 'aman' ? 'AMAN' : label}</div>
       </div>
-      <div class="pull-meta">${esc(item.barcode)} · Ketentuan tarik: H-${item.hMinus}</div>
-      <div class="pull-bottom">
-        <div>
-          <div class="pull-exp">Expired: ${expLabel}</div>
-          ${item.lokasi ? `<div class="pull-loc">${esc(item.lokasi)}</div>` : ''}
-        </div>
-        <div class="check-box ${isDone ? 'checked' : ''}" onclick="toggleCheck(${item.rowIndex})">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      <div style="font-size:11px; color:#666; margin-bottom:10px;">
+        Exp: ${item.expiredDate} · H-${item.hMinus} · Lok: ${item.lokasi || '-'}
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <div class="check-box ${isDone?'checked':''}" onclick="toggleCheck(${item.rowIndex})">
+          ${isDone ? '<svg width="14" height="14" stroke="white" fill="none" viewBox="0 0 24 24"><path stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
         </div>
       </div>
     </div>`;
-  }).join('');
-}
-
-function toggleCheck(rowIndex) {
-  if (checkedRows.has(rowIndex)) checkedRows.delete(rowIndex);
-  else checkedRows.add(rowIndex);
-  renderPullList();
-}
-
-function setFilter(val, el) {
-  activeFilter = val;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderPullList();
-}
-
-// =============================================
-// SUBMIT INPUT
-// =============================================
-async function submitInput() {
-  const barcode = document.getElementById('fBarcode').value.trim();
-  const desc    = document.getElementById('fDesc').value.trim();
-  const exp     = document.getElementById('fExp').value;
-  const lokasi  = document.getElementById('fLokasi').value.trim();
-
-  if (!barcode) { showToast("Barcode tidak boleh kosong", "error"); return; }
-  if (!exp)     { showToast("Tanggal expired wajib diisi", "error"); return; }
-
-  const btn = document.querySelector('.btn-primary.btn-full');
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
-
-  try {
-    const dbRef    = dbItems.find(d => d.barcode === barcode);
-    const finalDesc = desc || (dbRef ? dbRef.description : "");
-    await apiPost({ action: "addInput", barcode, description: finalDesc, expiredDate: exp, lokasi });
-    showToast("Berhasil disimpan!", "success");
-    document.getElementById('fBarcode').value = '';
-    document.getElementById('fDesc').value    = '';
-    document.getElementById('fExp').value     = todayStr;
-    document.getElementById('fLokasi').value  = '';
-    document.getElementById('fBarcode').focus();
-    await loadAll();
-  } catch(e) {
-    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal: " + e.message;
-    showToast(msg, "error");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan ke Spreadsheet`;
   }
+  container.innerHTML = html || '<div style="text-align:center; padding:50px; color:#999;">Tidak ada data tarik</div>';
+}
+
+function toggleCheck(idx) {
+  if(checkedRows.has(idx)) checkedRows.delete(idx);
+  else checkedRows.add(idx);
+  
+  // Simpan status centang agar tidak hilang saat refresh
+  localStorage.setItem(CACHE_CHECKED, JSON.stringify([...checkedRows]));
+  renderPullList();
 }
 
 // =============================================
-// AUTO-FILL DARI DATABASE
-// =============================================
-function autoFillFromBarcode(val) {
-  if (!val || val.length < 4) return;
-  const found = dbItems.find(d => d.barcode === val.trim());
-  if (found) document.getElementById('fDesc').value = found.description;
-}
-
-// =============================================
-// BARCODE SCANNER — html5-qrcode (AppSheet style)
+// SCANNER ENGINE
 // =============================================
 function openScanner() {
   document.getElementById('scannerOverlay').classList.add('open');
-  document.getElementById('scannerManualInput').value = '';
-
-  const container = document.getElementById('html5-qrcode-container');
-  container.innerHTML = '';
-
   html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-
-  const config = {
-    fps: 15,
-    qrbox: { width: 260, height: 160 },
-    aspectRatio: window.innerHeight / window.innerWidth,
-    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-    rememberLastUsedCamera: true,
-    showTorchButtonIfSupported: true,
-  };
-
   html5QrScanner.start(
     { facingMode: "environment" },
-    config,
-    (decodedText) => {
-      // Sukses scan — auto langsung masuk, tidak perlu klik
-      onScanSuccess(decodedText);
+    { fps: 20, qrbox: { width: 250, height: 150 } },
+    (text) => {
+      onScanSuccess(text);
     },
-    (_errorMsg) => { /* abaikan error scanning biasa */ }
-  ).catch(err => {
-    showToast("Kamera tidak bisa diakses: " + err, "error");
+    () => {}
+  ).catch(() => {
+    showToast("Kamera tidak diizinkan", "error");
     closeScanner();
   });
 }
 
 function onScanSuccess(code) {
+  playScanEffects(); // Bunyi Beep & Getar
   closeScanner();
+  
   document.getElementById('fBarcode').value = code;
   autoFillFromBarcode(code);
-  document.getElementById('fExp').focus();
-  showToast("✓ Barcode: " + code, "success");
+  
+  // UX: Langsung arahkan user ke input tanggal
+  setTimeout(() => {
+    const el = document.getElementById('fExp');
+    el.focus();
+    if(el.showPicker) el.showPicker(); // Munculkan kalender otomatis
+  }, 400);
 }
 
 async function closeScanner() {
   document.getElementById('scannerOverlay').classList.remove('open');
-  if (html5QrScanner) {
-    try {
-      if (html5QrScanner.isScanning) await html5QrScanner.stop();
-      html5QrScanner.clear();
-    } catch(e) {}
+  if(html5QrScanner) {
+    try { await html5QrScanner.stop(); } catch(e) {}
     html5QrScanner = null;
   }
 }
 
 function confirmManualScan() {
   const val = document.getElementById('scannerManualInput').value.trim();
-  if (!val) return;
-  onScanSuccess(val);
-}
-
-// =============================================
-// TABS
-// =============================================
-function switchTab(tab) {
-  document.getElementById('panelInput').classList.toggle('active', tab === 'input');
-  document.getElementById('panelTarik').classList.toggle('active', tab === 'tarik');
-  document.getElementById('tabInput').classList.toggle('active', tab === 'input');
-  document.getElementById('tabTarik').classList.toggle('active', tab === 'tarik');
-}
-
-// =============================================
-// TOAST
-// =============================================
-let toastTimer;
-function showToast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.innerText = msg;
-  el.className = 'toast ' + type + ' show';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  if(val) onScanSuccess(val);
 }
 
 // =============================================
 // UTILS
 // =============================================
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+function autoFillFromBarcode(val) {
+  if(!val) return;
+  const found = dbItems.find(d => d.barcode === val);
+  if(found) document.getElementById('fDesc').value = found.description;
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+  document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+}
+
+function showToast(m, type) {
+  const t = document.getElementById('toast');
+  t.innerText = m;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 </script>
 </body>

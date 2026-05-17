@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Expired Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --violet: #6d28d9;
+  --violet-light: #ede9fe;
+  --violet-mid: #8b5cf6;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --surface: #ffffff;
+  --bg: #f5f3ff;
+  --border: #e8e3f7;
+  --text: #1c1033;
+  --text-2: #6b7280;
+  --text-3: #a78bfa;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* HEADER */
+.header {
+  background: var(--violet);
+  padding: 52px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.header-title { color: #fff; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+.header-date { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; }
+.sync-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+.sync-btn:active { background: rgba(255,255,255,0.25); }
+.sync-btn svg { width: 14px; height: 14px; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px 12px 0 0;
+  padding: 5px 5px 0;
+  margin-top: 4px;
+}
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 0 12px;
+  border-radius: 9px 9px 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+  position: relative;
+}
+.tab-btn.active {
+  background: var(--bg);
+  color: var(--violet);
+}
+.tab-badge {
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+.tab-btn.active .tab-badge { background: var(--red); }
+
+/* MAIN CONTENT */
+.main { flex: 1; overflow-y: auto; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* SCAN AREA */
+.scan-area {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1.5px dashed var(--border);
+  padding: 24px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.scan-area:active { background: var(--violet-light); border-color: var(--violet-mid); }
+.scan-icon {
+  width: 52px; height: 52px;
+  background: var(--violet-light);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+}
+.scan-icon svg { width: 26px; height: 26px; stroke: var(--violet); }
+.scan-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.scan-sub { font-size: 12px; color: var(--text-2); }
+
+/* FORM INPUT */
+.form-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.form-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: block; }
+.form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.form-row:last-child { margin-bottom: 0; }
+.inp {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+.inp:focus { border-color: var(--violet-mid); background: white; }
+.inp::placeholder { color: #c4b5fd; }
+.inp.mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.03em; }
+.btn-primary {
+  background: var(--violet);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary svg { width: 16px; height: 16px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* SECTION LABEL */
+.sec-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 16px 0 8px;
+}
+
+/* RECENT LIST */
+.recent-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-green { background: var(--green); }
+.dot-amber { background: var(--amber); }
+.dot-red { background: var(--red); }
+.ri-info { flex: 1; min-width: 0; }
+.ri-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.ri-exp { font-size: 12px; font-weight: 600; color: var(--violet); flex-shrink: 0; }
+
+/* STAT ROW */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 10px;
+  text-align: center;
+}
+.stat-num { font-size: 26px; font-weight: 600; line-height: 1; }
+.stat-num.red { color: var(--red); }
+.stat-num.amber { color: var(--amber); }
+.stat-num.green { color: var(--green); }
+.stat-lbl { font-size: 10px; color: var(--text-2); margin-top: 4px; line-height: 1.3; }
+
+/* FILTER CHIPS */
+.chips { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.chip.active { background: var(--violet); color: white; border-color: var(--violet); }
+
+/* PULL CARDS */
+.pull-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 3.5px solid var(--red);
+  padding: 12px 13px;
+  margin-bottom: 8px;
+  transition: opacity 0.3s;
+}
+.pull-card.amber { border-left-color: var(--amber); }
+.pull-card.done { opacity: 0.4; }
+.pull-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.pull-name { font-size: 13px; font-weight: 600; line-height: 1.3; flex: 1; }
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.pull-meta { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
+.pull-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.pull-exp { font-size: 11px; color: var(--text-2); }
+.pull-loc { font-size: 11px; font-weight: 500; color: var(--violet); }
+.check-box {
+  width: 24px; height: 24px;
+  border-radius: 7px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.check-box.checked { background: var(--green); border-color: var(--green); }
+.check-box svg { width: 14px; height: 14px; stroke: white; display: none; }
+.check-box.checked svg { display: block; }
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-2);
+}
+.empty svg { width: 40px; height: 40px; stroke: var(--border); margin: 0 auto 12px; display: block; }
+.empty p { font-size: 13px; }
+
+/* LOADING */
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--violet-light), var(--violet-mid), var(--violet-light));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 2px;
+  margin-bottom: 14px;
+}
+@keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* SCANNER OVERLAY */
+.scanner-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.scanner-overlay.open { display: flex; }
+.scanner-frame {
+  width: 260px; height: 180px;
+  border: 2.5px solid var(--violet-mid);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+#scannerVideo { width: 100%; height: 100%; object-fit: cover; }
+.scanner-line {
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: var(--violet-mid);
+  animation: scan 2s linear infinite;
+}
+@keyframes scan { 0%{top:0} 100%{top:100%} }
+.scanner-hint { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 20px; }
+.scanner-close {
+  margin-top: 24px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+/* SPINNER */
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- SCANNER OVERLAY -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div class="scanner-frame">
+    <video id="scannerVideo" playsinline autoplay muted></video>
+    <div class="scanner-line"></div>
+  </div>
+  <p class="scanner-hint">Arahkan barcode ke dalam kotak</p>
+  <button class="scanner-close" onclick="closeScanner()">Tutup Kamera</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">Expired Tracker</div>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+    <button class="sync-btn" onclick="loadAll()" id="syncBtn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      <span id="syncLabel">Sync</span>
+    </button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('input')" id="tabInput">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+      Input
+    </button>
+    <button class="tab-btn" onclick="switchTab('tarik')" id="tabTarik">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      Tarik
+      <span class="tab-badge" id="tarikBadge" style="display:none">0</span>
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PANEL INPUT -->
+  <div class="panel active" id="panelInput">
+    <div class="scan-area" onclick="openScanner()">
+      <div class="scan-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7M4 11h16M12 4v16"/></svg>
+      </div>
+      <div class="scan-title">Tap untuk Scan Barcode</div>
+      <div class="scan-sub">Gunakan kamera untuk scan otomatis</div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-label">Input Manual</span>
+      <div class="form-row">
+        <input class="inp mono" id="fBarcode" placeholder="Barcode / SKU" oninput="autoFillFromBarcode(this.value)">
+      </div>
+      <div class="form-row">
+        <input class="inp" id="fDesc" placeholder="Nama barang" style="flex:2">
+      </div>
+      <div class="form-row">
+        <input class="inp" id="fExp" type="date" style="flex:1">
+        <input class="inp" id="fLokasi" placeholder="Lokasi (rak, area...)" style="flex:1.4">
+      </div>
+      <div class="form-row" style="margin-top:4px">
+        <button class="btn-primary btn-full" onclick="submitInput()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          Simpan ke Spreadsheet
+        </button>
+      </div>
+    </div>
+
+    <div class="sec-label">Input hari ini</div>
+    <div id="loadingInput" class="loading-bar" style="display:none"></div>
+    <div id="recentList"></div>
+  </div>
+
+  <!-- PANEL TARIK -->
+  <div class="panel" id="panelTarik">
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num red" id="statHarus">-</div>
+        <div class="stat-lbl">Harus Ditarik</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num amber" id="statMendekati">-</div>
+        <div class="stat-lbl">Mendekati Expired</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green" id="statAman">-</div>
+        <div class="stat-lbl">Aman</div>
+      </div>
+    </div>
+
+    <div class="chips">
+      <div class="chip active" onclick="setFilter('all',this)">Semua</div>
+      <div class="chip" onclick="setFilter('harus',this)">Harus Tarik</div>
+      <div class="chip" onclick="setFilter('mendekati',this)">Mendekati</div>
+      <div class="chip" onclick="setFilter('aman',this)">Aman</div>
+    </div>
+
+    <div id="loadingTarik" class="loading-bar" style="display:none"></div>
+    <div id="pullList"></div>
+  </div>
+
+</div>
+
+<!-- ZXing barcode scanner -->
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+
+<script>
+// =============================================
+// KONFIGURASI — GANTI URL INI
+// =============================================
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
+
+// =============================================
+// STATE
+// =============================================
+let dbItems    = [];   // data dari sheet Database
+let inputItems = [];   // data dari sheet Input
+let activeFilter = "all";
+let checkedRows  = new Set();
+let codeReader   = null;
+let scanStream   = null;
+let todayStr     = "";
+
+// =============================================
+// INIT
+// =============================================
+window.onload = () => {
+  const now = new Date();
+  todayStr = toISO(now);
+  document.getElementById('headerDate').innerText = now.toLocaleDateString('id-ID', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+  document.getElementById('fExp').value = todayStr;
+  loadAll();
+};
+
+function toISO(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function addDays(iso, n) {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + n);
+  return toISO(d);
+}
+
+function diffDays(isoA, isoB) {
+  return Math.round((new Date(isoA) - new Date(isoB)) / 86400000);
+}
+
+// =============================================
+// API CALLS
+// =============================================
+async function apiFetch(params) {
+  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
+  const res = await fetch(url);
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json;
+}
+
+async function apiPost(body) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(body)
+  });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json;
+}
+
+// =============================================
+// LOAD DATA
+// =============================================
+async function loadAll() {
+  const btn = document.getElementById('syncBtn');
+  const lbl = document.getElementById('syncLabel');
+  btn.disabled = true;
+  lbl.innerText = "Syncing...";
+
+  try {
+    const [dbRes, inputRes] = await Promise.all([
+      apiFetch({ action: "getDatabase" }),
+      apiFetch({ action: "getInputs" })
+    ]);
+    dbItems    = dbRes.data    || [];
+    inputItems = inputRes.data || [];
+    renderRecent();
+    renderPullList();
+  } catch (e) {
+    showToast("Gagal sync: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    lbl.innerText = "Sync";
+  }
+}
+
+// =============================================
+// RENDER: RECENT (Tab Input)
+// =============================================
+function renderRecent() {
+  const todayInputs = inputItems
+    .filter(i => i.timestamp && i.timestamp.startsWith(todayStr))
+    .reverse();
+
+  const container = document.getElementById('recentList');
+
+  if (todayInputs.length === 0) {
+    container.innerHTML = `<div class="empty">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <p>Belum ada input hari ini</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = todayInputs.map(item => {
+    const diff = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
+    const dotClass = diff === null ? 'dot-amber' : diff <= 0 ? 'dot-red' : diff <= 3 ? 'dot-amber' : 'dot-green';
+    const expLabel = item.expiredDate
+      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', { day:'2-digit', month:'short' })
+      : '-';
+    const time = item.timestamp ? item.timestamp.split(' ')[1] : '';
+    return `<div class="recent-item">
+      <div class="dot ${dotClass}"></div>
+      <div class="ri-info">
+        <div class="ri-name">${esc(item.description || item.barcode)}</div>
+        <div class="ri-meta">${esc(item.barcode)} · ${time}${item.lokasi ? ' · ' + esc(item.lokasi) : ''}</div>
+      </div>
+      <div class="ri-exp">${expLabel}</div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// RENDER: PULL LIST (Tab Tarik)
+// =============================================
+function renderPullList() {
+  // Gabungkan data input dengan info H-minus dari database
+  const enriched = inputItems.map(item => {
+    const dbRef = dbItems.find(d => d.barcode === item.barcode);
+    const hMinus = dbRef ? dbRef.hMinus : 0;
+    const pullDate = item.expiredDate ? addDays(item.expiredDate, -hMinus) : null;
+    const daysToExp = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
+    const daysToPull = pullDate ? diffDays(pullDate, todayStr) : null;
+
+    let status = 'aman';
+    if (daysToPull !== null) {
+      if (daysToPull <= 0) status = 'harus';
+      else if (daysToPull <= 3) status = 'mendekati';
+    }
+
+    return { ...item, hMinus, pullDate, daysToExp, daysToPull, status };
+  });
+
+  // Hitung stats
+  const harus     = enriched.filter(i => i.status === 'harus').length;
+  const mendekati = enriched.filter(i => i.status === 'mendekati').length;
+  const aman      = enriched.filter(i => i.status === 'aman').length;
+
+  document.getElementById('statHarus').innerText     = harus;
+  document.getElementById('statMendekati').innerText = mendekati;
+  document.getElementById('statAman').innerText      = aman;
+
+  // Badge di tab
+  const harusTarik = harus;
+  const badge = document.getElementById('tarikBadge');
+  badge.style.display = harusTarik > 0 ? 'inline-block' : 'none';
+  badge.innerText = harusTarik;
+
+  // Filter
+  const filtered = activeFilter === 'all' ? enriched
+    : enriched.filter(i => i.status === activeFilter);
+
+  // Sort: harus dulu, lalu mendekati, lalu aman; dalam tiap grup sort by pullDate
+  filtered.sort((a, b) => {
+    const order = { harus: 0, mendekati: 1, aman: 2 };
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    return (a.pullDate || '').localeCompare(b.pullDate || '');
+  });
+
+  const container = document.getElementById('pullList');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p>Tidak ada barang di kategori ini</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => {
+    const isHarus     = item.status === 'harus';
+    const isMendekati = item.status === 'mendekati';
+    const cardClass   = isHarus ? '' : isMendekati ? 'amber' : 'amber';
+    const isDone      = checkedRows.has(item.rowIndex);
+
+    const badgeText = isHarus
+      ? (item.daysToExp === 0 ? 'Expired hari ini' : item.daysToExp < 0 ? 'Sudah expired' : 'Tarik hari ini')
+      : `${item.daysToPull} hari lagi`;
+    const badgeClass = isHarus ? 'badge-red' : 'badge-amber';
+
+    const expLabel  = item.expiredDate
+      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'})
+      : '-';
+
+    return `<div class="pull-card ${cardClass} ${isDone ? 'done' : ''}" id="pc-${item.rowIndex}">
+      <div class="pull-top">
+        <div class="pull-name">${esc(item.description || item.barcode)}</div>
+        <span class="badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="pull-meta">${esc(item.barcode)} · Ketentuan tarik: H-${item.hMinus}</div>
+      <div class="pull-bottom">
+        <div>
+          <div class="pull-exp">Expired: ${expLabel}</div>
+          ${item.lokasi ? `<div class="pull-loc">${esc(item.lokasi)}</div>` : ''}
+        </div>
+        <div class="check-box ${isDone ? 'checked' : ''}" onclick="toggleCheck(${item.rowIndex})">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCheck(rowIndex) {
+  if (checkedRows.has(rowIndex)) checkedRows.delete(rowIndex);
+  else checkedRows.add(rowIndex);
+  renderPullList();
+}
+
+function setFilter(val, el) {
+  activeFilter = val;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderPullList();
+}
+
+// =============================================
+// SUBMIT INPUT
+// =============================================
+async function submitInput() {
+  const barcode = document.getElementById('fBarcode').value.trim();
+  const desc    = document.getElementById('fDesc').value.trim();
+  const exp     = document.getElementById('fExp').value;
+  const lokasi  = document.getElementById('fLokasi').value.trim();
+
+  if (!barcode) { showToast("Barcode tidak boleh kosong", "error"); return; }
+  if (!exp)     { showToast("Tanggal expired wajib diisi", "error"); return; }
+
+  const btn = document.querySelector('.btn-primary.btn-full');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
+
+  try {
+    // Cari nama dari database jika desc kosong
+    const dbRef = dbItems.find(d => d.barcode === barcode);
+    const finalDesc = desc || (dbRef ? dbRef.description : "");
+
+    await apiPost({
+      action      : "addInput",
+      barcode,
+      description : finalDesc,
+      expiredDate : exp,
+      lokasi
+    });
+
+    showToast("Berhasil disimpan!", "success");
+    document.getElementById('fBarcode').value = '';
+    document.getElementById('fDesc').value    = '';
+    document.getElementById('fExp').value     = todayStr;
+    document.getElementById('fLokasi').value  = '';
+    document.getElementById('fBarcode').focus();
+
+    await loadAll();
+  } catch(e) {
+    showToast("Gagal: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan ke Spreadsheet`;
+  }
+}
+
+// =============================================
+// AUTO-FILL DARI DATABASE
+// =============================================
+function autoFillFromBarcode(val) {
+  if (!val || val.length < 4) return;
+  const found = dbItems.find(d => d.barcode === val.trim());
+  if (found) {
+    document.getElementById('fDesc').value = found.description;
+  }
+}
+
+// =============================================
+// BARCODE SCANNER
+// =============================================
+function openScanner() {
+  if (!window.ZXing) {
+    showToast("Library scanner belum siap", "error");
+    return;
+  }
+  document.getElementById('scannerOverlay').classList.add('open');
+  codeReader = new ZXing.BrowserBarcodeReader();
+  codeReader.decodeFromVideoDevice(null, 'scannerVideo', (result, err) => {
+    if (result) {
+      const code = result.getText();
+      closeScanner();
+      document.getElementById('fBarcode').value = code;
+      autoFillFromBarcode(code);
+      document.getElementById('fExp').focus();
+      showToast("Barcode: " + code, "success");
+    }
+  });
+}
+
+function closeScanner() {
+  document.getElementById('scannerOverlay').classList.remove('open');
+  if (codeReader) {
+    try { codeReader.reset(); } catch(e) {}
+    codeReader = null;
+  }
+}
+
+// =============================================
+// TABS
+// =============================================
+function switchTab(tab) {
+  document.getElementById('panelInput').classList.toggle('active', tab === 'input');
+  document.getElementById('panelTarik').classList.toggle('active', tab === 'tarik');
+  document.getElementById('tabInput').classList.toggle('active', tab === 'input');
+  document.getElementById('tabTarik').classList.toggle('active', tab === 'tarik');
+}
+
+// =============================================
+// TOAST
+// =============================================
+let toastTimer;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.innerText = msg;
+  el.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// =============================================
+// UTILS
+// =============================================
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+</script>
+</body>
+</html>

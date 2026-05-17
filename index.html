@@ -6,6 +6,7 @@
 <title>Expired Control D&D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root {
   --violet: #6d28d9;
@@ -100,7 +101,6 @@ body {
   justify-content: center;
   gap: 6px;
   transition: all 0.2s;
-  position: relative;
 }
 .tab-btn.active {
   background: var(--bg);
@@ -116,19 +116,18 @@ body {
   min-width: 18px;
   text-align: center;
 }
-.tab-btn.active .tab-badge { background: var(--red); }
 
 /* MAIN CONTENT */
 .main { flex: 1; overflow-y: auto; padding: 16px; }
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* SCAN AREA */
+/* SCAN BUTTON */
 .scan-area {
   background: var(--surface);
   border-radius: var(--radius);
   border: 1.5px dashed var(--border);
-  padding: 24px 16px;
+  padding: 20px 16px;
   text-align: center;
   margin-bottom: 14px;
   cursor: pointer;
@@ -192,6 +191,55 @@ body {
 .btn-primary:active { transform: scale(0.97); }
 .btn-primary svg { width: 16px; height: 16px; }
 .btn-full { width: 100%; justify-content: center; }
+.btn-secondary {
+  background: var(--bg);
+  color: var(--violet);
+  border: 1.5px solid var(--violet-mid);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s;
+}
+.btn-secondary:active { background: var(--violet-light); }
+.btn-danger {
+  background: var(--red-light);
+  color: var(--red);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* SEARCH BAR */
+.search-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 13px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.search-bar:focus { border-color: var(--violet-mid); }
+.search-wrap { position: relative; margin-bottom: 10px; }
+.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: var(--text-3); pointer-events: none; }
+.search-bar { padding-left: 36px; }
 
 /* SECTION LABEL */
 .sec-label {
@@ -201,6 +249,9 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin: 16px 0 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* RECENT LIST */
@@ -222,6 +273,20 @@ body {
 .ri-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 .ri-exp { font-size: 12px; font-weight: 600; color: var(--violet); flex-shrink: 0; }
+.ri-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.icon-btn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: none;
+  background: var(--bg);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.icon-btn:active { background: var(--violet-light); }
+.icon-btn svg { width: 14px; height: 14px; }
+.icon-btn.del svg { stroke: var(--red); }
+.icon-btn.edit svg { stroke: var(--violet); }
 
 /* STAT ROW */
 .stat-row {
@@ -272,6 +337,7 @@ body {
   transition: opacity 0.3s;
 }
 .pull-card.amber { border-left-color: var(--amber); }
+.pull-card.aman-card { border-left-color: var(--green); }
 .pull-card.done { opacity: 0.4; }
 .pull-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
 .pull-name { font-size: 13px; font-weight: 600; line-height: 1.3; flex: 1; }
@@ -285,6 +351,7 @@ body {
 }
 .badge-red { background: var(--red-light); color: var(--red); }
 .badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-green { background: var(--green-light); color: var(--green); }
 .pull-meta { font-size: 11px; color: var(--text-2); margin-bottom: 8px; }
 .pull-bottom {
   display: flex;
@@ -329,6 +396,18 @@ body {
 }
 @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
 
+/* OFFLINE BANNER */
+.offline-banner {
+  background: var(--amber);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px;
+  display: none;
+}
+.offline-banner.show { display: block; }
+
 /* TOAST */
 .toast {
   position: fixed;
@@ -349,44 +428,159 @@ body {
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: var(--green); }
 .toast.error { background: var(--red); }
+.toast.warning { background: var(--amber); }
 
-/* SCANNER OVERLAY */
+/* SCANNER OVERLAY — AppSheet style */
 .scanner-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.92);
+  background: #000;
   z-index: 200;
   display: none;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 .scanner-overlay.open { display: flex; }
-.scanner-frame {
-  width: 260px; height: 180px;
-  border: 2.5px solid var(--violet-mid);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
+.scanner-header {
+  background: rgba(0,0,0,0.7);
+  padding: 52px 20px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-#scannerVideo { width: 100%; height: 100%; object-fit: cover; }
-.scanner-line {
-  position: absolute; left: 0; right: 0; top: 0; height: 2px;
-  background: var(--violet-mid);
-  animation: scan 2s linear infinite;
-}
-@keyframes scan { 0%{top:0} 100%{top:100%} }
-.scanner-hint { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 20px; }
-.scanner-close {
-  margin-top: 24px;
-  background: rgba(255,255,255,0.1);
+.scanner-header-title { color: white; font-size: 16px; font-weight: 600; }
+.scanner-close-btn {
+  background: rgba(255,255,255,0.15);
   border: none;
   color: white;
   border-radius: 10px;
-  padding: 12px 28px;
-  font-size: 14px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-family: var(--sans);
   cursor: pointer;
 }
+
+#html5-qrcode-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Override html5-qrcode default styles */
+#html5-qrcode-container video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+#html5-qrcode-container img { display: none !important; }
+#qr-shaded-region {
+  border-width: 40px !important;
+}
+
+.scanner-footer {
+  background: rgba(0,0,0,0.7);
+  padding: 16px 20px 36px;
+  text-align: center;
+}
+.scanner-hint-text { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 12px; }
+.scanner-manual-row { display: flex; gap: 8px; }
+.scanner-manual-inp {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 11px 13px;
+  font-size: 14px;
+  font-family: var(--mono);
+  color: white;
+  outline: none;
+  letter-spacing: 0.05em;
+}
+.scanner-manual-inp::placeholder { color: rgba(255,255,255,0.35); }
+.scanner-manual-inp:focus { border-color: var(--violet-mid); background: rgba(255,255,255,0.15); }
+.scanner-confirm-btn {
+  background: var(--violet);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* MODAL EDIT */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-card {
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 36px;
+  width: 100%;
+  max-width: 430px;
+}
+.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+.modal-row { margin-bottom: 10px; }
+.modal-label { font-size: 11px; color: var(--text-2); margin-bottom: 4px; font-weight: 500; }
+.modal-inp {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.modal-inp:focus { border-color: var(--violet-mid); background: white; }
+.modal-btns { display: flex; gap: 8px; margin-top: 16px; }
+.modal-btns .btn-primary { flex: 1; justify-content: center; }
+.modal-cancel {
+  background: var(--bg);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 18px;
+  font-size: 13px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+/* CONFIRM MODAL */
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 400;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+.confirm-icon { font-size: 32px; margin-bottom: 10px; }
+.confirm-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.confirm-sub { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
+.confirm-btns { display: flex; gap: 8px; }
+.confirm-btns button { flex: 1; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: var(--sans); cursor: pointer; border: none; }
+.confirm-cancel { background: var(--bg); color: var(--text-2); border: 1px solid var(--border) !important; }
+.confirm-ok { background: var(--red); color: white; }
 
 /* SPINNER */
 .spin { animation: spin 1s linear infinite; display: inline-block; }
@@ -395,18 +589,71 @@ body {
 </head>
 <body>
 
-<!-- SCANNER OVERLAY -->
-<div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-frame">
-    <video id="scannerVideo" playsinline autoplay muted></video>
-    <div class="scanner-line"></div>
-  </div>
-  <p class="scanner-hint">Arahkan barcode ke dalam kotak</p>
-  <button class="scanner-close" onclick="closeScanner()">Tutup Kamera</button>
-</div>
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offlineBanner">⚡ Offline — data dari cache lokal</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- SCANNER OVERLAY (AppSheet style) -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div class="scanner-header">
+    <div class="scanner-header-title">Scan Barcode / QR Code</div>
+    <button class="scanner-close-btn" onclick="closeScanner()">✕ Tutup</button>
+  </div>
+  <div id="html5-qrcode-container"></div>
+  <div class="scanner-footer">
+    <div class="scanner-hint-text">Arahkan kamera ke barcode secara otomatis terdeteksi</div>
+    <div class="scanner-manual-row">
+      <input class="scanner-manual-inp" id="scannerManualInput" placeholder="Atau ketik barcode manual..." onkeydown="if(event.key==='Enter') confirmManualScan()">
+      <button class="scanner-confirm-btn" onclick="confirmManualScan()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal-overlay" id="modalEdit">
+  <div class="modal-card">
+    <div class="modal-title">Edit Data Input</div>
+    <input type="hidden" id="editRowIndex">
+    <div class="modal-row">
+      <div class="modal-label">Barcode / SKU</div>
+      <input class="modal-inp" id="editBarcode" placeholder="Barcode">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">Nama Barang</div>
+      <input class="modal-inp" id="editDesc" placeholder="Nama barang">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">Tanggal Expired</div>
+      <input class="modal-inp" id="editExp" type="date">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">Lokasi</div>
+      <input class="modal-inp" id="editLokasi" placeholder="Rak, area...">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeEditModal()">Batal</button>
+      <button class="btn-primary" onclick="saveEdit()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="confirm-overlay" id="confirmDelete">
+  <div class="confirm-card">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Hapus Data?</div>
+    <div class="confirm-sub">Data yang dihapus tidak bisa dikembalikan.</div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">Batal</button>
+      <button class="confirm-ok" onclick="doDelete()">Hapus</button>
+    </div>
+  </div>
+</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -442,8 +689,8 @@ body {
       <div class="scan-icon">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4H4v7M12 4h8v7M12 20H4v-7M12 20h8v-7M4 11h16M12 4v16"/></svg>
       </div>
-      <div class="scan-title">Tap untuk Scan Barcode</div>
-      <div class="scan-sub">Gunakan kamera untuk scan otomatis</div>
+      <div class="scan-title">Tap untuk Scan Barcode / QR</div>
+      <div class="scan-sub">Deteksi otomatis — semua format barcode & QR didukung</div>
     </div>
 
     <div class="form-card">
@@ -466,7 +713,17 @@ body {
       </div>
     </div>
 
-    <div class="sec-label">Input hari ini</div>
+    <div class="sec-label">
+      <span>Input hari ini</span>
+      <span id="recentCount" style="font-size:11px;color:var(--text-3);font-weight:500"></span>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"/></svg>
+      <input class="search-bar" id="searchInput" placeholder="Cari nama atau barcode..." oninput="renderRecent()">
+    </div>
+
     <div id="loadingInput" class="loading-bar" style="display:none"></div>
     <div id="recentList"></div>
   </div>
@@ -501,25 +758,25 @@ body {
 
 </div>
 
-<!-- ZXing barcode scanner -->
-<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
-
 <script>
 // =============================================
-// KONFIGURASI — GANTI URL INI
+// KONFIGURASI
 // =============================================
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
+const CACHE_KEY_DB    = "expired_cache_db";
+const CACHE_KEY_INPUT = "expired_cache_input";
+const CACHE_TTL       = 5 * 60 * 1000; // 5 menit
 
 // =============================================
 // STATE
 // =============================================
-let dbItems    = [];   // data dari sheet Database
-let inputItems = [];   // data dari sheet Input
-let activeFilter = "all";
-let checkedRows  = new Set();
-let codeReader   = null;
-let scanStream   = null;
-let todayStr     = "";
+let dbItems        = [];
+let inputItems     = [];
+let activeFilter   = "all";
+let checkedRows    = new Set();
+let html5QrScanner = null;
+let todayStr       = "";
+let deleteRowIndex = null;
 
 // =============================================
 // INIT
@@ -531,52 +788,84 @@ window.onload = () => {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
   document.getElementById('fExp').value = todayStr;
+
+  // Offline detection
+  window.addEventListener('online',  () => { document.getElementById('offlineBanner').classList.remove('show'); loadAll(); });
+  window.addEventListener('offline', () => { document.getElementById('offlineBanner').classList.add('show'); });
+  if (!navigator.onLine) document.getElementById('offlineBanner').classList.add('show');
+
   loadAll();
 };
 
-function toISO(d) {
-  return d.toISOString().split('T')[0];
-}
+function toISO(d) { return d.toISOString().split('T')[0]; }
+function addDays(iso, n) { const d = new Date(iso); d.setDate(d.getDate() + n); return toISO(d); }
+function diffDays(isoA, isoB) { return Math.round((new Date(isoA) - new Date(isoB)) / 86400000); }
 
-function addDays(iso, n) {
-  const d = new Date(iso);
-  d.setDate(d.getDate() + n);
-  return toISO(d);
+// =============================================
+// CACHE
+// =============================================
+function saveCache(key, data) {
+  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
 }
-
-function diffDays(isoA, isoB) {
-  return Math.round((new Date(isoA) - new Date(isoB)) / 86400000);
+function loadCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > CACHE_TTL) return null;
+    return obj.data;
+  } catch(e) { return null; }
 }
 
 // =============================================
 // API CALLS
 // =============================================
-async function apiFetch(params) {
+async function apiFetch(params, timeoutMs = 10000) {
   const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
-  const res = await fetch(url);
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
+  const res = await fetch(url, { signal: ctrl.signal });
+  clearTimeout(tid);
   const json = await res.json();
   if (json.error) throw new Error(json.error);
   return json;
 }
 
-async function apiPost(body) {
+async function apiPost(body, timeoutMs = 15000) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
   const res = await fetch(APPS_SCRIPT_URL, {
     method: "POST",
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: ctrl.signal
   });
+  clearTimeout(tid);
   const json = await res.json();
   if (json.error) throw new Error(json.error);
   return json;
 }
 
 // =============================================
-// LOAD DATA
+// LOAD DATA (dengan cache fallback)
 // =============================================
 async function loadAll() {
   const btn = document.getElementById('syncBtn');
   const lbl = document.getElementById('syncLabel');
   btn.disabled = true;
   lbl.innerText = "Syncing...";
+
+  if (!navigator.onLine) {
+    const cachedDb    = loadCache(CACHE_KEY_DB);
+    const cachedInput = loadCache(CACHE_KEY_INPUT);
+    if (cachedDb)    dbItems    = cachedDb;
+    if (cachedInput) inputItems = cachedInput;
+    renderRecent();
+    renderPullList();
+    showToast("Offline — menampilkan data cache", "warning");
+    btn.disabled = false;
+    lbl.innerText = "Sync";
+    return;
+  }
 
   try {
     const [dbRes, inputRes] = await Promise.all([
@@ -585,10 +874,26 @@ async function loadAll() {
     ]);
     dbItems    = dbRes.data    || [];
     inputItems = inputRes.data || [];
+    saveCache(CACHE_KEY_DB,    dbItems);
+    saveCache(CACHE_KEY_INPUT, inputItems);
     renderRecent();
     renderPullList();
   } catch (e) {
-    showToast("Gagal sync: " + e.message, "error");
+    // Coba fallback ke cache
+    const cachedDb    = loadCache(CACHE_KEY_DB);
+    const cachedInput = loadCache(CACHE_KEY_INPUT);
+    if (cachedDb || cachedInput) {
+      if (cachedDb)    dbItems    = cachedDb;
+      if (cachedInput) inputItems = cachedInput;
+      renderRecent();
+      renderPullList();
+      showToast("Gagal sync, menampilkan data cache", "warning");
+    } else {
+      const msg = e.name === 'AbortError'
+        ? "Koneksi timeout — periksa jaringan Anda"
+        : "Gagal sync: " + e.message;
+      showToast(msg, "error");
+    }
   } finally {
     btn.disabled = false;
     lbl.innerText = "Sync";
@@ -596,25 +901,33 @@ async function loadAll() {
 }
 
 // =============================================
-// RENDER: RECENT (Tab Input)
+// RENDER: RECENT (Tab Input) + Search
 // =============================================
 function renderRecent() {
+  const searchVal = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
   const todayInputs = inputItems
     .filter(i => i.timestamp && i.timestamp.startsWith(todayStr))
+    .filter(i => {
+      if (!searchVal) return true;
+      const name    = (i.description || '').toLowerCase();
+      const barcode = (i.barcode || '').toLowerCase();
+      return name.includes(searchVal) || barcode.includes(searchVal);
+    })
     .reverse();
 
-  const container = document.getElementById('recentList');
+  document.getElementById('recentCount').innerText = todayInputs.length > 0 ? `${todayInputs.length} item` : '';
 
+  const container = document.getElementById('recentList');
   if (todayInputs.length === 0) {
     container.innerHTML = `<div class="empty">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      <p>Belum ada input hari ini</p>
+      <p>${searchVal ? 'Tidak ditemukan' : 'Belum ada input hari ini'}</p>
     </div>`;
     return;
   }
 
   container.innerHTML = todayInputs.map(item => {
-    const diff = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
+    const diff     = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
     const dotClass = diff === null ? 'dot-amber' : diff <= 0 ? 'dot-red' : diff <= 3 ? 'dot-amber' : 'dot-green';
     const expLabel = item.expiredDate
       ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', { day:'2-digit', month:'short' })
@@ -627,19 +940,97 @@ function renderRecent() {
         <div class="ri-meta">${esc(item.barcode)} · ${time}${item.lokasi ? ' · ' + esc(item.lokasi) : ''}</div>
       </div>
       <div class="ri-exp">${expLabel}</div>
+      <div class="ri-actions">
+        <button class="icon-btn edit" title="Edit" onclick="openEditModal(${item.rowIndex})">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </button>
+        <button class="icon-btn del" title="Hapus" onclick="confirmDeleteItem(${item.rowIndex})">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
     </div>`;
   }).join('');
+}
+
+// =============================================
+// EDIT MODAL
+// =============================================
+function openEditModal(rowIndex) {
+  const item = inputItems.find(i => i.rowIndex === rowIndex);
+  if (!item) return;
+  document.getElementById('editRowIndex').value = rowIndex;
+  document.getElementById('editBarcode').value  = item.barcode || '';
+  document.getElementById('editDesc').value     = item.description || '';
+  document.getElementById('editExp').value      = item.expiredDate || '';
+  document.getElementById('editLokasi').value   = item.lokasi || '';
+  document.getElementById('modalEdit').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('modalEdit').classList.remove('open');
+}
+
+async function saveEdit() {
+  const rowIndex = parseInt(document.getElementById('editRowIndex').value);
+  const barcode  = document.getElementById('editBarcode').value.trim();
+  const desc     = document.getElementById('editDesc').value.trim();
+  const exp      = document.getElementById('editExp').value;
+  const lokasi   = document.getElementById('editLokasi').value.trim();
+
+  if (!barcode || !exp) { showToast("Barcode & tanggal wajib diisi", "error"); return; }
+
+  const btn = document.querySelector('#modalEdit .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
+
+  try {
+    await apiPost({ action: "updateInput", rowIndex, barcode, description: desc, expiredDate: exp, lokasi });
+    closeEditModal();
+    showToast("Berhasil diupdate!", "success");
+    await loadAll();
+  } catch(e) {
+    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal: " + e.message;
+    showToast(msg, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan`;
+  }
+}
+
+// =============================================
+// DELETE
+// =============================================
+function confirmDeleteItem(rowIndex) {
+  deleteRowIndex = rowIndex;
+  document.getElementById('confirmDelete').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmDelete').classList.remove('open');
+  deleteRowIndex = null;
+}
+async function doDelete() {
+  if (deleteRowIndex === null) return;
+  const rowIndex = deleteRowIndex;
+  closeConfirm();
+
+  try {
+    await apiPost({ action: "deleteInput", rowIndex });
+    showToast("Data dihapus", "success");
+    await loadAll();
+  } catch(e) {
+    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal hapus: " + e.message;
+    showToast(msg, "error");
+  }
 }
 
 // =============================================
 // RENDER: PULL LIST (Tab Tarik)
 // =============================================
 function renderPullList() {
-  // Gabungkan data input dengan info H-minus dari database
   const enriched = inputItems.map(item => {
-    const dbRef = dbItems.find(d => d.barcode === item.barcode);
-    const hMinus = dbRef ? dbRef.hMinus : 0;
-    const pullDate = item.expiredDate ? addDays(item.expiredDate, -hMinus) : null;
+    const dbRef     = dbItems.find(d => d.barcode === item.barcode);
+    const hMinus    = dbRef ? dbRef.hMinus : 0;
+    const pullDate  = item.expiredDate ? addDays(item.expiredDate, -hMinus) : null;
     const daysToExp = item.expiredDate ? diffDays(item.expiredDate, todayStr) : null;
     const daysToPull = pullDate ? diffDays(pullDate, todayStr) : null;
 
@@ -648,11 +1039,9 @@ function renderPullList() {
       if (daysToPull <= 0) status = 'harus';
       else if (daysToPull <= 3) status = 'mendekati';
     }
-
     return { ...item, hMinus, pullDate, daysToExp, daysToPull, status };
   });
 
-  // Hitung stats
   const harus     = enriched.filter(i => i.status === 'harus').length;
   const mendekati = enriched.filter(i => i.status === 'mendekati').length;
   const aman      = enriched.filter(i => i.status === 'aman').length;
@@ -661,17 +1050,11 @@ function renderPullList() {
   document.getElementById('statMendekati').innerText = mendekati;
   document.getElementById('statAman').innerText      = aman;
 
-  // Badge di tab
-  const harusTarik = harus;
   const badge = document.getElementById('tarikBadge');
-  badge.style.display = harusTarik > 0 ? 'inline-block' : 'none';
-  badge.innerText = harusTarik;
+  badge.style.display = harus > 0 ? 'inline-block' : 'none';
+  badge.innerText = harus;
 
-  // Filter
-  const filtered = activeFilter === 'all' ? enriched
-    : enriched.filter(i => i.status === activeFilter);
-
-  // Sort: harus dulu, lalu mendekati, lalu aman; dalam tiap grup sort by pullDate
+  const filtered = activeFilter === 'all' ? enriched : enriched.filter(i => i.status === activeFilter);
   filtered.sort((a, b) => {
     const order = { harus: 0, mendekati: 1, aman: 2 };
     if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
@@ -679,7 +1062,6 @@ function renderPullList() {
   });
 
   const container = document.getElementById('pullList');
-
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -691,16 +1073,18 @@ function renderPullList() {
   container.innerHTML = filtered.map(item => {
     const isHarus     = item.status === 'harus';
     const isMendekati = item.status === 'mendekati';
-    const cardClass   = isHarus ? '' : isMendekati ? 'amber' : 'amber';
+    const isAman      = item.status === 'aman';
+    const cardClass   = isHarus ? '' : isMendekati ? 'amber' : 'aman-card';
     const isDone      = checkedRows.has(item.rowIndex);
 
     const badgeText = isHarus
       ? (item.daysToExp === 0 ? 'Expired hari ini' : item.daysToExp < 0 ? 'Sudah expired' : 'Tarik hari ini')
+      : isAman ? 'Aman'
       : `${item.daysToPull} hari lagi`;
-    const badgeClass = isHarus ? 'badge-red' : 'badge-amber';
+    const badgeClass = isHarus ? 'badge-red' : isMendekati ? 'badge-amber' : 'badge-green';
 
-    const expLabel  = item.expiredDate
-      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'})
+    const expLabel = item.expiredDate
+      ? new Date(item.expiredDate + 'T00:00:00').toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'})
       : '-';
 
     return `<div class="pull-card ${cardClass} ${isDone ? 'done' : ''}" id="pc-${item.rowIndex}">
@@ -752,28 +1136,19 @@ async function submitInput() {
   btn.innerHTML = `<span class="spin">↻</span> Menyimpan...`;
 
   try {
-    // Cari nama dari database jika desc kosong
-    const dbRef = dbItems.find(d => d.barcode === barcode);
+    const dbRef    = dbItems.find(d => d.barcode === barcode);
     const finalDesc = desc || (dbRef ? dbRef.description : "");
-
-    await apiPost({
-      action      : "addInput",
-      barcode,
-      description : finalDesc,
-      expiredDate : exp,
-      lokasi
-    });
-
+    await apiPost({ action: "addInput", barcode, description: finalDesc, expiredDate: exp, lokasi });
     showToast("Berhasil disimpan!", "success");
     document.getElementById('fBarcode').value = '';
     document.getElementById('fDesc').value    = '';
     document.getElementById('fExp').value     = todayStr;
     document.getElementById('fLokasi').value  = '';
     document.getElementById('fBarcode').focus();
-
     await loadAll();
   } catch(e) {
-    showToast("Gagal: " + e.message, "error");
+    const msg = e.name === 'AbortError' ? "Timeout — coba lagi" : "Gagal: " + e.message;
+    showToast(msg, "error");
   } finally {
     btn.disabled = false;
     btn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan ke Spreadsheet`;
@@ -786,39 +1161,67 @@ async function submitInput() {
 function autoFillFromBarcode(val) {
   if (!val || val.length < 4) return;
   const found = dbItems.find(d => d.barcode === val.trim());
-  if (found) {
-    document.getElementById('fDesc').value = found.description;
-  }
+  if (found) document.getElementById('fDesc').value = found.description;
 }
 
 // =============================================
-// BARCODE SCANNER
+// BARCODE SCANNER — html5-qrcode (AppSheet style)
 // =============================================
 function openScanner() {
-  if (!window.ZXing) {
-    showToast("Library scanner belum siap", "error");
-    return;
-  }
   document.getElementById('scannerOverlay').classList.add('open');
-  codeReader = new ZXing.BrowserBarcodeReader();
-  codeReader.decodeFromVideoDevice(null, 'scannerVideo', (result, err) => {
-    if (result) {
-      const code = result.getText();
-      closeScanner();
-      document.getElementById('fBarcode').value = code;
-      autoFillFromBarcode(code);
-      document.getElementById('fExp').focus();
-      showToast("Barcode: " + code, "success");
-    }
+  document.getElementById('scannerManualInput').value = '';
+
+  const container = document.getElementById('html5-qrcode-container');
+  container.innerHTML = '';
+
+  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
+
+  const config = {
+    fps: 15,
+    qrbox: { width: 260, height: 160 },
+    aspectRatio: window.innerHeight / window.innerWidth,
+    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+    rememberLastUsedCamera: true,
+    showTorchButtonIfSupported: true,
+  };
+
+  html5QrScanner.start(
+    { facingMode: "environment" },
+    config,
+    (decodedText) => {
+      // Sukses scan — auto langsung masuk, tidak perlu klik
+      onScanSuccess(decodedText);
+    },
+    (_errorMsg) => { /* abaikan error scanning biasa */ }
+  ).catch(err => {
+    showToast("Kamera tidak bisa diakses: " + err, "error");
+    closeScanner();
   });
 }
 
-function closeScanner() {
+function onScanSuccess(code) {
+  closeScanner();
+  document.getElementById('fBarcode').value = code;
+  autoFillFromBarcode(code);
+  document.getElementById('fExp').focus();
+  showToast("✓ Barcode: " + code, "success");
+}
+
+async function closeScanner() {
   document.getElementById('scannerOverlay').classList.remove('open');
-  if (codeReader) {
-    try { codeReader.reset(); } catch(e) {}
-    codeReader = null;
+  if (html5QrScanner) {
+    try {
+      if (html5QrScanner.isScanning) await html5QrScanner.stop();
+      html5QrScanner.clear();
+    } catch(e) {}
+    html5QrScanner = null;
   }
+}
+
+function confirmManualScan() {
+  const val = document.getElementById('scannerManualInput').value.trim();
+  if (!val) return;
+  onScanSuccess(val);
 }
 
 // =============================================

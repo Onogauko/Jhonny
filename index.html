@@ -96,7 +96,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); font-size: 13px; }
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 
-/* SCANNER OVERLAY — Improved */
+/* SCANNER OVERLAY */
 .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column; }
 .scanner-overlay.open { display: flex; }
 .scanner-header { padding: 54px 20px 15px; display: flex; justify-content: space-between; align-items: center; }
@@ -105,7 +105,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .scanner-hint { color: rgba(255,255,255,0.5); font-size: 12px; text-align: center; padding: 0 20px 10px; }
 #html5-qrcode-container { flex: 1; }
 
-/* Crosshair overlay for scanner */
+/* Crosshair overlay */
 .scanner-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; pointer-events: none; z-index: 210; }
 .scanner-frame::before, .scanner-frame::after { content: ''; position: absolute; width: 36px; height: 36px; border-color: #fff; border-style: solid; }
 .scanner-frame::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
@@ -114,7 +114,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .scanner-frame-tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
 .scanner-frame-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
 
-/* Scanner scan line animation */
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
@@ -132,11 +131,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .toast.success { background: #065f46; }
 .toast.error { background: #7f1d1d; }
 
-/* SCAN SUCCESS FLASH */
-@keyframes flashGreen { 0% { background: rgba(5,150,105,0.3); } 100% { background: transparent; } }
 .scan-success-flash { animation: flashGreen 0.6s ease-out; }
+@keyframes flashGreen { 0% { background: rgba(5,150,105,0.3); } 100% { background: transparent; } }
 
-/* LOKASI suggestion */
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 </style>
@@ -194,7 +191,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <div class="main">
-  <!-- TAB INPUT -->
   <div class="panel active" id="panelInput">
     <div class="scan-area" onclick="openScanner()" id="scanArea">
       <div class="scan-area-icon">📷</div>
@@ -215,18 +211,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div id="recentList"></div>
   </div>
 
-  <!-- TAB TARIK -->
   <div class="panel" id="panelTarik">
     <div class="stat-row">
-      <div class="stat-card" id="cardHarus" onclick="setFilter('red')" title="Filter: Harus Tarik">
+      <div class="stat-card" id="cardHarus" onclick="setFilter('red')">
         <div class="stat-num" style="color:var(--red)" id="sHarus">0</div>
         <div class="stat-lbl">Harus Tarik</div>
       </div>
-      <div class="stat-card" id="cardMendekati" onclick="setFilter('amber')" title="Filter: Mendekati">
+      <div class="stat-card" id="cardMendekati" onclick="setFilter('amber')">
         <div class="stat-num" style="color:var(--amber)" id="sMendekati">0</div>
         <div class="stat-lbl">Mendekati</div>
       </div>
-      <div class="stat-card" id="cardAman" onclick="setFilter('green')" title="Filter: Aman">
+      <div class="stat-card" id="cardAman" onclick="setFilter('green')">
         <div class="stat-num" style="color:var(--green)" id="sAman">0</div>
         <div class="stat-lbl">Aman</div>
       </div>
@@ -248,11 +243,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 // =============================================
 // KONFIGURASI
 // =============================================
-const PROXY_URL = "/api/proxy";
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
 const API_TOKEN = "RAHASIA_123";
-
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 let dbItems = [];
 let inItems = [];
@@ -261,111 +253,70 @@ let activeFilter = 'today';
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
 
-function getTodayStr() {
-  return new Date().toISOString().split('T')[0];
-}
+function getTodayStr() { return new Date().toISOString().split('T')[0]; }
 
 // =============================================
-// parseToISO — PERBAIKAN TOTAL: Lebih Agresif Membaca Tanggal
+// parseToISO — FIX: Penanganan Bulan Indonesia
 // =============================================
 function parseToISO(raw) {
   if (!raw) return null;
-  
-  // 1. Jika sudah objek Date
   if (raw instanceof Date) return raw.toISOString().split('T')[0];
-
-  let s = String(raw).trim();
-  if (!s || s === "null" || s === "undefined") return null;
-
-  // 2. Cek format ISO YYYY-MM-DD
-  const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (isoMatch) return isoMatch[1];
-
-  // 3. Normalisasi Bulan Indonesia ke Inggris agar terbaca browser (Mei -> May, dst)
-  let cleanS = s.toLowerCase()
-    .replace(/mei/g, 'may').replace(/agu/g, 'aug').replace(/okt/g, 'oct').replace(/des/g, 'dec');
   
-  // 4. Gunakan browser parser (sangat ampuh untuk "2 Jun 2026")
-  const d = new Date(cleanS);
-  if (!isNaN(d.getTime())) {
-    const year = d.getFullYear();
-    // Pastikan tahun masuk akal
-    if (year > 2000) {
-       const month = String(d.getMonth() + 1).padStart(2, '0');
-       const day = String(d.getDate()).padStart(2, '0');
-       return `${year}-${month}-${day}`;
-    }
-  }
+  let s = String(raw).trim();
+  if (s.match(/^\d{4}-\d{2}-\d{2}/)) return s.split('T')[0];
 
-  // 5. Regex Manual untuk DD/MM/YYYY (Jika browser parser gagal)
+  // Map bulan Indonesia ke Inggris
+  const bulanIndo = {'mei':'may', 'agu':'aug', 'okt':'oct', 'des':'dec'};
+  let engS = s.toLowerCase();
+  for (let key in bulanIndo) engS = engS.replace(key, bulanIndo[key]);
+
+  const d = new Date(engS);
+  if (!isNaN(d.getTime())) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  
+  // Format DD/MM/YYYY
   const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
   if (dmy) return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-
+  
   return null;
 }
 
-function daysDiff(rawA, rawB) {
-  const isoA = parseToISO(rawA);
-  const isoB = parseToISO(rawB);
-  if (!isoA || !isoB) return 0;
-  const [y1,m1,d1] = isoA.split('-').map(Number);
-  const [y2,m2,d2] = isoB.split('-').map(Number);
-  return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
+function daysDiff(a, b) {
+  const da = new Date(parseToISO(a));
+  const db = new Date(parseToISO(b));
+  return Math.round((da - db) / 86400000);
 }
 
+// =============================================
+// CACHE & SYNC
+// =============================================
 function loadCache() {
-  try {
-    const dbRaw = localStorage.getItem('cache_db');
-    const inRaw = localStorage.getItem('cache_in');
-    const chkRaw = localStorage.getItem('cache_checked');
-    dbItems = dbRaw ? JSON.parse(dbRaw) : [];
-    inItems = inRaw ? JSON.parse(inRaw) : [];
-    checkedRows = new Set(chkRaw ? JSON.parse(chkRaw) : []);
-  } catch(e) {
-    dbItems = []; inItems = []; checkedRows = new Set();
-  }
-}
-
-function saveCache(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-  localStorage.setItem(key + '_ts', Date.now().toString());
+  dbItems = JSON.parse(localStorage.getItem('cache_db') || '[]');
+  inItems = JSON.parse(localStorage.getItem('cache_in') || '[]');
+  checkedRows = new Set(JSON.parse(localStorage.getItem('cache_checked') || '[]'));
 }
 
 async function callApi(params, body = null) {
-  try {
-    const url = PROXY_URL + "?" + new URLSearchParams(params);
-    const res = await fetch(url, { method: body ? 'POST' : 'GET', body: body ? JSON.stringify(body) : null });
-    if (res.ok) return await res.json();
-  } catch(e) {}
-
   params.token = API_TOKEN;
   const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
-  const res = await fetch(url, { method: body ? 'POST' : 'GET', body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null });
+  const res = await fetch(url, { method: body ? 'POST' : 'GET', body: body ? JSON.stringify({...body, token: API_TOKEN}) : null });
   return await res.json();
 }
 
 async function loadAll() {
-  const syncBtn = document.getElementById('syncBtn');
-  syncBtn.innerText = "Sync...";
-  syncBtn.disabled = true;
+  const btn = document.getElementById('syncBtn');
+  btn.innerText = "Sync..."; btn.disabled = true;
   try {
-    const [dbRes, inRes] = await Promise.all([
-      callApi({ action: "getDatabase" }),
-      callApi({ action: "getInputs" })
-    ]);
+    const [dbRes, inRes] = await Promise.all([callApi({action:"getDatabase"}), callApi({action:"getInputs"})]);
     dbItems = dbRes.data;
     inItems = inRes.data;
-    saveCache('cache_db', dbItems);
-    saveCache('cache_in', inItems);
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    showToast("Data diperbarui ✓", "success");
-  } catch(e) {
-    showToast("Gagal sync: " + e.message, "error");
-  }
-  syncBtn.innerText = "↻ Sync";
-  syncBtn.disabled = false;
+    localStorage.setItem('cache_db', JSON.stringify(dbItems));
+    localStorage.setItem('cache_in', JSON.stringify(inItems));
+    renderRecent(); renderPullList(); buildLokasiHistory();
+    showToast("Sync Berhasil ✓", "success");
+  } catch(e) { showToast("Gagal Sync", "error"); }
+  btn.innerText = "↻ Sync"; btn.disabled = false;
 }
 
 async function submitInput() {
@@ -373,91 +324,41 @@ async function submitInput() {
   const d = document.getElementById('fDesc').value.trim();
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
-  if (!b || !e) return showToast("Barcode & Tanggal wajib diisi!", "error");
+  if(!b || !e) return showToast("Isi Barcode & Expired!", "error");
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.innerText = "Menyimpan...";
   try {
-    const res = await callApi({ action: "addInput" }, { barcode:b, description:d, expiredDate:e, lokasi:l });
-    const newItem = { rowIndex: res.rowIndex, barcode:b, description:d, expiredDate:e, lokasi:l, timestamp: getTodayStr() };
+    const res = await callApi({action:"addInput"}, {barcode:b, description:d, expiredDate:e, lokasi:l});
+    // Gunakan nama kolom yang sama dengan Spreadsheet agar tidak hilang saat refresh
+    const newItem = { rowIndex: res.rowIndex, barcode:b, description:d, expiredDate:e, lokasi:l, "Timestamp Input": new Date().toISOString() };
     inItems.push(newItem);
-    saveCache('cache_in', inItems);
+    localStorage.setItem('cache_in', JSON.stringify(inItems));
     renderRecent(); renderPullList(); buildLokasiHistory();
-    document.getElementById('fBarcode').value = "";
-    document.getElementById('fDesc').value = "";
-    document.getElementById('fExp').value = getTodayStr();
-    document.getElementById('fLokasi').value = "";
-    showToast("Berhasil disimpan ✓", "success");
-  } catch(x) {
-    showToast("Gagal simpan: " + x.message, "error");
-  }
+    document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = "";
+    showToast("Tersimpan ✓", "success");
+  } catch(x) { showToast("Gagal Simpan", "error"); }
   btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
 }
 
-function openEdit(idx) {
-  const item = inItems.find(i => i.rowIndex == idx);
-  if (!item) return;
-  document.getElementById('editRowIndex').value = idx;
-  document.getElementById('editBarcode').value = item.barcode;
-  document.getElementById('editDesc').value = item.description;
-  document.getElementById('editExp').value = parseToISO(item.expiredDate);
-  document.getElementById('editLokasi').value = item.lokasi || '';
-  document.getElementById('modalEdit').classList.add('open');
-}
-
-function closeEditModal() { document.getElementById('modalEdit').classList.remove('open'); }
-
-async function saveEdit() {
-  const idx = document.getElementById('editRowIndex').value;
-  const b = document.getElementById('editBarcode').value.trim();
-  const d = document.getElementById('editDesc').value.trim();
-  const e = document.getElementById('editExp').value;
-  const l = document.getElementById('editLokasi').value.trim();
-  const btn = document.getElementById('btnSaveEdit');
-  btn.disabled = true;
-  try {
-    await callApi({ action: "updateInput" }, { rowIndex:idx, barcode:b, description:d, expiredDate:e, lokasi:l });
-    const i = inItems.findIndex(x => x.rowIndex == idx);
-    inItems[i] = { ...inItems[i], barcode:b, description:d, expiredDate:e, lokasi:l };
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList(); closeEditModal();
-    showToast("Berhasil diupdate ✓", "success");
-  } catch(x) { showToast("Gagal update", "error"); }
-  btn.disabled = false;
-}
-
-async function delItem(idx) {
-  if (!confirm("Hapus data ini?")) return;
-  try {
-    await callApi({ action: "deleteInput" }, { rowIndex: idx });
-    inItems = inItems.filter(x => x.rowIndex != idx);
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList();
-    showToast("Data dihapus", "success");
-  } catch(x) { showToast("Gagal hapus", "error"); }
-}
-
-function formatDateIndo(raw) {
-  const iso = parseToISO(raw);
-  if (!iso) return '-';
-  const [y,m,d] = iso.split('-').map(Number);
-  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-  return `${d} ${months[m-1]} ${y}`;
-}
-
+// =============================================
+// RENDER LOGIC
+// =============================================
 function renderRecent() {
   const container = document.getElementById('recentList');
   const today = getTodayStr();
-  const filtered = inItems.filter(i => i.timestamp && i.timestamp.startsWith(today)).reverse();
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Belum ada input hari ini</div>`;
-    return;
-  }
+  // Cek kolom "Timestamp Input" atau "timestamp"
+  const filtered = inItems.filter(i => {
+    const ts = i["Timestamp Input"] || i.timestamp;
+    return ts && ts.startsWith(today);
+  }).reverse();
+
+  if(!filtered.length) { container.innerHTML = `<div class="empty-state">Belum ada input hari ini</div>`; return; }
   container.innerHTML = filtered.map(i => `
     <div class="recent-item">
       <div class="ri-info">
         <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
-        <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(i.expiredDate)}</div>
+        <div class="ri-meta">Exp: ${formatDateIndo(i.expiredDate || i.expired_date)}</div>
       </div>
       <div class="ri-actions">
         <button class="icon-btn" onclick="openEdit(${i.rowIndex})">✏️</button>
@@ -467,61 +368,43 @@ function renderRecent() {
   `).join('');
 }
 
-function setFilter(filter) {
-  activeFilter = filter;
-  document.querySelectorAll('.filter-chip').forEach(f => f.classList.toggle('active', f.id === 'chip-'+filter));
-  renderPullList();
-}
-
 function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
-  let h = 0, m = 0, a = 0;
+  let h=0, m=0, a=0;
 
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode);
     const hMin = db ? (db.hMinus || 0) : 0;
-    const isoExp = parseToISO(i.expiredDate);
-    
-    if (!isoExp) {
-      a++;
-      return { ...i, status: 'green', daysUntilPull: 9999, daysUntilExp: 9999 };
-    }
+    const isoExp = parseToISO(i.expiredDate || i.expired_date);
+    if(!isoExp) { a++; return {...i, status:'green', diff:999}; }
 
-    const daysUntilExp = daysDiff(isoExp, today);
-    const daysUntilPull = daysUntilExp - (hMin - 1);
-
+    const diffExp = daysDiff(isoExp, today);
+    const diffPull = diffExp - (hMin - 1);
     let status = 'green';
-    if (daysUntilPull <= 0) { status = 'red'; h++; }
-    else if (daysUntilPull <= 3) { status = 'amber'; m++; }
+    if(diffPull <= 0) { status = 'red'; h++; }
+    else if(diffPull <= 3) { status = 'amber'; m++; }
     else a++;
-
-    return { ...i, isoExp, status, daysUntilPull, daysUntilExp, hMin };
-  }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
+    return {...i, isoExp, status, diffPull, diffExp, hMin};
+  }).sort((a,b) => a.diffPull - b.diffPull);
 
   document.getElementById('sHarus').innerText = h;
   document.getElementById('sMendekati').innerText = m;
   document.getElementById('sAman').innerText = a;
 
   let filtered = list;
-  if (activeFilter === 'today') filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
-  else if (activeFilter !== 'all') filtered = list.filter(i => i.status === activeFilter);
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Data kosong</div>`;
-    return;
-  }
+  if(activeFilter === 'today') filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
+  else if(activeFilter !== 'all') filtered = list.filter(i => i.status === activeFilter);
 
   container.innerHTML = filtered.map(i => {
     const checked = checkedRows.has(i.rowIndex);
-    const expText = i.daysUntilExp === 9999 ? 'Tgl tidak diset' : `Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr)`;
     return `
       <div class="pull-card ${i.status} ${checked ? 'done' : ''}">
         <div class="pull-card-top">
           <div style="flex:1">
             <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
-            <div class="pull-meta">${escHtml(i.barcode)}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-            <div class="pull-meta">${expText}</div>
+            <div class="pull-meta">${i.barcode} · ${i.lokasi || ''}</div>
+            <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.diffExp} hr lagi)</div>
           </div>
           <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checked ? '✔️' : ''}</div>
         </div>
@@ -530,71 +413,27 @@ function renderPullList() {
   }).join('');
 }
 
+// =============================================
+// OTHERS (Sama seperti struktur asli)
+// =============================================
+function formatDateIndo(raw) {
+  const iso = parseToISO(raw);
+  if(!iso) return "Tgl tidak valid";
+  const [y,m,d] = iso.split('-');
+  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+  return `${parseInt(d)} ${months[m-1]} ${y}`;
+}
+
 function toggleCheck(idx) {
-  if (checkedRows.has(idx)) checkedRows.delete(idx); else checkedRows.add(idx);
-  saveCache('cache_checked', [...checkedRows]);
+  if(checkedRows.has(idx)) checkedRows.delete(idx); else checkedRows.add(idx);
+  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
   renderPullList();
 }
 
-function buildLokasiHistory() {
-  const freq = {};
-  inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
-  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
-  renderLokasiChips('');
-}
-
-function renderLokasiChips(v) {
-  const c = document.getElementById('lokasiChips');
-  const s = lokasiFrecuentes.filter(l => !v || l.toLowerCase().includes(v.toLowerCase()));
-  c.innerHTML = s.map(l => `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g,"\\'")}')">${l}</button>`).join('');
-}
-
-function updateLokasiChips() { renderLokasiChips(document.getElementById('fLokasi').value); }
-function pickLokasi(v) { document.getElementById('fLokasi').value = v; renderLokasiChips(''); }
-
-function openScanner() {
-  document.getElementById('scannerOverlay').classList.add('open');
-  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-  html5QrScanner.start({ facingMode: "environment" }, { fps: 30, qrbox: { width: 250, height: 150 } }, (t) => onScanSuccess(t));
-}
-
-function onScanSuccess(t) {
-  closeScanner();
-  document.getElementById('fBarcode').value = t;
-  autoFill(t);
-  showToast("Barcode terbaca", "success");
-}
-
-function closeScanner() {
-  document.getElementById('scannerOverlay').classList.remove('open');
-  if (html5QrScanner) { html5QrScanner.stop(); html5QrScanner = null; }
-}
-
-function autoFill(val) {
-  const found = dbItems.find(x => x.barcode === val);
-  if (found) document.getElementById('fDesc').value = found.description || '';
-}
-
-function switchTab(t) {
-  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('panel'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
-  document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');
-}
-
-function showToast(m, type) {
-  const t = document.getElementById('toast');
-  t.innerText = m; t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 3000);
-}
-
-function escHtml(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-window.onload = () => {
-  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-  document.getElementById('fExp').value = getTodayStr();
-  loadCache(); renderRecent(); renderPullList(); buildLokasiHistory();
-  loadAll();
-};
-</script>
-</body>
-</html>
+function openEdit(idx) {
+  const item = inItems.find(i => i.rowIndex == idx);
+  if(!item) return;
+  document.getElementById('editRowIndex').value = idx;
+  document.getElementById('editBarcode').value = item.barcode;
+  document.getElementById('editDesc').value = item.description;
+  document.getElementById('editExp').value = parseToISO(item.expiredDate || item.expired_date

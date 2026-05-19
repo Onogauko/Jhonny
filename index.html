@@ -516,14 +516,24 @@ function renderPullList() {
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode);
     const hMin = db ? (db.hMinus || 0) : 0;
-    const diff = daysDiff(i.expiredDate, today); // positif = hari menuju exp
-    const pullDays = diff - hMin;
+
+    // daysUntilExp: sisa hari ke expired (0 = hari ini expired, negatif = sudah lewat)
+    const daysUntilExp = daysDiff(i.expiredDate, today);
+
+    // Logika: expired 21 Mei, hMin=3 → harus tarik di 19 Mei
+    // 19 Mei: daysUntilExp=2, 20 Mei: daysUntilExp=1, 21 Mei: daysUntilExp=0
+    // Hitung berapa hari lagi ke tanggal tarik:
+    // daysUntilExp=2, hMin=3 → sudah harus tarik (2 < 3)
+    // daysUntilPull: negatif = sudah lewat tanggal tarik, 0 = hari ini tanggal tarik
+    const daysUntilPull = daysUntilExp - (hMin - 1);
+
     let status = 'green';
-    if (pullDays <= 0) { status = 'red'; h++; }
-    else if (pullDays <= 3) { status = 'amber'; m++; }
+    if (daysUntilPull <= 0) { status = 'red'; h++; }      // sudah waktunya tarik
+    else if (daysUntilPull <= 3) { status = 'amber'; m++; } // 1-3 hari lagi harus tarik
     else a++;
-    return { ...i, status, pullDays, diff };
-  }).sort((a, b) => a.pullDays - b.pullDays);
+
+    return { ...i, status, daysUntilPull, daysUntilExp, hMin };
+  }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
 
   document.getElementById('sHarus').innerText = h;
   document.getElementById('sMendekati').innerText = m;
@@ -532,7 +542,7 @@ function renderPullList() {
   // Filter berdasarkan activeFilter
   let filtered = list;
   if (activeFilter === 'today') {
-    // Tampilkan yg harus tarik hari ini: red + amber (pullDays <= 3)
+    // Tampilkan yg sudah/akan waktunya tarik
     filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
   } else if (activeFilter === 'red') {
     filtered = list.filter(i => i.status === 'red');
@@ -561,11 +571,16 @@ function renderPullList() {
 
   container.innerHTML = filtered.map(i => {
     const checked = checkedRows.has(i.rowIndex);
-    const daysText = i.diff < 0
-      ? `Sudah expired ${Math.abs(i.diff)} hari lalu`
-      : i.diff === 0
+    // Info display
+    const expInfo = i.daysUntilExp < 0
+      ? `Expired ${Math.abs(i.daysUntilExp)} hari lalu`
+      : i.daysUntilExp === 0
         ? 'Expired HARI INI'
-        : `Exp: ${formatDateIndo(i.expiredDate)} (${i.diff} hr lagi)`;
+        : `Exp: ${formatDateIndo(i.expiredDate)} (${i.daysUntilExp} hr lagi)`;
+    const pullInfo = i.daysUntilPull <= 0
+      ? `⚠️ Tarik sekarang (H-${i.hMin})`
+      : `Tarik dalam ${i.daysUntilPull} hari lagi (H-${i.hMin})`;
+    const daysText = expInfo + ' · ' + pullInfo;
 
     return `
       <div class="pull-card ${i.status === 'amber' ? 'amber' : i.status === 'green' ? 'green' : ''} ${checked ? 'done' : ''}">

@@ -9,14 +9,14 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root {
-  --violet: #6d28d9; --violet-light: #ede9fe; --violet-mid: #8b5cf6;
-  --red: #dc2626; --red-light: #fee2e2;
-  --amber: #d97706; --amber-light: #fef3c7;
-  --green: #059669; --green-light: #d1fae5;
-  --surface: #ffffff; --bg: #f5f3ff;
-  --border: #e8e3f7; --text: #1c1033;
-  --text-2: #6b7280; --text-3: #a78bfa;
-  --radius: 16px; --radius-sm: 10px;
+  --violet: #6d28d9; --violet-light: #ede9fe; --violet-mid: #8b5cf6;
+  --red: #dc2626; --red-light: #fee2e2;
+  --amber: #d97706; --amber-light: #fef3c7;
+  --green: #059669; --green-light: #d1fae5;
+  --surface: #ffffff; --bg: #f5f3ff;
+  --border: #e8e3f7; --text: #1c1033;
+  --text-2: #6b7280; --text-3: #a78bfa;
+  --radius: 16px; --radius-sm: 10px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -31,8 +31,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .sync-btn:active { background: rgba(255,255,255,0.25); }
 
 /* TABS */
-.tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 4px; }
-.tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 500; padding: 10px 0 12px; border-radius: 9px 9px 0 0; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+.tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 10px; }
+.tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; padding: 10px 0 12px; border-radius: 9px 9px 0 0; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
 .tab-btn.active { background: var(--bg); color: var(--violet); font-weight: 700; }
 
 /* CONTENT */
@@ -96,7 +96,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); font-size: 13px; }
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 
-/* SCANNER OVERLAY — Improved */
+/* SCANNER OVERLAY */
 .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: none; flex-direction: column; }
 .scanner-overlay.open { display: flex; }
 .scanner-header { padding: 54px 20px 15px; display: flex; justify-content: space-between; align-items: center; }
@@ -105,7 +105,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .scanner-hint { color: rgba(255,255,255,0.5); font-size: 12px; text-align: center; padding: 0 20px 10px; }
 #html5-qrcode-container { flex: 1; }
 
-/* Crosshair overlay for scanner */
 .scanner-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; pointer-events: none; z-index: 210; }
 .scanner-frame::before, .scanner-frame::after { content: ''; position: absolute; width: 36px; height: 36px; border-color: #fff; border-style: solid; }
 .scanner-frame::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
@@ -113,12 +112,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .scanner-frame-tr, .scanner-frame-bl { position: absolute; width: 36px; height: 36px; border-color: #fff; border-style: solid; }
 .scanner-frame-tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
 .scanner-frame-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
-
-/* Scanner scan line animation */
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-/* MODAL EDIT */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; display: none; align-items: flex-end; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-card { background: white; width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px 20px 40px; }
@@ -126,17 +122,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .modal-actions { display: flex; gap: 10px; margin-top: 12px; }
 .btn-cancel { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text); }
 
-/* TOAST */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1c1033; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: #065f46; }
 .toast.error { background: #7f1d1d; }
 
-/* SCAN SUCCESS FLASH */
-@keyframes flashGreen { 0% { background: rgba(5,150,105,0.3); } 100% { background: transparent; } }
-.scan-success-flash { animation: flashGreen 0.6s ease-out; }
-
-/* LOKASI suggestion */
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 </style>
@@ -146,109 +136,105 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 <div class="toast" id="toast"></div>
 
 <div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-header">
-    <span class="scanner-title">📷 Scan Barcode</span>
-    <button class="scanner-close" onclick="closeScanner()">Tutup</button>
-  </div>
-  <p class="scanner-hint">Arahkan kamera ke barcode produk</p>
-  <div style="position:relative; flex:1;">
-    <div id="html5-qrcode-container" style="width:100%;height:100%;"></div>
-    <div class="scanner-frame">
-      <div class="scan-line"></div>
-      <div class="scanner-frame-tr"></div>
-      <div class="scanner-frame-bl"></div>
-    </div>
-  </div>
+  <div class="scanner-header">
+    <span class="scanner-title">📷 Scan Barcode</span>
+    <button class="scanner-close" onclick="closeScanner()">Tutup</button>
+  </div>
+  <p class="scanner-hint">Arahkan kamera ke barcode produk</p>
+  <div style="position:relative; flex:1;">
+    <div id="html5-qrcode-container" style="width:100%;height:100%;"></div>
+    <div class="scanner-frame">
+      <div class="scan-line"></div>
+      <div class="scanner-frame-tr"></div>
+      <div class="scanner-frame-bl"></div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalEdit">
-  <div class="modal-card">
-    <div class="modal-title">Edit Data Barang</div>
-    <input type="hidden" id="editRowIndex">
-    <input class="inp" id="editBarcode" placeholder="Barcode">
-    <input class="inp" id="editDesc" placeholder="Nama Barang">
-    <input class="inp" id="editExp" type="date">
-    <input class="inp" id="editLokasi" placeholder="Lokasi (Rak/Area)">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
-      <button class="btn-primary" style="margin:0;flex:1.5" onclick="saveEdit()" id="btnSaveEdit">Simpan</button>
-    </div>
-  </div>
+  <div class="modal-card">
+    <div class="modal-title">Edit Data Barang</div>
+    <input type="hidden" id="editRowIndex">
+    <input class="inp" id="editBarcode" placeholder="Barcode">
+    <input class="inp" id="editDesc" placeholder="Nama Barang">
+    <input class="inp" id="editExp" type="date">
+    <input class="inp" id="editLokasi" placeholder="Lokasi (Rak/Area)">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
+      <button class="btn-primary" style="margin:0;flex:1.5" onclick="saveEdit()" id="btnSaveEdit">Simpan</button>
+    </div>
+  </div>
 </div>
 
 <div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-title">Expired Control D&D</div>
-      <div class="header-date" id="headerDate"></div>
-    </div>
-    <button class="sync-btn" onclick="loadAll()" id="syncBtn">↻ Sync</button>
-  </div>
-  <div class="tabs">
-    <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">Input</button>
-    <button class="tab-btn" id="tabTarik" onclick="switchTab('tarik')">Tarik</button>
-  </div>
+  <div class="header-top">
+    <div>
+      <div class="header-title">Expired Control D&D</div>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+    <button class="sync-btn" onclick="loadAll()" id="syncBtn">↻ Sync</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">Input</button>
+    <button class="tab-btn" id="tabTarik" onclick="switchTab('tarik')">Tarik</button>
+  </div>
 </div>
 
 <div class="main">
-  <div class="panel active" id="panelInput">
-    <div class="scan-area" onclick="openScanner()" id="scanArea">
-      <div class="scan-area-icon">📷</div>
-      <div class="scan-area-text">Klik untuk Scan Barcode</div>
-      <div class="scan-area-sub">Kamera belakang • Auto-detect • Langsung isi form</div>
-    </div>
+  <div class="panel active" id="panelInput">
+    <div class="scan-area" onclick="openScanner()" id="scanArea">
+      <div class="scan-area-icon">📷</div>
+      <div class="scan-area-text">Klik untuk Scan Barcode</div>
+      <div class="scan-area-sub">Kamera belakang • Auto-detect • Langsung isi form</div>
+    </div>
 
-    <div class="form-card" id="formCard">
-      <input class="inp" id="fBarcode" placeholder="Barcode (atau scan)" oninput="autoFill(this.value)">
-      <input class="inp" id="fDesc" placeholder="Nama Barang">
-      <input class="inp" id="fExp" type="date">
-      <div class="lokasi-chips" id="lokasiChips"></div>
-      <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)" oninput="updateLokasiChips()">
-      <button class="btn-primary" onclick="submitInput()" id="submitBtn">💾 Simpan Ke Spreadsheet</button>
-    </div>
+    <div class="form-card" id="formCard">
+      <input class="inp" id="fBarcode" placeholder="Barcode (atau scan)" oninput="autoFill(this.value)">
+      <input class="inp" id="fDesc" placeholder="Nama Barang">
+      <input class="inp" id="fExp" type="date">
+      <div class="lokasi-chips" id="lokasiChips"></div>
+      <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)" oninput="updateLokasiChips()">
+      <button class="btn-primary" onclick="submitInput()" id="submitBtn">💾 Simpan Ke Spreadsheet</button>
+    </div>
 
-    <div class="section-label">INPUT HARI INI</div>
-    <div id="recentList"></div>
-  </div>
+    <div class="section-label">INPUT HARI INI</div>
+    <div id="recentList"></div>
+  </div>
 
-  <div class="panel" id="panelTarik">
-    <div class="stat-row">
-      <div class="stat-card" id="cardHarus" onclick="setFilter('red')" title="Filter: Harus Tarik">
-        <div class="stat-num" style="color:var(--red)" id="sHarus">0</div>
-        <div class="stat-lbl">Harus Tarik</div>
-      </div>
-      <div class="stat-card" id="cardMendekati" onclick="setFilter('amber')" title="Filter: Mendekati">
-        <div class="stat-num" style="color:var(--amber)" id="sMendekati">0</div>
-        <div class="stat-lbl">Mendekati</div>
-      </div>
-      <div class="stat-card" id="cardAman" onclick="setFilter('green')" title="Filter: Aman">
-        <div class="stat-num" style="color:var(--green)" id="sAman">0</div>
-        <div class="stat-lbl">Aman</div>
-      </div>
-    </div>
+  <div class="panel" id="panelTarik">
+    <div class="stat-row">
+      <div class="stat-card" id="cardHarus" onclick="setFilter('red')" title="Filter: Harus Tarik">
+        <div class="stat-num" style="color:var(--red)" id="sHarus">0</div>
+        <div class="stat-lbl">Harus Tarik</div>
+      </div>
+      <div class="stat-card" id="cardMendekati" onclick="setFilter('amber')" title="Filter: Mendekati">
+        <div class="stat-num" style="color:var(--amber)" id="sMendekati">0</div>
+        <div class="stat-lbl">Mendekati</div>
+      </div>
+      <div class="stat-card" id="cardAman" onclick="setFilter('green')" title="Filter: Aman">
+        <div class="stat-num" style="color:var(--green)" id="sAman">0</div>
+        <div class="stat-lbl">Aman</div>
+      </div>
+    </div>
 
-    <div class="filter-row">
-      <button class="filter-chip active" id="chip-today" onclick="setFilter('today')">🔥 Hari Ini</button>
-      <button class="filter-chip" id="chip-red" onclick="setFilter('red')">🔴 Harus Tarik</button>
-      <button class="filter-chip" id="chip-amber" onclick="setFilter('amber')">🟡 Mendekati</button>
-      <button class="filter-chip" id="chip-green" onclick="setFilter('green')">🟢 Aman</button>
-      <button class="filter-chip" id="chip-all" onclick="setFilter('all')">Semua</button>
-    </div>
+    <div class="filter-row">
+      <button class="filter-chip active" id="chip-today" onclick="setFilter('today')">🔥 Hari Ini</button>
+      <button class="filter-chip" id="chip-red" onclick="setFilter('red')">🔴 Harus Tarik</button>
+      <button class="filter-chip" id="chip-amber" onclick="setFilter('amber')">🟡 Mendekati</button>
+      <button class="filter-chip" id="chip-green" onclick="setFilter('green')">🟢 Aman</button>
+      <button class="filter-chip" id="chip-all" onclick="setFilter('all')">Semua</button>
+    </div>
 
-    <div id="pullList"></div>
-  </div>
+    <div id="pullList"></div>
+  </div>
 </div>
 
 <script>
-// =============================================
-// KONFIGURASI
-// =============================================
-const PROXY_URL = "/api/proxy"; 
+const PROXY_URL = "/api/proxy"; 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
-const API_TOKEN = "RAHASIA_123"; 
+const API_TOKEN = "RAHASIA_123"; 
 
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
-
 let dbItems = [];
 let inItems = [];
 let checkedRows = new Set();
@@ -256,630 +242,253 @@ let activeFilter = 'today';
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
 
-function getTodayStr() {
-  return new Date().toISOString().split('T')[0];
-}
+function getTodayStr() { return new Date().toISOString().split('T')[0]; }
 
-// =============================================
-// HELPER: Ekstrak Tanggal Super Cerdas (Tahan Banting)
-// =============================================
 function getExpRaw(obj) {
-  if (!obj) return null;
-  
-  // 1. Cek Exact Match
-  const exact = ['Expired Date', 'expiredDate', 'expired_date', 'expDate', 'exp_date', 'tanggal_expired', 'Tanggal Expired'];
-  for (let k of exact) if (obj[k]) return obj[k];
-
-  // 2. Cek Nama Kolom yang Mengandung Kata Kunci
-  let possibleDate = null;
-  for (let key in obj) {
-    let k = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
-    // Prioritas tinggi: ada unsur 'exp' atau 'kadal'
-    if (k.includes('exp') || k.includes('kadal')) {
-      if (obj[key]) return obj[key];
-    }
-    // Prioritas sedang: ada kata tgl/date (skip timestamp)
-    if (!possibleDate && (k.includes('date') || k.includes('tgl') || k.includes('tanggal')) && !k.includes('timestamp') && !k.includes('input')) {
-      if (obj[key]) possibleDate = obj[key];
-    }
-  }
-  if (possibleDate) return possibleDate;
-
-  // 3. Fallback Ekstrim: Jika nama kolom benar-benar aneh/hilang, cari isi data yang berformat tanggal
-  let fallbackDates = [];
-  for (let key in obj) {
-    let val = String(obj[key]).trim();
-    if (val.length < 5 || val.length > 30) continue;
-    if (/^\d+$/.test(val) && val.length > 10) continue; // Abaikan angka panjang (seperti barcode)
-
-    if (/^\d{4}[\/\-]\d{2}[\/\-]\d{2}/.test(val) || 
-        /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(val) ||
-        /jan|feb|mar|apr|mei|may|jun|jul|agu|aug|sep|okt|oct|nov|des|dec/i.test(val) ||
-        (/^\d{5}$/.test(val) && parseInt(val) > 30000 && parseInt(val) < 60000)) { // Format angka serial Excel
-        fallbackDates.push(val);
-    }
-  }
-
-  if (fallbackDates.length > 0) {
-    // Utamakan yang tidak ada jamnya (menghindari kolom Timestamp terambil), atau ambil yang pertama ada
-    let noTime = fallbackDates.find(v => !v.includes(':'));
-    return noTime || fallbackDates[0];
-  }
-
-  return null;
+  if (!obj) return null;
+  const exact = ['Expired Date', 'expiredDate', 'expired_date', 'expDate', 'exp_date', 'tanggal_expired', 'Tanggal Expired'];
+  for (let k of exact) if (obj[k]) return obj[k];
+  let possibleDate = null;
+  for (let key in obj) {
+    let k = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (k.includes('exp') || k.includes('kadal')) if (obj[key]) return obj[key];
+    if (!possibleDate && (k.includes('date') || k.includes('tgl') || k.includes('tanggal')) && !k.includes('timestamp') && !k.includes('input')) if (obj[key]) possibleDate = obj[key];
+  }
+  if (possibleDate) return possibleDate;
+  let fallbackDates = [];
+  for (let key in obj) {
+    let val = String(obj[key]).trim();
+    if (val.length < 5 || val.length > 30) continue;
+    if (/^\d+$/.test(val) && val.length > 10) continue;
+    if (/^\d{4}[\/\-]\d{2}[\/\-]\d{2}/.test(val) || /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(val) || (/^\d{5}$/.test(val) && parseInt(val) > 30000)) fallbackDates.push(val);
+  }
+  return fallbackDates.length > 0 ? (fallbackDates.find(v => !v.includes(':')) || fallbackDates[0]) : null;
 }
 
-// =============================================
-// parseToISO — FIX: Menangani format Excel, Indo, & Safari
-// =============================================
 function parseToISO(raw) {
-  if (!raw) return null;
-
-  // Jika sudah object Date
-  if (raw instanceof Date) {
-    return raw.getFullYear() + '-' +
-      String(raw.getMonth() + 1).padStart(2, '0') + '-' +
-      String(raw.getDate()).padStart(2, '0');
-  }
-
-  let s = String(raw).trim();
-
-  // =========================================
-  // Excel Serial Number
-  // =========================================
-  if (/^\d{5}$/.test(s) && parseInt(s) > 30000) {
-    const date = new Date((parseInt(s) - 25569) * 86400000);
-    return date.getFullYear() + '-' +
-      String(date.getMonth() + 1).padStart(2, '0') + '-' +
-      String(date.getDate()).padStart(2, '0');
-  }
-
-  // =========================================
-  // YYYY-MM-DD / YYYY/MM/DD
-  // =========================================
-  let isoMatch = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-  if (isoMatch) {
-    return `${isoMatch[1]}-${isoMatch[2].padStart(2,'0')}-${isoMatch[3].padStart(2,'0')}`;
-  }
-
-  // =========================================
-  // Google Sheets US Format
-  // Contoh: 5/19/2026 0:00:00
-  // =========================================
-  let usDate = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?/);
-
-  if (usDate) {
-    let first = parseInt(usDate[1]);
-    let second = parseInt(usDate[2]);
-
-    // Jika angka pertama >12 berarti format Indo
-    if (first > 12) {
-      return `${usDate[3]}-${String(second).padStart(2,'0')}-${String(first).padStart(2,'0')}`;
-    }
-
-    // Default anggap US
-    return `${usDate[3]}-${String(first).padStart(2,'0')}-${String(second).padStart(2,'0')}`;
-  }
-
-  // =========================================
-  // DD-MM-YYYY / DD/MM/YYYY
-  // =========================================
-  let dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-
-  if (dmy) {
-    return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
-  }
-
-  // =========================================
-  // Bulan Indonesia
-  // =========================================
-  const bulanIndo = {
-    januari:'jan',
-    februari:'feb',
-    maret:'mar',
-    april:'apr',
-    mei:'may',
-    juni:'jun',
-    juli:'jul',
-    agustus:'aug',
-    agu:'aug',
-    september:'sep',
-    oktober:'oct',
-    okt:'oct',
-    november:'nov',
-    desember:'dec',
-    des:'dec'
-  };
-
-  let engS = s.toLowerCase();
-
-  for (let key in bulanIndo) {
-    engS = engS.replace(new RegExp(key, 'g'), bulanIndo[key]);
-  }
-
-  // =========================================
-  // Text Month
-  // =========================================
-  const strMonths = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-
-  const parts = engS.split(/[\s\-\,\/]+/);
-
-  if (parts.length >= 3) {
-    let yStr = parts.find(p => p.length === 4 && !isNaN(p));
-    let dStr = parts.find(p => p.length > 0 && p.length <= 2 && !isNaN(p));
-    let mStr = parts.find(p => isNaN(p));
-
-    if (yStr && dStr && mStr) {
-      let mIndex = strMonths.findIndex(m => mStr.startsWith(m));
-
-      if (mIndex >= 0) {
-        return `${yStr}-${String(mIndex + 1).padStart(2,'0')}-${dStr.padStart(2,'0')}`;
-      }
-    }
-  }
-
-  // =========================================
-  // Fallback Native Date
-  // =========================================
-  const d = new Date(engS);
-
-  if (!isNaN(d.getTime())) {
-    return d.getFullYear() + '-' +
-      String(d.getMonth() + 1).padStart(2, '0') + '-' +
-      String(d.getDate()).padStart(2, '0');
-  }
-
-  return null;
+  if (!raw) return null;
+  if (raw instanceof Date) return raw.toISOString().split('T')[0];
+  let s = String(raw).trim();
+  if (/^\d{5}$/.test(s) && parseInt(s) > 30000) {
+    let d = new Date((parseInt(s) - 25569) * 86400000);
+    return d.toISOString().split('T')[0];
+  }
+  let iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return `${iso[1]}-${iso[2].padStart(2,'0')}-${iso[3].padStart(2,'0')}`;
+  let us = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (us) {
+    let a = parseInt(us[1]), b = parseInt(us[2]);
+    if (a > 12) return `${us[3]}-${String(b).padStart(2,'0')}-${String(a).padStart(2,'0')}`;
+    return `${us[3]}-${String(a).padStart(2,'0')}-${String(b).padStart(2,'0')}`;
+  }
+  let d = new Date(s);
+  if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+  return null;
 }
 
-// =============================================
-// daysDiff — timezone-safe, handle semua format
-// =============================================
 function daysDiff(rawA, rawB) {
-  const isoA = parseToISO(rawA);
-  const isoB = parseToISO(rawB);
-  if (!isoA || !isoB) return 0;
-  const [y1,m1,d1] = isoA.split('-').map(Number);
-  const [y2,m2,d2] = isoB.split('-').map(Number);
-  return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
+  const isoA = parseToISO(rawA), isoB = parseToISO(rawB);
+  if (!isoA || !isoB) return 0;
+  const [y1,m1,d1] = isoA.split('-').map(Number), [y2,m2,d2] = isoB.split('-').map(Number);
+  return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
-// =============================================
-// LOAD CACHE 
-// =============================================
 function loadCache() {
-  try {
-    const dbRaw = localStorage.getItem('cache_db');
-    const inRaw = localStorage.getItem('cache_in');
-    const chkRaw = localStorage.getItem('cache_checked');
-    const dbTs = parseInt(localStorage.getItem('cache_db_ts') || '0');
-    const inTs = parseInt(localStorage.getItem('cache_in_ts') || '0');
-    const now = Date.now();
-
-    dbItems = (dbRaw && (now - dbTs) < CACHE_TTL_MS) ? JSON.parse(dbRaw) : [];
-    inItems = (inRaw && (now - inTs) < CACHE_TTL_MS) ? JSON.parse(inRaw) : [];
-    checkedRows = new Set(chkRaw ? JSON.parse(chkRaw) : []);
-  } catch(e) {
-    dbItems = []; inItems = []; checkedRows = new Set();
-  }
+  try {
+    const dbRaw = localStorage.getItem('cache_db'), inRaw = localStorage.getItem('cache_in'), chkRaw = localStorage.getItem('cache_checked');
+    const now = Date.now();
+    dbItems = (dbRaw && (now - parseInt(localStorage.getItem('cache_db_ts') || '0')) < CACHE_TTL_MS) ? JSON.parse(dbRaw) : [];
+    inItems = (inRaw && (now - parseInt(localStorage.getItem('cache_in_ts') || '0')) < CACHE_TTL_MS) ? JSON.parse(inRaw) : [];
+    checkedRows = new Set(chkRaw ? JSON.parse(chkRaw) : []);
+  } catch(e) { dbItems = []; inItems = []; checkedRows = new Set(); }
 }
 
-function saveCache(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-  localStorage.setItem(key + '_ts', Date.now().toString());
-}
+function saveCache(key, data) { localStorage.setItem(key, JSON.stringify(data)); localStorage.setItem(key + '_ts', Date.now().toString()); }
 
-// =============================================
-// API CALL 
-// =============================================
 async function callApi(params, body = null) {
-  try {
-    const url = PROXY_URL + "?" + new URLSearchParams(params);
-    const options = {
-      method: body ? 'POST' : 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : null
-    };
-    const res = await fetch(url, options);
-    if (res.ok) {
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      return json;
-    }
-    if (res.status !== 404) throw new Error(`HTTP ${res.status}`);
-  } catch(e) {
-    if (!e.message.includes('Failed to fetch') && !e.message.includes('404') && !e.message.includes('NetworkError')) {
-      throw e;
-    }
-  }
-
-  params.token = API_TOKEN;
-  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
-  const options = {
-    method: body ? 'POST' : 'GET',
-    body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null
-  };
-  const res = await fetch(url, options);
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
-  return json;
+  try {
+    const res = await fetch(PROXY_URL + "?" + new URLSearchParams(params), { method: body ? 'POST' : 'GET', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : null });
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    return json;
+  } catch(e) {
+    params.token = API_TOKEN;
+    const res = await fetch(APPS_SCRIPT_URL + "?" + new URLSearchParams(params), { method: body ? 'POST' : 'GET', body: body ? JSON.stringify({...body, token:API_TOKEN}) : null });
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    return json;
+  }
 }
 
 async function loadAll() {
-  const syncBtn = document.getElementById('syncBtn');
-  syncBtn.innerText = "Sync...";
-  syncBtn.disabled = true;
-  try {
-    const [dbRes, inRes] = await Promise.all([
-      callApi({ action: "getDatabase" }),
-      callApi({ action: "getInputs" })
-    ]);
-    dbItems = dbRes.data;
-    console.log('DATA DARI SPREADSHEET:', inRes.data);
-    inItems = inRes.data;
-    saveCache('cache_db', dbItems);
-    saveCache('cache_in', inItems);
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    showToast("Data diperbarui ✓", "success");
-  } catch(e) {
-    console.error('loadAll error:', e);
-    showToast("Gagal sync: " + e.message, "error");
-  }
-  syncBtn.innerText = "↻ Sync";
-  syncBtn.disabled = false;
+  const syncBtn = document.getElementById('syncBtn');
+  syncBtn.innerText = "Sync..."; syncBtn.disabled = true;
+  try {
+    const [dbRes, inRes] = await Promise.all([callApi({action:"getDatabase"}), callApi({action:"getInputs"})]);
+    dbItems = dbRes.data;
+    console.log('DATA DARI SPREADSHEET:', inRes.data);
+    inItems = inRes.data;
+    saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
+    renderRecent(); renderPullList(); buildLokasiHistory();
+    showToast("Data diperbarui ✓", "success");
+  } catch(e) { showToast("Gagal sync: " + e.message, "error"); }
+  syncBtn.innerText = "↻ Sync"; syncBtn.disabled = false;
 }
 
-// =============================================
-// SUBMIT INPUT
-// =============================================
 async function submitInput() {
-  const b = document.getElementById('fBarcode').value.trim();
-  const d = document.getElementById('fDesc').value.trim();
-  const e = document.getElementById('fExp').value;
-  const l = document.getElementById('fLokasi').value.trim();
-  if (!b || !e) return showToast("Barcode & Tanggal wajib diisi!", "error");
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerText = "Menyimpan...";
-  try {
-    const res = await callApi({ action: "addInput" }, { barcode:b, description:d, expiredDate:e, lokasi:l });
-    const newItem = { rowIndex: res.rowIndex, barcode:b, description:d, expiredDate:e, lokasi:l, timestamp: getTodayStr() };
-    inItems.push(newItem);
-    saveCache('cache_in', inItems);
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    document.getElementById('fBarcode').value = "";
-    document.getElementById('fDesc').value = "";
-    document.getElementById('fExp').value = getTodayStr();
-    document.getElementById('fLokasi').value = "";
-    showToast("Berhasil disimpan ✓", "success");
-  } catch(x) {
-    console.error('submitInput error:', x);
-    showToast("Gagal simpan: " + x.message, "error");
-  }
-  btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
+  const b = document.getElementById('fBarcode').value.trim(), e = document.getElementById('fExp').value;
+  if (!b || !e) return showToast("Barcode & Tanggal wajib diisi!", "error");
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.innerText = "Menyimpan...";
+  try {
+    const res = await callApi({action:"addInput"}, {barcode:b, description:document.getElementById('fDesc').value.trim(), expiredDate:e, lokasi:document.getElementById('fLokasi').value.trim()});
+    inItems.push({rowIndex:res.rowIndex, barcode:b, description:document.getElementById('fDesc').value.trim(), expiredDate:e, lokasi:document.getElementById('fLokasi').value.trim(), timestamp:getTodayStr()});
+    saveCache('cache_in', inItems); renderRecent(); renderPullList();
+    document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = ""; document.getElementById('fExp').value = getTodayStr(); document.getElementById('fLokasi').value = "";
+    showToast("Berhasil disimpan ✓", "success");
+  } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
+  btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
 }
 
-// =============================================
-// EDIT & DELETE
-// =============================================
 function openEdit(idx) {
-  const item = inItems.find(i => i.rowIndex == idx);
-  if (!item) return;
-  document.getElementById('editRowIndex').value = idx;
-  document.getElementById('editBarcode').value = item.barcode;
-  document.getElementById('editDesc').value = item.description;
-  document.getElementById('editExp').value = parseToISO(getExpRaw(item));
-  document.getElementById('editLokasi').value = item.lokasi || '';
-  document.getElementById('modalEdit').classList.add('open');
+  const item = inItems.find(i => i.rowIndex == idx);
+  if (!item) return;
+  document.getElementById('editRowIndex').value = idx;
+  document.getElementById('editBarcode').value = item.barcode;
+  document.getElementById('editDesc').value = item.description;
+  document.getElementById('editExp').value = parseToISO(getExpRaw(item));
+  document.getElementById('editLokasi').value = item.lokasi || '';
+  document.getElementById('modalEdit').classList.add('open');
 }
 
 function closeEditModal() { document.getElementById('modalEdit').classList.remove('open'); }
 
 async function saveEdit() {
-  const idx = document.getElementById('editRowIndex').value;
-  const b = document.getElementById('editBarcode').value.trim();
-  const d = document.getElementById('editDesc').value.trim();
-  const e = document.getElementById('editExp').value;
-  const l = document.getElementById('editLokasi').value.trim();
-  const btn = document.getElementById('btnSaveEdit');
-  btn.disabled = true; btn.innerText = "Menyimpan...";
-  try {
-    await callApi({ action: "updateInput" }, { rowIndex:idx, barcode:b, description:d, expiredDate:e, lokasi:l });
-    const i = inItems.findIndex(x => x.rowIndex == idx);
-    inItems[i] = { ...inItems[i], barcode:b, description:d, expiredDate:e, lokasi:l };
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList(); closeEditModal();
-    showToast("Berhasil diupdate ✓", "success");
-  } catch(x) {
-    console.error('saveEdit error:', x);
-    showToast("Gagal update: " + x.message, "error");
-  }
-  btn.disabled = false; btn.innerText = "Simpan";
+  const idx = document.getElementById('editRowIndex').value;
+  const data = { rowIndex:idx, barcode:document.getElementById('editBarcode').value.trim(), description:document.getElementById('editDesc').value.trim(), expiredDate:document.getElementById('editExp').value, lokasi:document.getElementById('editLokasi').value.trim() };
+  try {
+    await callApi({action:"updateInput"}, data);
+    const i = inItems.findIndex(x => x.rowIndex == idx);
+    inItems[i] = {...inItems[i], ...data};
+    saveCache('cache_in', inItems); renderRecent(); renderPullList(); closeEditModal();
+    showToast("Berhasil diupdate ✓", "success");
+  } catch(x) { showToast("Gagal update: " + x.message, "error"); }
 }
 
 async function delItem(idx) {
-  if (!confirm("Hapus data ini?")) return;
-  try {
-    await callApi({ action: "deleteInput" }, { rowIndex: idx });
-    inItems = inItems.filter(x => x.rowIndex != idx);
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList();
-    showToast("Data dihapus", "success");
-  } catch(x) {
-    console.error('delItem error:', x);
-    showToast("Gagal hapus: " + x.message, "error");
-  }
+  if (!confirm("Hapus data ini?")) return;
+  try {
+    await callApi({action:"deleteInput"}, {rowIndex:idx});
+    inItems = inItems.filter(x => x.rowIndex != idx);
+    saveCache('cache_in', inItems); renderRecent(); renderPullList();
+    showToast("Data dihapus", "success");
+  } catch(x) { showToast("Gagal hapus: " + x.message, "error"); }
 }
 
-// =============================================
-// RENDER
-// =============================================
 function formatDateIndo(raw) {
-  const iso = parseToISO(raw);
-  if (!iso) return '-';
-  const [y,m,d] = iso.split('-').map(Number);
-  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-  return `${d} ${months[m-1]} ${y}`;
+  const iso = parseToISO(raw);
+  if (!iso) return '-';
+  const [y,m,d] = iso.split('-').map(Number);
+  return `${d} ${["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][m-1]} ${y}`;
 }
 
 function renderRecent() {
-  const container = document.getElementById('recentList');
-  const today = getTodayStr();
-  const filtered = inItems.filter(i => {
-    const ts = i.timestamp || i["Timestamp Input"] || "";
-    return ts.startsWith(today);
-  }).reverse();
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>Belum ada input hari ini</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(i => `
-    <div class="recent-item">
-      <div class="ri-info">
-        <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
-        <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-      </div>
-      <div class="ri-actions">
-        <button class="icon-btn" style="background:#ede9fe" onclick="openEdit(${i.rowIndex})" aria-label="Edit item">✏️</button>
-        <button class="icon-btn" style="background:#fee2e2" onclick="delItem(${i.rowIndex})" aria-label="Hapus item">🗑️</button>
-      </div>
-    </div>
-  `).join('');
+  const container = document.getElementById('recentList');
+  const today = getTodayStr();
+  const filtered = inItems.filter(i => (i.timestamp || "").startsWith(today)).reverse();
+  if (!filtered.length) { container.innerHTML = `<div class="empty-state">Belum ada input hari ini</div>`; return; }
+  container.innerHTML = filtered.map(i => `
+    <div class="recent-item">
+      <div class="ri-info">
+        <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
+        <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>
+      </div>
+      <div class="ri-actions">
+        <button class="icon-btn" onclick="openEdit(${i.rowIndex})">✏️</button>
+        <button class="icon-btn" onclick="delItem(${i.rowIndex})">🗑️</button>
+      </div>
+    </div>`).join('');
 }
 
-// =============================================
-// FILTER STATE
-// =============================================
 function setFilter(filter) {
-  activeFilter = filter;
-  ['today','red','amber','green','all'].forEach(f => {
-    document.getElementById('chip-' + f)?.classList.toggle('active', f === filter);
-  });
-  ['Harus','Mendekati','Aman'].forEach(n => {
-    document.getElementById('card'+n)?.classList.remove('active-filter');
-  });
-  if (filter === 'red') document.getElementById('cardHarus')?.classList.add('active-filter');
-  if (filter === 'amber') document.getElementById('cardMendekati')?.classList.add('active-filter');
-  if (filter === 'green') document.getElementById('cardAman')?.classList.add('active-filter');
-  renderPullList();
+  activeFilter = filter;
+  ['today','red','amber','green','all'].forEach(f => document.getElementById('chip-' + f)?.classList.toggle('active', f === filter));
+  renderPullList();
 }
 
 function renderPullList() {
-  const container = document.getElementById('pullList');
-  const today = getTodayStr();
-  let h = 0, m = 0, a = 0;
-
-  const list = inItems.map(i => {
-    const db = dbItems.find(x => x.barcode === i.barcode);
-    const hMin = db ? (db.hMinus || 0) : 0;
-
-    const isoExp = parseToISO(getExpRaw(i)); 
-
-    if (!isoExp) {
-      a++;
-      return { ...i, status: 'green', daysUntilPull: 9999, daysUntilExp: 9999, hMin };
-    }
-
-    const daysUntilExp = daysDiff(isoExp, today);
-    const daysUntilPull = daysUntilExp - (hMin - 1);
-
-    let status = 'green';
-    if (daysUntilPull <= 0) { status = 'red'; h++; }
-    else if (daysUntilPull <= 3) { status = 'amber'; m++; }
-    else a++;
-
-    return { ...i, isoExp, status, daysUntilPull, daysUntilExp, hMin };
-  }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
-
-  document.getElementById('sHarus').innerText = h;
-  document.getElementById('sMendekati').innerText = m;
-  document.getElementById('sAman').innerText = a;
-
-  let filtered = list;
-  if (activeFilter === 'today') {
-    filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
-  } else if (activeFilter === 'red') {
-    filtered = list.filter(i => i.status === 'red');
-  } else if (activeFilter === 'amber') {
-    filtered = list.filter(i => i.status === 'amber');
-  } else if (activeFilter === 'green') {
-    filtered = list.filter(i => i.status === 'green');
-  }
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Data kosong</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(i => {
-    const checked = checkedRows.has(i.rowIndex);
-    const expText = i.daysUntilExp === 9999 ? 'Tgl tidak diset' : `Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)`;
-    return `
-      <div class="pull-card ${i.status === 'amber' ? 'amber' : i.status === 'green' ? 'green' : ''} ${checked ? 'done' : ''}">
-        <div class="pull-card-top">
-          <div style="flex:1;min-width:0">
-            <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
-            <div class="pull-meta">${escHtml(i.barcode)}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-            <div class="pull-meta" style="margin-top:2px">${expText}</div>
-            <span class="pull-status-badge ${i.status}">${i.status.toUpperCase()}</span>
-          </div>
-          <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">
-            ${checked ? '✔️' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
+  const container = document.getElementById('pullList');
+  const today = getTodayStr();
+  let h = 0, m = 0, a = 0;
+  const list = inItems.map(i => {
+    const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
+    const isoExp = parseToISO(getExpRaw(i)); 
+    if (!isoExp) { a++; return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999}; }
+    const daysUntilExp = daysDiff(isoExp, today), daysUntilPull = daysUntilExp - (hMin - 1);
+    let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
+    if (status === 'red') h++; else if (status === 'amber') m++; else a++;
+    return {...i, isoExp, status, daysUntilExp};
+  }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
+  document.getElementById('sHarus').innerText = h; document.getElementById('sMendekati').innerText = m; document.getElementById('sAman').innerText = a;
+  const filtered = (activeFilter === 'today') ? list.filter(i => i.status !== 'green') : (activeFilter !== 'all' ? list.filter(i => i.status === activeFilter) : list);
+  container.innerHTML = filtered.map(i => `
+    <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''}">
+      <div class="pull-card-top">
+        <div style="flex:1">
+          <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
+          <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)</div>
+          <span class="pull-status-badge ${i.status}">${i.status.toUpperCase()}</span>
+        </div>
+        <div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div>
+      </div>
+    </div>`).join('');
 }
 
 function toggleCheck(idx) {
-  if (checkedRows.has(idx)) checkedRows.delete(idx);
-  else checkedRows.add(idx);
-  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
-  renderPullList();
+  if (checkedRows.has(idx)) checkedRows.delete(idx); else checkedRows.add(idx);
+  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
+  renderPullList();
 }
 
-// =============================================
-// LOKASI HISTORY CHIPS
-// =============================================
 function buildLokasiHistory() {
-  const freq = {};
-  inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
-  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
-  renderLokasiChips('');
+  const freq = {}; inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
+  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
+  renderLokasiChips('');
 }
 
-function renderLokasiChips(currentVal) {
-  const container = document.getElementById('lokasiChips');
-  const suggestions = lokasiFrecuentes.filter(l => !currentVal || l.toLowerCase().includes(currentVal.toLowerCase()));
-  if (!suggestions.length) { container.innerHTML = ''; return; }
-  container.innerHTML = suggestions.map(l =>
-    `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g, "\\'")}')">${escHtml(l)}</button>`
-  ).join('');
+function renderLokasiChips(val) {
+  const container = document.getElementById('lokasiChips');
+  const s = lokasiFrecuentes.filter(l => !val || l.toLowerCase().includes(val.toLowerCase()));
+  container.innerHTML = s.map(l => `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g, "\\'")}')">${escHtml(l)}</button>`).join('');
 }
 
-function updateLokasiChips() {
-  const val = document.getElementById('fLokasi').value;
-  renderLokasiChips(val);
-}
+function updateLokasiChips() { renderLokasiChips(document.getElementById('fLokasi').value); }
+function pickLokasi(val) { document.getElementById('fLokasi').value = val; renderLokasiChips(''); }
 
-function pickLokasi(val) {
-  document.getElementById('fLokasi').value = val;
-  renderLokasiChips('');
-}
-
-// =============================================
-// SCANNER 
-// =============================================
 function openScanner() {
-  document.getElementById('scannerOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  const config = {
-    fps: 30,
-    qrbox: { width: 240, height: 160 },
-    aspectRatio: 1.0,
-    disableFlip: false,
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.CODE_93,
-      Html5QrcodeSupportedFormats.ITF,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E,
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.DATA_MATRIX,
-    ]
-  };
-
-  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-  html5QrScanner.start(
-    { facingMode: "environment" },
-    { fps: config.fps, qrbox: config.qrbox, aspectRatio: config.aspectRatio },
-    (decodedText) => onScanSuccess(decodedText),
-    (err) => {}
-  ).catch(err => {
-    showToast("Gagal buka kamera", "error");
-    closeScanner();
-  });
+  document.getElementById('scannerOverlay').classList.add('open');
+  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
+  html5QrScanner.start({facingMode: "environment"}, {fps: 30, qrbox: 240}, (t) => { closeScanner(); document.getElementById('fBarcode').value = t; autoFill(t); showToast("Barcode terbaca"); });
 }
 
-function onScanSuccess(text) {
-  closeScanner();
-  document.getElementById('fBarcode').value = text;
-  autoFill(text);
-  showToast("Barcode terbaca", "success");
-}
-
-function closeScanner() {
-  document.getElementById('scannerOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  if (html5QrScanner) {
-    html5QrScanner.stop().catch(() => {});
-    html5QrScanner = null;
-  }
-}
-
-// =============================================
-// AUTO FILL dari database
-// =============================================
-function autoFill(val) {
-  if (!val) return;
-  const found = dbItems.find(x => x.barcode === val);
-  if (found) {
-    document.getElementById('fDesc').value = found.description || '';
-  }
-}
-
-// =============================================
-// TAB SWITCH
-// =============================================
+function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
+function autoFill(val) { const found = dbItems.find(x => x.barcode === val); if (found) document.getElementById('fDesc').value = found.description || ''; }
 function switchTab(t) {
-  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
-  const panelId = 'panel' + t.charAt(0).toUpperCase() + t.slice(1);
-  const tabId = 'tab' + t.charAt(0).toUpperCase() + t.slice(1);
-  document.getElementById(panelId)?.classList.add('active');
-  document.getElementById(tabId)?.classList.add('active');
+  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
+  document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
 }
-
-// =============================================
-// TOAST
-// =============================================
-let toastTimer = null;
 function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
 }
+function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// =============================================
-// UTILS
-// =============================================
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// =============================================
-// INIT
-// =============================================
 window.onload = () => {
-  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-  document.getElementById('fExp').value = getTodayStr();
-  loadCache();
-  renderRecent();
-  renderPullList();
-  buildLokasiHistory();
-  loadAll(); 
+  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
+  document.getElementById('fExp').value = getTodayStr();
+  loadCache(); renderRecent(); renderPullList(); buildLokasiHistory(); loadAll(); 
 };
 </script>
 </body>

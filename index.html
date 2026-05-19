@@ -243,12 +243,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 // =============================================
 // KONFIGURASI
 // =============================================
-const PROXY_URL = "/api/proxy"; // Vercel serverless proxy — simpan APPS_SCRIPT_URL & API_TOKEN di sini
-// Fallback: jika belum ada proxy, langsung ke Apps Script (HAPUS di production!)
+const PROXY_URL = "/api/proxy"; 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
-const API_TOKEN = "RAHASIA_123"; // ⚠️ Pindahkan ke Vercel env var — lihat /api/proxy.js
+const API_TOKEN = "RAHASIA_123"; 
 
-// Cache expiry: 6 jam
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 let dbItems = [];
@@ -258,37 +256,73 @@ let activeFilter = 'today';
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
 
-// =============================================
-// FIX: getTodayStr() — always fresh, no stale date
-// =============================================
 function getTodayStr() {
   return new Date().toISOString().split('T')[0];
 }
 
 // =============================================
-// parseToISO — FIX: Handle format Indo dan Jam
+// HELPER: Ekstrak Tanggal Cerdas (Anti typo kolom)
+// =============================================
+function getExpRaw(obj) {
+  if (!obj) return null;
+  if (obj["Expired Date"]) return obj["Expired Date"];
+  if (obj.expiredDate) return obj.expiredDate;
+  if (obj.expired_date) return obj.expired_date;
+
+  // Pencarian fuzzy jika ada spasi tak kasat mata di sheet
+  for (let key in obj) {
+    let k = key.toLowerCase().trim();
+    if (k.includes('expired') || k.includes('exp')) {
+      if (obj[key]) return obj[key];
+    }
+  }
+  return null;
+}
+
+// =============================================
+// parseToISO — FIX: Handle format Indo, Jam, & Safari
 // =============================================
 function parseToISO(raw) {
   if (!raw) return null;
   if (raw instanceof Date) return raw.toISOString().split('T')[0];
   let s = String(raw).trim();
 
-  // 1. Ambil hanya tanggalnya saja jika format YYYY-MM-DD (termasuk T00:00:00 atau jam spasi)
-  const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (isoMatch) return isoMatch[1];
+  // 1. Ambil format YYYY-MM-DD
+  const isoMatch = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
+  if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
 
-  // 2. Format DD/MM/YYYY atau DD-MM-YYYY (Pindah ke atas)
-  // Menghapus tanda $ di akhir agar regex tetap menangkap tanggal meskipun ada jam di belakangnya
+  // 2. Format DD/MM/YYYY atau DD-MM-YYYY
   const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (dmy) {
     return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
   }
 
-  // 3. Normalisasi Bulan Indonesia
-  const bulanIndo = {'mei':'may', 'agu':'aug', 'okt':'oct', 'des':'dec'};
+  // 3. Normalisasi Bulan Indo
+  const bulanIndo = {
+    'januari':'jan', 'februari':'feb', 'maret':'mar', 'april':'apr', 'mei':'may', 'juni':'jun', 'juli':'jul', 'agustus':'aug', 'agu':'aug', 'september':'sep', 'oktober':'oct', 'okt':'oct', 'november':'nov', 'desember':'dec', 'des':'dec'
+  };
   let engS = s.toLowerCase();
-  for (let key in bulanIndo) engS = engS.replace(key, bulanIndo[key]);
+  for (let key in bulanIndo) {
+    engS = engS.replace(new RegExp(key, 'g'), bulanIndo[key]);
+  }
 
+  // 4. Ekstrak teks manual (Kebal bug Safari/iPhone)
+  const strMonths = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const parts = engS.split(/[\s\-\,\/]+/);
+  if (parts.length >= 3) {
+     let yStr = parts.find(p => p.length === 4 && !isNaN(p));
+     let dStr = parts.find(p => p.length > 0 && p.length <= 2 && !isNaN(p));
+     let mStr = parts.find(p => isNaN(p));
+
+     if (yStr && dStr && mStr) {
+        let mIndex = strMonths.findIndex(m => mStr.startsWith(m));
+        if (mIndex >= 0) {
+           return `${yStr}-${String(mIndex + 1).padStart(2,'0')}-${dStr.padStart(2,'0')}`;
+        }
+     }
+  }
+
+  // 5. Fallback JS Date
   const d = new Date(engS);
   if (!isNaN(d.getTime())) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -310,448 +344,11 @@ function daysDiff(rawA, rawB) {
 }
 
 // =============================================
-// LOAD CACHE — dengan expiry check
+// LOAD CACHE 
 // =============================================
 function loadCache() {
   try {
     const dbRaw = localStorage.getItem('cache_db');
     const inRaw = localStorage.getItem('cache_in');
     const chkRaw = localStorage.getItem('cache_checked');
-    const dbTs = parseInt(localStorage.getItem('cache_db_ts') || '0');
-    const inTs = parseInt(localStorage.getItem('cache_in_ts') || '0');
-    const now = Date.now();
-
-    dbItems = (dbRaw && (now - dbTs) < CACHE_TTL_MS) ? JSON.parse(dbRaw) : [];
-    inItems = (inRaw && (now - inTs) < CACHE_TTL_MS) ? JSON.parse(inRaw) : [];
-    checkedRows = new Set(chkRaw ? JSON.parse(chkRaw) : []);
-  } catch(e) {
-    dbItems = []; inItems = []; checkedRows = new Set();
-  }
-}
-
-function saveCache(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-  localStorage.setItem(key + '_ts', Date.now().toString());
-}
-
-// =============================================
-// API CALL — via proxy jika tersedia, fallback langsung
-// =============================================
-async function callApi(params, body = null) {
-  // Coba proxy dulu
-  try {
-    const url = PROXY_URL + "?" + new URLSearchParams(params);
-    const options = {
-      method: body ? 'POST' : 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : null
-    };
-    const res = await fetch(url, options);
-    if (res.ok) {
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      return json;
-    }
-    // Jika 404 (proxy belum ada), fallback ke direct
-    if (res.status !== 404) throw new Error(`HTTP ${res.status}`);
-  } catch(e) {
-    if (!e.message.includes('Failed to fetch') && !e.message.includes('404') && !e.message.includes('NetworkError')) {
-      throw e;
-    }
-  }
-
-  // Fallback langsung ke Apps Script (hapus di production)
-  params.token = API_TOKEN;
-  const url = APPS_SCRIPT_URL + "?" + new URLSearchParams(params);
-  const options = {
-    method: body ? 'POST' : 'GET',
-    body: body ? JSON.stringify({ ...body, token: API_TOKEN }) : null
-  };
-  const res = await fetch(url, options);
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
-  return json;
-}
-
-async function loadAll() {
-  const syncBtn = document.getElementById('syncBtn');
-  syncBtn.innerText = "Sync...";
-  syncBtn.disabled = true;
-  try {
-    const [dbRes, inRes] = await Promise.all([
-      callApi({ action: "getDatabase" }),
-      callApi({ action: "getInputs" })
-    ]);
-    dbItems = dbRes.data;
-    inItems = inRes.data;
-    saveCache('cache_db', dbItems);
-    saveCache('cache_in', inItems);
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    showToast("Data diperbarui ✓", "success");
-  } catch(e) {
-    console.error('loadAll error:', e);
-    showToast("Gagal sync: " + e.message, "error");
-  }
-  syncBtn.innerText = "↻ Sync";
-  syncBtn.disabled = false;
-}
-
-// =============================================
-// SUBMIT INPUT
-// =============================================
-async function submitInput() {
-  const b = document.getElementById('fBarcode').value.trim();
-  const d = document.getElementById('fDesc').value.trim();
-  const e = document.getElementById('fExp').value;
-  const l = document.getElementById('fLokasi').value.trim();
-  if (!b || !e) return showToast("Barcode & Tanggal wajib diisi!", "error");
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerText = "Menyimpan...";
-  try {
-    const res = await callApi({ action: "addInput" }, { barcode:b, description:d, expiredDate:e, lokasi:l });
-    // Tetapkan timestamp agar muncul di recent input hari ini
-    const newItem = { rowIndex: res.rowIndex, barcode:b, description:d, expiredDate:e, lokasi:l, timestamp: getTodayStr() };
-    inItems.push(newItem);
-    saveCache('cache_in', inItems);
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    document.getElementById('fBarcode').value = "";
-    document.getElementById('fDesc').value = "";
-    document.getElementById('fExp').value = getTodayStr();
-    document.getElementById('fLokasi').value = "";
-    showToast("Berhasil disimpan ✓", "success");
-  } catch(x) {
-    console.error('submitInput error:', x);
-    showToast("Gagal simpan: " + x.message, "error");
-  }
-  btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
-}
-
-// =============================================
-// EDIT & DELETE
-// =============================================
-function openEdit(idx) {
-  const item = inItems.find(i => i.rowIndex == idx);
-  if (!item) return;
-  document.getElementById('editRowIndex').value = idx;
-  document.getElementById('editBarcode').value = item.barcode;
-  document.getElementById('editDesc').value = item.description;
-  document.getElementById('editExp').value = parseToISO(item["Expired Date"] || item.expiredDate || item.expired_date);
-  document.getElementById('editLokasi').value = item.lokasi || '';
-  document.getElementById('modalEdit').classList.add('open');
-}
-
-function closeEditModal() { document.getElementById('modalEdit').classList.remove('open'); }
-
-async function saveEdit() {
-  const idx = document.getElementById('editRowIndex').value;
-  const b = document.getElementById('editBarcode').value.trim();
-  const d = document.getElementById('editDesc').value.trim();
-  const e = document.getElementById('editExp').value;
-  const l = document.getElementById('editLokasi').value.trim();
-  const btn = document.getElementById('btnSaveEdit');
-  btn.disabled = true; btn.innerText = "Menyimpan...";
-  try {
-    await callApi({ action: "updateInput" }, { rowIndex:idx, barcode:b, description:d, expiredDate:e, lokasi:l });
-    const i = inItems.findIndex(x => x.rowIndex == idx);
-    inItems[i] = { ...inItems[i], barcode:b, description:d, expiredDate:e, lokasi:l };
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList(); closeEditModal();
-    showToast("Berhasil diupdate ✓", "success");
-  } catch(x) {
-    console.error('saveEdit error:', x);
-    showToast("Gagal update: " + x.message, "error");
-  }
-  btn.disabled = false; btn.innerText = "Simpan";
-}
-
-async function delItem(idx) {
-  if (!confirm("Hapus data ini?")) return;
-  try {
-    await callApi({ action: "deleteInput" }, { rowIndex: idx });
-    inItems = inItems.filter(x => x.rowIndex != idx);
-    saveCache('cache_in', inItems);
-    renderRecent(); renderPullList();
-    showToast("Data dihapus", "success");
-  } catch(x) {
-    console.error('delItem error:', x);
-    showToast("Gagal hapus: " + x.message, "error");
-  }
-}
-
-// =============================================
-// RENDER
-// =============================================
-function formatDateIndo(raw) {
-  const iso = parseToISO(raw);
-  if (!iso) return '-';
-  const [y,m,d] = iso.split('-').map(Number);
-  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-  return `${d} ${months[m-1]} ${y}`;
-}
-
-function renderRecent() {
-  const container = document.getElementById('recentList');
-  const today = getTodayStr();
-  // Support kolom "Timestamp Input" dari spreadsheet atau "timestamp" dari local
-  const filtered = inItems.filter(i => {
-    const ts = i.timestamp || i["Timestamp Input"] || "";
-    return ts.startsWith(today);
-  }).reverse();
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>Belum ada input hari ini</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(i => `
-    <div class="recent-item">
-      <div class="ri-info">
-        <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
-        <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(i["Expired Date"] || i.expiredDate || i.expired_date)}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-      </div>
-      <div class="ri-actions">
-        <button class="icon-btn" style="background:#ede9fe" onclick="openEdit(${i.rowIndex})" aria-label="Edit item">✏️</button>
-        <button class="icon-btn" style="background:#fee2e2" onclick="delItem(${i.rowIndex})" aria-label="Hapus item">🗑️</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// =============================================
-// FILTER STATE
-// =============================================
-function setFilter(filter) {
-  activeFilter = filter;
-  // Update chips
-  ['today','red','amber','green','all'].forEach(f => {
-    document.getElementById('chip-' + f)?.classList.toggle('active', f === filter);
-  });
-  // Update stat cards
-  ['Harus','Mendekati','Aman'].forEach(n => {
-    document.getElementById('card'+n)?.classList.remove('active-filter');
-  });
-  if (filter === 'red') document.getElementById('cardHarus')?.classList.add('active-filter');
-  if (filter === 'amber') document.getElementById('cardMendekati')?.classList.add('active-filter');
-  if (filter === 'green') document.getElementById('cardAman')?.classList.add('active-filter');
-  renderPullList();
-}
-
-function renderPullList() {
-  const container = document.getElementById('pullList');
-  const today = getTodayStr();
-  let h = 0, m = 0, a = 0;
-
-  const list = inItems.map(i => {
-    const db = dbItems.find(x => x.barcode === i.barcode);
-    const hMin = db ? (db.hMinus || 0) : 0;
-
-    const isoExp = parseToISO(i["Expired Date"] || i.expiredDate || i.expired_date);
-    if (!isoExp) {
-      a++;
-      return { ...i, status: 'green', daysUntilPull: 9999, daysUntilExp: 9999, hMin };
-    }
-
-    const daysUntilExp = daysDiff(isoExp, today);
-    const daysUntilPull = daysUntilExp - (hMin - 1);
-
-    let status = 'green';
-    if (daysUntilPull <= 0) { status = 'red'; h++; }
-    else if (daysUntilPull <= 3) { status = 'amber'; m++; }
-    else a++;
-
-    return { ...i, isoExp, status, daysUntilPull, daysUntilExp, hMin };
-  }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
-
-  document.getElementById('sHarus').innerText = h;
-  document.getElementById('sMendekati').innerText = m;
-  document.getElementById('sAman').innerText = a;
-
-  // Filter berdasarkan activeFilter
-  let filtered = list;
-  if (activeFilter === 'today') {
-    filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
-  } else if (activeFilter === 'red') {
-    filtered = list.filter(i => i.status === 'red');
-  } else if (activeFilter === 'amber') {
-    filtered = list.filter(i => i.status === 'amber');
-  } else if (activeFilter === 'green') {
-    filtered = list.filter(i => i.status === 'green');
-  }
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Data kosong</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(i => {
-    const checked = checkedRows.has(i.rowIndex);
-    const expText = i.daysUntilExp === 9999 ? 'Tgl tidak diset' : `Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)`;
-    return `
-      <div class="pull-card ${i.status === 'amber' ? 'amber' : i.status === 'green' ? 'green' : ''} ${checked ? 'done' : ''}">
-        <div class="pull-card-top">
-          <div style="flex:1;min-width:0">
-            <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
-            <div class="pull-meta">${escHtml(i.barcode)}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-            <div class="pull-meta" style="margin-top:2px">${expText}</div>
-            <span class="pull-status-badge ${i.status}">${i.status.toUpperCase()}</span>
-          </div>
-          <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">
-            ${checked ? '✔️' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function toggleCheck(idx) {
-  if (checkedRows.has(idx)) checkedRows.delete(idx);
-  else checkedRows.add(idx);
-  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
-  renderPullList();
-}
-
-// =============================================
-// LOKASI HISTORY CHIPS
-// =============================================
-function buildLokasiHistory() {
-  const freq = {};
-  inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
-  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
-  renderLokasiChips('');
-}
-
-function renderLokasiChips(currentVal) {
-  const container = document.getElementById('lokasiChips');
-  const suggestions = lokasiFrecuentes.filter(l => !currentVal || l.toLowerCase().includes(currentVal.toLowerCase()));
-  if (!suggestions.length) { container.innerHTML = ''; return; }
-  container.innerHTML = suggestions.map(l =>
-    `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g, "\\'")}')">${escHtml(l)}</button>`
-  ).join('');
-}
-
-function updateLokasiChips() {
-  const val = document.getElementById('fLokasi').value;
-  renderLokasiChips(val);
-}
-
-function pickLokasi(val) {
-  document.getElementById('fLokasi').value = val;
-  renderLokasiChips('');
-}
-
-// =============================================
-// SCANNER — agresif & cepat seperti AppSheet
-// =============================================
-function openScanner() {
-  document.getElementById('scannerOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  const config = {
-    fps: 30,
-    qrbox: { width: 240, height: 160 },
-    aspectRatio: 1.0,
-    disableFlip: false,
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.CODE_93,
-      Html5QrcodeSupportedFormats.ITF,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E,
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.DATA_MATRIX,
-    ]
-  };
-
-  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-  html5QrScanner.start(
-    { facingMode: "environment" },
-    { fps: config.fps, qrbox: config.qrbox, aspectRatio: config.aspectRatio },
-    (decodedText) => onScanSuccess(decodedText),
-    (err) => {}
-  ).catch(err => {
-    showToast("Gagal buka kamera", "error");
-    closeScanner();
-  });
-}
-
-function onScanSuccess(text) {
-  closeScanner();
-  document.getElementById('fBarcode').value = text;
-  autoFill(text);
-  showToast("Barcode terbaca", "success");
-}
-
-function closeScanner() {
-  document.getElementById('scannerOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  if (html5QrScanner) {
-    html5QrScanner.stop().catch(() => {});
-    html5QrScanner = null;
-  }
-}
-
-// =============================================
-// AUTO FILL dari database
-// =============================================
-function autoFill(val) {
-  if (!val) return;
-  const found = dbItems.find(x => x.barcode === val);
-  if (found) {
-    document.getElementById('fDesc').value = found.description || '';
-  }
-}
-
-// =============================================
-// TAB SWITCH
-// =============================================
-function switchTab(t) {
-  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
-  const panelId = 'panel' + t.charAt(0).toUpperCase() + t.slice(1);
-  const tabId = 'tab' + t.charAt(0).toUpperCase() + t.slice(1);
-  document.getElementById(panelId)?.classList.add('active');
-  document.getElementById(tabId)?.classList.add('active');
-}
-
-// =============================================
-// TOAST
-// =============================================
-let toastTimer = null;
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
-}
-
-// =============================================
-// UTILS
-// =============================================
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// =============================================
-// INIT
-// =============================================
-window.onload = () => {
-  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-  document.getElementById('fExp').value = getTodayStr();
-  loadCache();
-  renderRecent();
-  renderPullList();
-  buildLokasiHistory();
-  loadAll(); 
-};
-</script>
-</body>
-</html>
+    const dbTs = parseInt(localStorage.getItem('cache

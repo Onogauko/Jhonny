@@ -1,3 +1,5 @@
+--- START OF FILE Paste May 19, 2026 - 4:06PM ---
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -271,14 +273,19 @@ function getTodayStr() {
 }
 
 // =============================================
-// parseToISO — normalisasi semua format tanggal dari spreadsheet → YYYY-MM-DD
+// parseToISO — FIX: Penanganan Tanggal yang lebih Fleksibel
 // =============================================
 function parseToISO(raw) {
   if (!raw) return null;
-  const s = String(raw).trim();
+  
+  // Jika sudah berupa objek Date asli dari Google Apps Script
+  if (raw instanceof Date) return raw.toISOString().split('T')[0];
 
-  // Sudah ISO: 2026-05-21
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  let s = String(raw).trim();
+
+  // Cek format ISO (2026-05-21...) atau ISO lengkap (2026-05-21T00:00:00...)
+  const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (isoMatch) return isoMatch[1];
 
   // DD/MM/YYYY atau D/M/YYYY (format Indonesia)
   const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
@@ -293,7 +300,7 @@ function parseToISO(raw) {
     return d.toISOString().split('T')[0];
   }
 
-  // "21 May 2026" atau "21 Mei 2026"
+  // "2 Jun 2026" atau "21 May 2026"
   const verbal = s.match(/^(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})$/);
   if (verbal) {
     const en = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
@@ -302,6 +309,10 @@ function parseToISO(raw) {
     let mi = en.indexOf(mn); if (mi===-1) mi = id.indexOf(mn);
     if (mi !== -1) return `${verbal[3]}-${String(mi+1).padStart(2,'0')}-${verbal[1].padStart(2,'0')}`;
   }
+
+  // Fallback terakhir: coba parse standar
+  const fallback = new Date(s);
+  if (!isNaN(fallback.getTime())) return fallback.toISOString().split('T')[0];
 
   return null;
 }
@@ -448,7 +459,7 @@ function openEdit(idx) {
   document.getElementById('editRowIndex').value = idx;
   document.getElementById('editBarcode').value = item.barcode;
   document.getElementById('editDesc').value = item.description;
-  document.getElementById('editExp').value = item.expiredDate;
+  document.getElementById('editExp').value = parseToISO(item.expiredDate);
   document.getElementById('editLokasi').value = item.lokasi || '';
   document.getElementById('modalEdit').classList.add('open');
 }
@@ -573,7 +584,7 @@ function renderPullList() {
     else if (daysUntilPull <= 3) { status = 'amber'; m++; }
     else a++;
 
-    return { ...i, expiredDate: isoExp, status, daysUntilPull, daysUntilExp, hMin };
+    return { ...i, isoExp: isoExp, status, daysUntilPull, daysUntilExp, hMin };
   }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
 
   document.getElementById('sHarus').innerText = h;
@@ -619,7 +630,7 @@ function renderPullList() {
         ? `Expired ${Math.abs(i.daysUntilExp)} hari lalu`
         : i.daysUntilExp === 0
           ? 'Expired HARI INI'
-          : `Exp: ${formatDateIndo(i.expiredDate)} (${i.daysUntilExp} hr lagi)`;
+          : `Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)`;
     const pullInfo = i.daysUntilExp === 9999
       ? ''
       : i.daysUntilPull <= 0

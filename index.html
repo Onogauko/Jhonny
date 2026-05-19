@@ -422,13 +422,27 @@ function renderPullList() {
   let h = 0, m = 0, a = 0;
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
-    const isoExp = parseToISO(getExpRaw(i)); 
+    
+    const rawExp =
+      getExpRaw(i) ||
+      i.expiredDate ||
+      i['Expired Date'] ||
+      i['expired_date'] ||
+      i['exp_date'] ||
+      i['Tanggal Expired'] ||
+      i['tanggal_expired'];
+
+    console.log('RAW EXP:', rawExp, i);
+
+    const isoExp = parseToISO(rawExp); 
+
     if (!isoExp) { a++; return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999}; }
     const daysUntilExp = daysDiff(isoExp, today), daysUntilPull = daysUntilExp - (hMin - 1);
     let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
     if (status === 'red') h++; else if (status === 'amber') m++; else a++;
     return {...i, isoExp, status, daysUntilExp};
   }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
+  
   document.getElementById('sHarus').innerText = h; document.getElementById('sMendekati').innerText = m; document.getElementById('sAman').innerText = a;
   const filtered = (activeFilter === 'today') ? list.filter(i => i.status !== 'green') : (activeFilter !== 'all' ? list.filter(i => i.status === activeFilter) : list);
   container.innerHTML = filtered.map(i => `

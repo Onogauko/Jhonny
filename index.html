@@ -271,14 +271,51 @@ function getTodayStr() {
 }
 
 // =============================================
-// FIX: daysDiff — timezone-safe date diff
+// parseToISO — normalisasi semua format tanggal dari spreadsheet → YYYY-MM-DD
 // =============================================
-function daysDiff(isoA, isoB) {
+function parseToISO(raw) {
+  if (!raw) return null;
+  const s = String(raw).trim();
+
+  // Sudah ISO: 2026-05-21
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // DD/MM/YYYY atau D/M/YYYY (format Indonesia)
+  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmy) {
+    const [,d,m,y] = dmy;
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+
+  // Excel serial number (misal: 46172)
+  if (/^\d{5}$/.test(s)) {
+    const d = new Date(new Date(1899,11,30).getTime() + parseInt(s)*86400000);
+    return d.toISOString().split('T')[0];
+  }
+
+  // "21 May 2026" atau "21 Mei 2026"
+  const verbal = s.match(/^(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})$/);
+  if (verbal) {
+    const en = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const id = ['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
+    const mn = verbal[2].toLowerCase().substring(0,3);
+    let mi = en.indexOf(mn); if (mi===-1) mi = id.indexOf(mn);
+    if (mi !== -1) return `${verbal[3]}-${String(mi+1).padStart(2,'0')}-${verbal[1].padStart(2,'0')}`;
+  }
+
+  return null;
+}
+
+// =============================================
+// daysDiff — timezone-safe, handle semua format
+// =============================================
+function daysDiff(rawA, rawB) {
+  const isoA = parseToISO(rawA);
+  const isoB = parseToISO(rawB);
+  if (!isoA || !isoB) return 0;
   const [y1,m1,d1] = isoA.split('-').map(Number);
   const [y2,m2,d2] = isoB.split('-').map(Number);
-  const a = new Date(y1, m1-1, d1);
-  const b = new Date(y2, m2-1, d2);
-  return Math.round((a - b) / 86400000);
+  return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
 // =============================================
@@ -457,12 +494,12 @@ async function delItem(idx) {
 // =============================================
 // RENDER
 // =============================================
-function formatDateIndo(iso) {
-  if (!iso) return "-";
-  const parts = iso.split('-');
-  if (parts.length !== 3) return iso;
+function formatDateIndo(raw) {
+  const iso = parseToISO(raw);
+  if (!iso) return '-';
+  const [y,m,d] = iso.split('-').map(Number);
   const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+  return `${d} ${months[m-1]} ${y}`;
 }
 
 function renderRecent() {

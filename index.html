@@ -132,10 +132,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .toast.success { background: #065f46; }
 .toast.error { background: #7f1d1d; }
 
-/* SCAN SUCCESS FLASH */
-@keyframes flashGreen { 0% { background: rgba(5,150,105,0.3); } 100% { background: transparent; } }
-.scan-success-flash { animation: flashGreen 0.6s ease-out; }
-
 /* LOKASI suggestion */
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
@@ -261,7 +257,7 @@ function getTodayStr() {
 }
 
 // =============================================
-// HELPER: Ekstrak Tanggal Super Cerdas (Tahan Banting)
+// HELPER: Ekstrak Tanggal Super Cerdas
 // =============================================
 function getExpRaw(obj) {
   if (!obj) return null;
@@ -274,34 +270,31 @@ function getExpRaw(obj) {
   let possibleDate = null;
   for (let key in obj) {
     let k = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
-    // Prioritas tinggi: ada unsur 'exp' atau 'kadal'
     if (k.includes('exp') || k.includes('kadal')) {
       if (obj[key]) return obj[key];
     }
-    // Prioritas sedang: ada kata tgl/date (skip timestamp)
     if (!possibleDate && (k.includes('date') || k.includes('tgl') || k.includes('tanggal')) && !k.includes('timestamp') && !k.includes('input')) {
       if (obj[key]) possibleDate = obj[key];
     }
   }
   if (possibleDate) return possibleDate;
 
-  // 3. Fallback Ekstrim: Jika nama kolom benar-benar aneh/hilang, cari isi data yang berformat tanggal
+  // 3. Fallback Ekstrim: Jika Apps Script ngawur
   let fallbackDates = [];
   for (let key in obj) {
     let val = String(obj[key]).trim();
     if (val.length < 5 || val.length > 30) continue;
-    if (/^\d+$/.test(val) && val.length > 10) continue; // Abaikan angka panjang (seperti barcode)
+    if (/^\d+$/.test(val) && val.length > 10) continue; 
 
-    if (/^\d{4}[\/\-]\d{2}[\/\-]\d{2}/.test(val) || 
+    if (/^\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/.test(val) || 
         /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(val) ||
         /jan|feb|mar|apr|mei|may|jun|jul|agu|aug|sep|okt|oct|nov|des|dec/i.test(val) ||
-        (/^\d{5}$/.test(val) && parseInt(val) > 30000 && parseInt(val) < 60000)) { // Format angka serial Excel
+        (/^\d{5}$/.test(val) && parseInt(val) > 30000 && parseInt(val) < 60000)) { 
         fallbackDates.push(val);
     }
   }
 
   if (fallbackDates.length > 0) {
-    // Utamakan yang tidak ada jamnya (menghindari kolom Timestamp terambil), atau ambil yang pertama ada
     let noTime = fallbackDates.find(v => !v.includes(':'));
     return noTime || fallbackDates[0];
   }
@@ -310,30 +303,28 @@ function getExpRaw(obj) {
 }
 
 // =============================================
-// parseToISO — FIX: Menangani format Excel, Indo, & Safari
+// parseToISO — FIX: Menangani format angka single digit
 // =============================================
 function parseToISO(raw) {
   if (!raw) return null;
   if (raw instanceof Date) return raw.toISOString().split('T')[0];
   let s = String(raw).trim();
 
-  // Handle jika tanggal dilempar berupa angka Serial Excel (misal: 45445)
   if (/^\d{5}$/.test(s) && parseInt(s) > 30000) {
     let date = new Date((parseInt(s) - 25569) * 86400000);
     return date.toISOString().split('T')[0];
   }
 
-  // 1. Ambil format YYYY-MM-DD
-  const isoMatch = s.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
-  if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+  // YYYY-M-D
+  const isoMatch = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (isoMatch) return `${isoMatch[1]}-${isoMatch[2].padStart(2,'0')}-${isoMatch[3].padStart(2,'0')}`;
 
-  // 2. Format DD/MM/YYYY atau DD-MM-YYYY
+  // D-M-YYYY
   const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (dmy) {
     return `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
   }
 
-  // 3. Normalisasi Bulan Indo
   const bulanIndo = {
     'januari':'jan', 'februari':'feb', 'maret':'mar', 'april':'apr', 'mei':'may', 'juni':'jun', 'juli':'jul', 'agustus':'aug', 'agu':'aug', 'september':'sep', 'oktober':'oct', 'okt':'oct', 'november':'nov', 'desember':'dec', 'des':'dec'
   };
@@ -342,13 +333,12 @@ function parseToISO(raw) {
     engS = engS.replace(new RegExp(key, 'g'), bulanIndo[key]);
   }
 
-  // 4. Ekstrak teks manual (Kebal bug Safari/iPhone)
   const strMonths = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
   const parts = engS.split(/[\s\-\,\/]+/);
   if (parts.length >= 3) {
      let yStr = parts.find(p => p.length === 4 && !isNaN(p));
      let dStr = parts.find(p => p.length > 0 && p.length <= 2 && !isNaN(p));
-     let mStr = parts.find(p => isNaN(p));
+     let mStr = parts.find(p => isNaN(p) && p.length >= 3);
 
      if (yStr && dStr && mStr) {
         let mIndex = strMonths.findIndex(m => mStr.startsWith(m));
@@ -358,7 +348,6 @@ function parseToISO(raw) {
      }
   }
 
-  // 5. Fallback JS Date
   const d = new Date(engS);
   if (!isNaN(d.getTime())) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -368,7 +357,7 @@ function parseToISO(raw) {
 }
 
 // =============================================
-// daysDiff — timezone-safe, handle semua format
+// daysDiff
 // =============================================
 function daysDiff(rawA, rawB) {
   const isoA = parseToISO(rawA);
@@ -617,204 +606,4 @@ function renderPullList() {
 
     if (!isoExp) {
       a++;
-      return { ...i, status: 'green', daysUntilPull: 9999, daysUntilExp: 9999, hMin };
-    }
-
-    const daysUntilExp = daysDiff(isoExp, today);
-    const daysUntilPull = daysUntilExp - (hMin - 1);
-
-    let status = 'green';
-    if (daysUntilPull <= 0) { status = 'red'; h++; }
-    else if (daysUntilPull <= 3) { status = 'amber'; m++; }
-    else a++;
-
-    return { ...i, isoExp, status, daysUntilPull, daysUntilExp, hMin };
-  }).sort((a, b) => a.daysUntilPull - b.daysUntilPull);
-
-  document.getElementById('sHarus').innerText = h;
-  document.getElementById('sMendekati').innerText = m;
-  document.getElementById('sAman').innerText = a;
-
-  let filtered = list;
-  if (activeFilter === 'today') {
-    filtered = list.filter(i => i.status === 'red' || i.status === 'amber');
-  } else if (activeFilter === 'red') {
-    filtered = list.filter(i => i.status === 'red');
-  } else if (activeFilter === 'amber') {
-    filtered = list.filter(i => i.status === 'amber');
-  } else if (activeFilter === 'green') {
-    filtered = list.filter(i => i.status === 'green');
-  }
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Data kosong</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(i => {
-    const checked = checkedRows.has(i.rowIndex);
-    const expText = i.daysUntilExp === 9999 ? 'Tgl tidak diset' : `Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)`;
-    return `
-      <div class="pull-card ${i.status === 'amber' ? 'amber' : i.status === 'green' ? 'green' : ''} ${checked ? 'done' : ''}">
-        <div class="pull-card-top">
-          <div style="flex:1;min-width:0">
-            <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
-            <div class="pull-meta">${escHtml(i.barcode)}${i.lokasi ? ' · '+escHtml(i.lokasi) : ''}</div>
-            <div class="pull-meta" style="margin-top:2px">${expText}</div>
-            <span class="pull-status-badge ${i.status}">${i.status.toUpperCase()}</span>
-          </div>
-          <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">
-            ${checked ? '✔️' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function toggleCheck(idx) {
-  if (checkedRows.has(idx)) checkedRows.delete(idx);
-  else checkedRows.add(idx);
-  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
-  renderPullList();
-}
-
-// =============================================
-// LOKASI HISTORY CHIPS
-// =============================================
-function buildLokasiHistory() {
-  const freq = {};
-  inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
-  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
-  renderLokasiChips('');
-}
-
-function renderLokasiChips(currentVal) {
-  const container = document.getElementById('lokasiChips');
-  const suggestions = lokasiFrecuentes.filter(l => !currentVal || l.toLowerCase().includes(currentVal.toLowerCase()));
-  if (!suggestions.length) { container.innerHTML = ''; return; }
-  container.innerHTML = suggestions.map(l =>
-    `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g, "\\'")}')">${escHtml(l)}</button>`
-  ).join('');
-}
-
-function updateLokasiChips() {
-  const val = document.getElementById('fLokasi').value;
-  renderLokasiChips(val);
-}
-
-function pickLokasi(val) {
-  document.getElementById('fLokasi').value = val;
-  renderLokasiChips('');
-}
-
-// =============================================
-// SCANNER 
-// =============================================
-function openScanner() {
-  document.getElementById('scannerOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  const config = {
-    fps: 30,
-    qrbox: { width: 240, height: 160 },
-    aspectRatio: 1.0,
-    disableFlip: false,
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.CODE_93,
-      Html5QrcodeSupportedFormats.ITF,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E,
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.DATA_MATRIX,
-    ]
-  };
-
-  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
-  html5QrScanner.start(
-    { facingMode: "environment" },
-    { fps: config.fps, qrbox: config.qrbox, aspectRatio: config.aspectRatio },
-    (decodedText) => onScanSuccess(decodedText),
-    (err) => {}
-  ).catch(err => {
-    showToast("Gagal buka kamera", "error");
-    closeScanner();
-  });
-}
-
-function onScanSuccess(text) {
-  closeScanner();
-  document.getElementById('fBarcode').value = text;
-  autoFill(text);
-  showToast("Barcode terbaca", "success");
-}
-
-function closeScanner() {
-  document.getElementById('scannerOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  if (html5QrScanner) {
-    html5QrScanner.stop().catch(() => {});
-    html5QrScanner = null;
-  }
-}
-
-// =============================================
-// AUTO FILL dari database
-// =============================================
-function autoFill(val) {
-  if (!val) return;
-  const found = dbItems.find(x => x.barcode === val);
-  if (found) {
-    document.getElementById('fDesc').value = found.description || '';
-  }
-}
-
-// =============================================
-// TAB SWITCH
-// =============================================
-function switchTab(t) {
-  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
-  const panelId = 'panel' + t.charAt(0).toUpperCase() + t.slice(1);
-  const tabId = 'tab' + t.charAt(0).toUpperCase() + t.slice(1);
-  document.getElementById(panelId)?.classList.add('active');
-  document.getElementById(tabId)?.classList.add('active');
-}
-
-// =============================================
-// TOAST
-// =============================================
-let toastTimer = null;
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
-}
-
-// =============================================
-// UTILS
-// =============================================
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// =============================================
-// INIT
-// =============================================
-window.onload = () => {
-  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-  document.getElementById('fExp').value = getTodayStr();
-  loadCache();
-  renderRecent();
-  renderPullList();
-  buildLokasiHistory();
-  loadAll(); 
-};
-</script>
-</body>
-</html>
+      return { ...i, status: 'green', daysUntilPull: 99

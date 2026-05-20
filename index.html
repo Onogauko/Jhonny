@@ -296,7 +296,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="section-label">
       DATABASE MASTER
     </div>
-    <div id="databaseList"></div>
+    
+    <input
+      class="inp"
+      id="databaseSearch"
+      placeholder="🔍 Cari barcode / nama barang..."
+      oninput="renderAdminDatabase()"
+      style="margin-bottom:12px;"
+    >
+    <div id="adminDatabaseList"></div>
   </div>
 
 </div>
@@ -404,7 +412,7 @@ async function loadAll() {
     inItems = inRes.data;
     saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
     renderRecent(); renderPullList(); buildLokasiHistory();
-    if(isAdmin) renderDatabase();
+    if(isAdmin) renderAdminDatabase();
     showToast("Data diperbarui ✓", "success");
   } catch(e) { showToast("Gagal sync: " + e.message, "error"); }
   syncBtn.innerText = "↻ Sync"; syncBtn.disabled = false;
@@ -680,7 +688,7 @@ function loginAdmin() {
   
   document.getElementById('tabDatabase').style.display = 'block';
 
-  renderDatabase();
+  renderAdminDatabase();
   renderRecent();
   renderPullList();
 }
@@ -697,42 +705,97 @@ function logoutAdmin() {
   showToast("Logout admin berhasil", "success");
 }
 
-function renderDatabase() {
-  const container = document.getElementById('databaseList');
+function renderAdminDatabase() {
+  const container =
+    document.getElementById('adminDatabaseList');
 
-  if (!dbItems.length) {
+  const keyword =
+    (
+      document.getElementById('databaseSearch')?.value || ''
+    )
+    .toLowerCase()
+    .trim();
+
+  let filtered = dbItems;
+
+  if (keyword) {
+
+    filtered = dbItems.filter(i => {
+
+      const barcode =
+        String(i.barcode || '').toLowerCase();
+
+      const desc =
+        String(i.description || '').toLowerCase();
+
+      return (
+        barcode.includes(keyword) ||
+        desc.includes(keyword)
+      );
+
+    });
+
+  }
+
+  if (!filtered.length) {
+
     container.innerHTML = `
       <div class="empty-state">
-        Database kosong
+        Database tidak ditemukan
       </div>
     `;
+
     return;
   }
 
-  container.innerHTML = dbItems.map(i => `
-    <div class="recent-item">
+  container.innerHTML = filtered.map(i => `
 
-      <div class="ri-info">
-        <div class="ri-name">
-          ${escHtml(i.description || '-')}
-        </div>
+    <div class="form-card">
 
-        <div class="ri-meta">
-          ${escHtml(i.barcode)} · Tarik: ${i.hMinus || i['Ketentuan Tarik'] || 0} hari
-        </div>
+      <div style="display:grid;gap:8px;">
+
+        <input
+          class="inp"
+          value="${escHtml(i.barcode || '')}"
+          readonly
+        >
+
+        <input
+          class="inp"
+          value="${escHtml(i.description || '')}"
+          readonly
+        >
+
+        <input
+          class="inp"
+          value="${escHtml(i.hMinus || '')}"
+          readonly
+        >
+
       </div>
 
-      <div class="ri-actions">
-        <button class="icon-btn" onclick="editDatabase('${i.barcode}')">
-          ✏️
+      <div style="display:flex;gap:8px;margin-top:10px;">
+
+        <button
+          class="btn-primary"
+          style="margin:0;"
+          onclick="editDatabase('${i.barcode}')"
+        >
+          ✏️ Edit
         </button>
 
-        <button class="icon-btn" onclick="deleteDatabase('${i.barcode}')">
-          🗑️
+        <button
+          class="btn-primary"
+          style="margin:0;background:var(--red);"
+          onclick="deleteDatabase('${i.barcode}')"
+        >
+          🗑 Delete
         </button>
+
       </div>
 
     </div>
+
   `).join('');
 }
 
@@ -803,7 +866,7 @@ async function saveDatabaseEdit() {
 
     saveCache('cache_db', dbItems);
 
-    renderDatabase();
+    renderAdminDatabase();
     renderPullList();
 
     closeDatabaseEdit();
@@ -834,7 +897,7 @@ async function deleteDatabase(barcode) {
 
     saveCache('cache_db', dbItems);
 
-    renderDatabase();
+    renderAdminDatabase();
     renderPullList();
 
     showToast("Database berhasil dihapus", "success");

@@ -186,6 +186,36 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
+<div class="modal-overlay" id="modalDatabaseEdit">
+  <div class="modal-card">
+    <div class="modal-title">Edit Database</div>
+    <input type="hidden" id="dbOldBarcode">
+    <input class="inp" id="dbBarcode" placeholder="Barcode">
+    <input class="inp" id="dbDescription" placeholder="Nama Barang">
+    <input 
+      class="inp"
+      id="dbTarik"
+      type="number"
+      placeholder="Ketentuan Tarik (hari)"
+    >
+    <div class="modal-actions">
+      <button 
+        class="btn-cancel"
+        onclick="closeDatabaseEdit()"
+      >
+        Batal
+      </button>
+      <button 
+        class="btn-primary"
+        style="margin:0;flex:1;"
+        onclick="saveDatabaseEdit()"
+      >
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="header">
   <div class="header-top">
     <div>
@@ -645,12 +675,26 @@ function loginAdmin() {
 
   showToast("Login admin berhasil", "success");
 
-  document.getElementById('adminBtn').innerText = "👑 Admin";
+  document.getElementById('adminBtn').innerText = "Logout";
+  document.getElementById('adminBtn').onclick = logoutAdmin;
+  
   document.getElementById('tabDatabase').style.display = 'block';
 
   renderDatabase();
   renderRecent();
   renderPullList();
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  document.getElementById('tabDatabase').style.display = 'none';
+  switchTab('input');
+  document.getElementById('adminPassword').value = '';
+  document.getElementById('adminBtn').innerText = "🔒 Admin";
+  document.getElementById('adminBtn').onclick = openAdminLogin;
+  renderRecent();
+  renderPullList();
+  showToast("Logout admin berhasil", "success");
 }
 
 function renderDatabase() {
@@ -693,11 +737,116 @@ function renderDatabase() {
 }
 
 function editDatabase(barcode) {
-  showToast("Edit database: " + barcode);
+  const item = dbItems.find(i => i.barcode == barcode);
+
+  if (!item) {
+    return showToast("Data tidak ditemukan", "error");
+  }
+
+  document.getElementById('dbOldBarcode').value = item.barcode;
+
+  document.getElementById('dbBarcode').value =
+    item.barcode || '';
+
+  document.getElementById('dbDescription').value =
+    item.description || '';
+
+  document.getElementById('dbTarik').value =
+    item.hMinus || item['Ketentuan Tarik'] || '';
+
+  document.getElementById('modalDatabaseEdit')
+    .classList.add('open');
 }
 
-function deleteDatabase(barcode) {
-  showToast("Delete database: " + barcode);
+function closeDatabaseEdit() {
+  document.getElementById('modalDatabaseEdit')
+    .classList.remove('open');
+}
+
+async function saveDatabaseEdit() {
+  const oldBarcode =
+    document.getElementById('dbOldBarcode').value;
+
+  const data = {
+    barcode:
+      document.getElementById('dbBarcode').value.trim(),
+
+    description:
+      document.getElementById('dbDescription').value.trim(),
+
+    hMinus:
+      document.getElementById('dbTarik').value.trim()
+  };
+
+  if (!data.barcode || !data.description || !data.hMinus) {
+    return showToast("Semua field wajib diisi", "error");
+  }
+
+  try {
+
+    await callApi(
+      { action:"updateDatabase" },
+      {
+        oldBarcode,
+        ...data
+      }
+    );
+
+    const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
+
+    if (idx !== -1) {
+      dbItems[idx] = {
+        ...dbItems[idx],
+        ...data
+      };
+    }
+
+    saveCache('cache_db', dbItems);
+
+    renderDatabase();
+    renderPullList();
+
+    closeDatabaseEdit();
+
+    showToast("Database berhasil diupdate", "success");
+
+  } catch(err) {
+
+    showToast(
+      "Gagal update database: " + err.message,
+      "error"
+    );
+
+  }
+}
+
+async function deleteDatabase(barcode) {
+  if (!confirm("Hapus data database ini?")) return;
+
+  try {
+
+    await callApi(
+      { action:"deleteDatabase" },
+      { barcode }
+    );
+
+    dbItems = dbItems.filter(i => i.barcode != barcode);
+
+    saveCache('cache_db', dbItems);
+
+    renderDatabase();
+    renderPullList();
+
+    showToast("Database berhasil dihapus", "success");
+
+  } catch(err) {
+
+    showToast(
+      "Gagal hapus database: " + err.message,
+      "error"
+    );
+
+  }
 }
 
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

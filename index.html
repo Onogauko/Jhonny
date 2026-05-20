@@ -485,7 +485,48 @@ function renderPullList() {
   }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
   
   document.getElementById('sHarus').innerText = h; document.getElementById('sMendekati').innerText = m; document.getElementById('sAman').innerText = a;
-  const filtered = (activeFilter === 'today') ? list.filter(i => i.status !== 'green') : (activeFilter !== 'all' ? list.filter(i => i.status === activeFilter) : list);
+  
+  const filtered = (() => {
+    // TAB TODAY = hanya barang yg wajib ditarik HARI INI
+    if (activeFilter === 'today') {
+      return list.filter(i => {
+        const db = dbItems.find(x => x.barcode === i.barcode);
+        const hMin = db ? parseInt(db.hMinus || db['Ketentuan Tarik'] || 0) : 0;
+
+        if (!i.isoExp || !hMin) return false;
+
+        // tanggal mulai wajib tarik
+        const pullDate = new Date(i.isoExp);
+        pullDate.setDate(pullDate.getDate() - (hMin - 1));
+
+        const todayDate = new Date(today);
+
+        return (
+          pullDate.getFullYear() === todayDate.getFullYear() &&
+          pullDate.getMonth() === todayDate.getMonth() &&
+          pullDate.getDate() === todayDate.getDate()
+        );
+      });
+    }
+
+    // FILTER LAIN
+    if (activeFilter !== 'all') {
+      return list.filter(i => i.status === activeFilter);
+    }
+
+    return list;
+  })();
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        Tidak ada barang yang wajib ditarik hari ini
+      </div>
+    `;
+    return;
+  }
+
   container.innerHTML = filtered.map(i => `
     <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''}">
       <div class="pull-card-top">

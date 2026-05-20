@@ -517,7 +517,7 @@ function renderPullList() {
       <div class="pull-card-top">
         <div style="flex:1">
           <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
-          <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hr lagi)</div>
+          <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hari menuju expired)</div>
           <span class="pull-status-badge ${i.status}">${i.status.toUpperCase()}</span>
         </div>
         <div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div>

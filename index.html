@@ -202,8 +202,20 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 
   <div class="panel" id="panelTarik">
-    <div class="section-label" style="margin-bottom:12px;">
-      List barang yg harus ditarik hari ini
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;">
+      
+      <div class="section-label" style="margin:0;">
+        List barang yg harus ditarik
+      </div>
+
+      <input 
+        type="date"
+        id="pullDateFilter"
+        class="inp"
+        style="width:auto;margin:0;padding:8px 10px;font-size:12px;"
+        onchange="changePullDate(this.value)"
+      >
+
     </div>
 
     <div id="pullList"></div>
@@ -219,7 +231,7 @@ const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 let dbItems = [];
 let inItems = [];
 let checkedRows = new Set();
-let activeFilter = 'today';
+let selectedPullDate = getTodayStr();
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
 
@@ -433,8 +445,8 @@ function renderRecent() {
 }
 
 function setFilter(filter) {
-  activeFilter = filter;
-  ['today','red','amber','green','all'].forEach(f => document.getElementById('chip-' + f)?.classList.toggle('active', f === filter));
+  // Function maintained to prevent referencing errors, although the buttons were removed
+  selectedPullDate = getTodayStr();
   renderPullList();
 }
 
@@ -471,7 +483,8 @@ function renderPullList() {
     const pullDate = new Date(isoExp);
     pullDate.setDate(pullDate.getDate() - (hMin - 1));
 
-    const todayDate = new Date(today);
+    const filterDate = selectedPullDate || getTodayStr();
+    const todayDate = new Date(filterDate);
 
     const isTodayPull =
       pullDate.getFullYear() === todayDate.getFullYear() &&
@@ -493,7 +506,7 @@ function renderPullList() {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📦</div>
-        Tidak ada barang yg wajib ditarik hari ini
+        Tidak ada barang yg wajib ditarik di tanggal ini
       </div>
     `;
     return;
@@ -546,6 +559,12 @@ function switchTab(t) {
   document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
   document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
 }
+
+function changePullDate(val) {
+  selectedPullDate = val || getTodayStr();
+  renderPullList();
+}
+
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.innerText = msg; t.className = 'toast show ' + type;
@@ -555,6 +574,9 @@ function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,
 
 window.onload = () => {
   document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
+
+  document.getElementById('pullDateFilter').value = getTodayStr();
+  selectedPullDate = getTodayStr();
 
   // tanggal dikosongkan, user wajib pilih sendiri
   document.getElementById('fExp').value = "";

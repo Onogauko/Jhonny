@@ -66,7 +66,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
 .icon-btn:active { transform: scale(0.9); }
 
-/* TARIK PANEL */
+/* TARIK PANEL (Updated) */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
 .stat-card:active { transform: scale(0.97); }
@@ -202,27 +202,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 
   <div class="panel" id="panelTarik">
-    <div class="stat-row">
-      <div class="stat-card" id="cardHarus" onclick="setFilter('red')" title="Filter: Harus Tarik">
-        <div class="stat-num" style="color:var(--red)" id="sHarus">0</div>
-        <div class="stat-lbl">Harus Tarik</div>
-      </div>
-      <div class="stat-card" id="cardMendekati" onclick="setFilter('amber')" title="Filter: Mendekati">
-        <div class="stat-num" style="color:var(--amber)" id="sMendekati">0</div>
-        <div class="stat-lbl">Mendekati</div>
-      </div>
-      <div class="stat-card" id="cardAman" onclick="setFilter('green')" title="Filter: Aman">
-        <div class="stat-num" style="color:var(--green)" id="sAman">0</div>
-        <div class="stat-lbl">Aman</div>
-      </div>
-    </div>
-
-    <div class="filter-row">
-      <button class="filter-chip active" id="chip-today" onclick="setFilter('today')">🔥 Hari Ini</button>
-      <button class="filter-chip" id="chip-red" onclick="setFilter('red')">🔴 Harus Tarik</button>
-      <button class="filter-chip" id="chip-amber" onclick="setFilter('amber')">🟡 Mendekati</button>
-      <button class="filter-chip" id="chip-green" onclick="setFilter('green')">🟢 Aman</button>
-      <button class="filter-chip" id="chip-all" onclick="setFilter('all')">Semua</button>
+    <div class="section-label" style="margin-bottom:12px;">
+      List barang yg harus ditarik hari ini
     </div>
 
     <div id="pullList"></div>
@@ -461,6 +442,7 @@ function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
   let h = 0, m = 0, a = 0;
+  
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
     
@@ -477,51 +459,41 @@ function renderPullList() {
 
     const isoExp = parseToISO(rawExp); 
 
-    if (!isoExp) { a++; return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999}; }
+    if (!isoExp) { 
+      a++; 
+      return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999, isTodayPull: false}; 
+    }
+    
     const daysUntilExp = daysDiff(isoExp, today), daysUntilPull = daysUntilExp - (hMin - 1);
     let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
     if (status === 'red') h++; else if (status === 'amber') m++; else a++;
-    return {...i, isoExp, status, daysUntilExp};
+
+    const pullDate = new Date(isoExp);
+    pullDate.setDate(pullDate.getDate() - (hMin - 1));
+
+    const todayDate = new Date(today);
+
+    const isTodayPull =
+      pullDate.getFullYear() === todayDate.getFullYear() &&
+      pullDate.getMonth() === todayDate.getMonth() &&
+      pullDate.getDate() === todayDate.getDate();
+
+    return {
+      ...i,
+      isoExp,
+      status,
+      daysUntilExp,
+      isTodayPull
+    };
   }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
   
-  document.getElementById('sHarus').innerText = h; document.getElementById('sMendekati').innerText = m; document.getElementById('sAman').innerText = a;
-  
-  const filtered = (() => {
-    // TAB TODAY = hanya barang yg wajib ditarik HARI INI
-    if (activeFilter === 'today') {
-      return list.filter(i => {
-        const db = dbItems.find(x => x.barcode === i.barcode);
-        const hMin = db ? parseInt(db.hMinus || db['Ketentuan Tarik'] || 0) : 0;
-
-        if (!i.isoExp || !hMin) return false;
-
-        // tanggal mulai wajib tarik
-        const pullDate = new Date(i.isoExp);
-        pullDate.setDate(pullDate.getDate() - (hMin - 1));
-
-        const todayDate = new Date(today);
-
-        return (
-          pullDate.getFullYear() === todayDate.getFullYear() &&
-          pullDate.getMonth() === todayDate.getMonth() &&
-          pullDate.getDate() === todayDate.getDate()
-        );
-      });
-    }
-
-    // FILTER LAIN
-    if (activeFilter !== 'all') {
-      return list.filter(i => i.status === activeFilter);
-    }
-
-    return list;
-  })();
+  const filtered = list.filter(i => i.isTodayPull);
 
   if (!filtered.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">✅</div>
-        Tidak ada barang yang wajib ditarik hari ini
+        <div class="empty-icon">📦</div>
+        Tidak ada barang yg wajib ditarik hari ini
       </div>
     `;
     return;

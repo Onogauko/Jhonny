@@ -336,18 +336,59 @@ async function loadAll() {
 }
 
 async function submitInput() {
-  const b = document.getElementById('fBarcode').value.trim(), e = document.getElementById('fExp').value;
-  if (!b || !e) return showToast("Barcode & Tanggal wajib diisi!", "error");
+  const b = document.getElementById('fBarcode').value.trim();
+  const d = document.getElementById('fDesc').value.trim();
+  const e = document.getElementById('fExp').value;
+  const l = document.getElementById('fLokasi').value.trim();
+
+  // VALIDASI SEMUA FIELD WAJIB
+  if (!b || !d || !e || !l) {
+    return showToast("Semua field wajib diisi!", "error");
+  }
+
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerText = "Menyimpan...";
+  btn.disabled = true;
+  btn.innerText = "Menyimpan...";
+
   try {
-    const res = await callApi({action:"addInput"}, {barcode:b, description:document.getElementById('fDesc').value.trim(), expiredDate:e, lokasi:document.getElementById('fLokasi').value.trim()});
-    inItems.push({rowIndex:res.rowIndex, barcode:b, description:document.getElementById('fDesc').value.trim(), expiredDate:e, lokasi:document.getElementById('fLokasi').value.trim(), timestamp:getTodayStr()});
-    saveCache('cache_in', inItems); renderRecent(); renderPullList();
-    document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = ""; document.getElementById('fExp').value = getTodayStr(); document.getElementById('fLokasi').value = "";
+    const res = await callApi(
+      { action:"addInput" },
+      {
+        barcode: b,
+        description: d,
+        expiredDate: e,
+        lokasi: l
+      }
+    );
+
+    inItems.push({
+      rowIndex: res.rowIndex,
+      barcode: b,
+      description: d,
+      expiredDate: e,
+      lokasi: l,
+      timestamp: getTodayStr()
+    });
+
+    saveCache('cache_in', inItems);
+
+    renderRecent();
+    renderPullList();
+
+    // kosongkan form setelah berhasil simpan
+    document.getElementById('fBarcode').value = "";
+    document.getElementById('fDesc').value = "";
+    document.getElementById('fExp').value = "";
+    document.getElementById('fLokasi').value = "";
+
     showToast("Berhasil disimpan ✓", "success");
-  } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
-  btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
+
+  } catch(x) {
+    showToast("Gagal simpan: " + x.message, "error");
+  }
+
+  btn.disabled = false;
+  btn.innerText = "💾 Simpan Ke Spreadsheet";
 }
 
 function openEdit(idx) {
@@ -501,8 +542,15 @@ function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,
 
 window.onload = () => {
   document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-  document.getElementById('fExp').value = getTodayStr();
-  loadCache(); renderRecent(); renderPullList(); buildLokasiHistory(); loadAll(); 
+
+  // tanggal dikosongkan, user wajib pilih sendiri
+  document.getElementById('fExp').value = "";
+
+  loadCache();
+  renderRecent();
+  renderPullList();
+  buildLokasiHistory();
+  loadAll();
 };
 </script>
 </body>

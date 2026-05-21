@@ -66,7 +66,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
 .icon-btn:active { transform: scale(0.9); }
 
-/* TARIK PANEL */
+/* TARIK PANEL (Updated) */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
 .stat-card:active { transform: scale(0.97); }
@@ -129,6 +129,27 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+.admin-tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.admin-tab{
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  background:#e5e7eb;
+  color:#111;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.admin-tab.active{
+  background:#111827;
+  color:white;
+}
 </style>
 </head>
 <body>
@@ -241,7 +262,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </button>
     <button 
       class="tab-btn"
-      id="tabDatabase"
+      id="tabAdminDatabase"
       onclick="switchTab('database')"
       style="display:none;"
     >
@@ -294,13 +315,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   
   <div class="panel" id="panelDatabase">
     
-    <div class="admin-tabs" style="display:flex;gap:8px;margin-bottom:16px;">
-      <button class="btn-cancel" style="flex:1;" onclick="showAdminTab('inputs')">
+    <div class="admin-tabs">
+
+      <button
+        id="tabInputs"
+        class="admin-tab active"
+        onclick="showAdminTab('inputs')"
+      >
         Data Input
       </button>
-      <button class="btn-cancel" style="flex:1;" onclick="showAdminTab('database')">
+
+      <button
+        id="tabDatabase"
+        class="admin-tab"
+        onclick="showAdminTab('database')"
+      >
         Database
       </button>
+
     </div>
 
     <div id="adminInputsPage" style="display:none;">
@@ -406,7 +438,7 @@ function saveCache(key, data) { localStorage.setItem(key, JSON.stringify(data));
 
 async function callApi(params, body = null) {
   try {
-    const res = await fetch(PROXY_URL + "?" + newSearchParams(params), { method: body ? 'POST' : 'GET', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : null });
+    const res = await fetch(PROXY_URL + "?" + new URLSearchParams(params), { method: body ? 'POST' : 'GET', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : null });
     const json = await res.json();
     if (json.error) throw new Error(json.error);
     return json;
@@ -709,7 +741,7 @@ function loginAdmin() {
   document.getElementById('adminBtn').innerText = "Logout";
   document.getElementById('adminBtn').onclick = logoutAdmin;
   
-  document.getElementById('tabDatabase').style.display = 'block';
+  document.getElementById('tabAdminDatabase').style.display = 'block';
 
   renderAdminDatabase();
   loadAdminInputs();
@@ -719,7 +751,7 @@ function loginAdmin() {
 
 function logoutAdmin() {
   isAdmin = false;
-  document.getElementById('tabDatabase').style.display = 'none';
+  document.getElementById('tabAdminDatabase').style.display = 'none';
   switchTab('input');
   document.getElementById('adminPassword').value = '';
   document.getElementById('adminBtn').innerText = "🔒 Admin";
@@ -730,18 +762,51 @@ function logoutAdmin() {
 }
 
 function showAdminTab(tab) {
-  document.getElementById("adminInputsPage").style.display = "none";
-  document.getElementById("adminDatabasePage").style.display = "none";
+
+  document.getElementById(
+    "adminInputsPage"
+  ).style.display = "none";
+
+  document.getElementById(
+    "adminDatabasePage"
+  ).style.display = "none";
+
+  document.getElementById(
+    "tabInputs"
+  ).classList.remove("active");
+
+  document.getElementById(
+    "tabDatabase"
+  ).classList.remove("active");
 
   if (tab === "inputs") {
-    document.getElementById("adminInputsPage").style.display = "block";
+
+    document.getElementById(
+      "adminInputsPage"
+    ).style.display = "block";
+
+    document.getElementById(
+      "tabInputs"
+    ).classList.add("active");
+
     loadAdminInputs();
+
   }
 
   if (tab === "database") {
-    document.getElementById("adminDatabasePage").style.display = "block";
+
+    document.getElementById(
+      "adminDatabasePage"
+    ).style.display = "block";
+
+    document.getElementById(
+      "tabDatabase"
+    ).classList.add("active");
+
     loadDatabaseAdmin();
+
   }
+
 }
 
 function loadDatabaseAdmin() {
@@ -815,28 +880,55 @@ async function deleteInputData(rowIndex) {
 }
 
 async function editInputData(item) {
-  const description = prompt("Description", item.description);
-  
-  if (description === null) return;
-  
-  showToast("Menyimpan...", "");
-  try {
-    await callApi({ action: "updateInput" }, {
+
+  const expiredDate = prompt(
+    "Expired Date (YYYY-MM-DD)",
+    item.expiredDate
+  );
+
+  if (expiredDate === null) return;
+
+  const lokasi = prompt(
+    "Lokasi",
+    item.lokasi
+  );
+
+  if (lokasi === null) return;
+
+  fetch(APPS_SCRIPT_URL, {
+
+    method: "POST",
+
+    body: JSON.stringify({
+
+      action: "updateInput",
+
+      token: API_TOKEN,
+
       rowIndex: item.rowIndex,
+
       barcode: item.barcode,
-      description,
-      expiredDate: item.expiredDate,
-      lokasi: item.lokasi
-    });
-    showToast("Berhasil diupdate", "success");
+
+      description: item.description,
+
+      expiredDate: expiredDate,
+
+      lokasi: lokasi
+
+    })
+
+  })
+  .then(r => r.json())
+  .then(() => {
+
     loadAdminInputs();
-    loadAll();
-  } catch(e) {
-    showToast("Gagal update: " + e.message, "error");
-  }
+
+  });
+
 }
 
 function renderAdminDatabase() {
+
   const q =
     (
       document.getElementById('dbSearch')?.value || ''
@@ -849,66 +941,93 @@ function renderAdminDatabase() {
   // =========================================
   // SEARCH
   // =========================================
+
   if (q) {
+
     data = data.filter(i =>
+
       (i.barcode || '')
         .toLowerCase()
         .includes(q)
+
       ||
+
       (i.description || '')
         .toLowerCase()
         .includes(q)
+
     );
+
   } else {
+
     // =========================================
     // DEFAULT LOAD 30 DATA SAJA
     // =========================================
+
     data = data.slice(0, 30);
+
   }
 
   // =========================================
   // EMPTY
   // =========================================
+
   if (!data.length) {
+
     document.getElementById('adminDatabaseList').innerHTML = `
       <div class="empty-state">
         Tidak ada data ditemukan
       </div>
     `;
+
     return;
+
   }
 
   // =========================================
   // RENDER
   // =========================================
+
   document.getElementById('adminDatabaseList').innerHTML =
     data.map(i => `
+
       <div class="recent-item">
+
         <div class="ri-info">
+
           <div class="ri-name">
             ${escHtml(i.description)}
           </div>
+
           <div class="ri-meta">
             ${escHtml(i.barcode)}
             · H-${i.hMinus}
           </div>
+
         </div>
+
         <div class="ri-actions">
+
           <button
             class="icon-btn"
             onclick='openDatabaseEdit(${JSON.stringify(i)})'
           >
             ✏️
           </button>
+
           <button
             class="icon-btn"
             onclick="deleteDatabase('${i.barcode}')"
           >
             🗑️
           </button>
+
         </div>
+
       </div>
+
     `).join('');
+
 }
 
 function editDatabase(barcode) {

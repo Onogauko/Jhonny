@@ -66,7 +66,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
 .icon-btn:active { transform: scale(0.9); }
 
-/* TARIK PANEL */
+/* TARIK PANEL (Updated) */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
 .stat-card:active { transform: scale(0.97); }
@@ -568,7 +568,8 @@ function renderPullList() {
       return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999, isTodayPull: false}; 
     }
     
-    const daysUntilExp = daysDiff(isoExp, today), daysUntilPull = daysUntilExp - (hMin - 1);
+    const daysUntilExp = daysDiff(isoExp, today) + 1;
+    const daysUntilPull = daysUntilExp - (hMin - 1);
     let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
     if (status === 'red') h++; else if (status === 'amber') m++; else a++;
 

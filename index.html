@@ -602,4 +602,593 @@ function renderRecent() {
         <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
         <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>
       </div>
-      ${
+      ${isAdmin ? `
+      <div class="ri-actions">
+        <button class="icon-btn" onclick="openEdit(${i.rowIndex})">✏️</button>
+        <button class="icon-btn" onclick="delItem(${i.rowIndex})">🗑️</button>
+      </div>
+      ` : ``}
+    </div>`).join('');
+}
+
+function setFilter(filter) {
+  // Function maintained to prevent referencing errors, although the buttons were removed
+  selectedPullDate = getTodayStr();
+  renderPullList();
+}
+
+function renderPullList() {
+  const container = document.getElementById('pullList');
+  const today = getTodayStr();
+  let h = 0, m = 0, a = 0;
+  
+  const list = inItems.map(i => {
+    const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
+    
+    const rawExp =
+      getExpRaw(i) ||
+      i.expiredDate ||
+      i['Expired Date'] ||
+      i['expired_date'] ||
+      i['exp_date'] ||
+      i['Tanggal Expired'] ||
+      i['tanggal_expired'];
+
+    console.log('RAW EXP:', rawExp, i);
+
+    const isoExp = parseToISO(rawExp); 
+
+    if (!isoExp) { 
+      a++; 
+      return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999, isTodayPull: false}; 
+    }
+    
+    const daysUntilExp = daysDiff(isoExp, today) + 1;
+    const daysUntilPull = daysUntilExp - (hMin - 1);
+    let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
+    if (status === 'red') h++; else if (status === 'amber') m++; else a++;
+
+    const pullDate = new Date(isoExp);
+    pullDate.setDate(pullDate.getDate() - (hMin - 1));
+
+    const filterDate = selectedPullDate || getTodayStr();
+    const todayDate = new Date(filterDate);
+
+    const isTodayPull =
+      pullDate.getFullYear() === todayDate.getFullYear() &&
+      pullDate.getMonth() === todayDate.getMonth() &&
+      pullDate.getDate() === todayDate.getDate();
+
+    return {
+      ...i,
+      isoExp,
+      status,
+      daysUntilExp,
+      isTodayPull
+    };
+  }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
+  
+  const filtered = list.filter(i => i.isTodayPull);
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        Tidak ada barang yg wajib ditarik di tanggal ini
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(i => `
+    <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''}">
+      <div class="pull-card-top">
+        <div style="flex:1">
+          <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
+          <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hari menuju expired)</div>
+        </div>
+        <div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCheck(idx) {
+  if (checkedRows.has(idx)) checkedRows.delete(idx); else checkedRows.add(idx);
+  localStorage.setItem('cache_checked', JSON.stringify([...checkedRows]));
+  renderPullList();
+}
+
+function buildLokasiHistory() {
+  const freq = {}; inItems.forEach(i => { if (i.lokasi) freq[i.lokasi] = (freq[i.lokasi] || 0) + 1; });
+  lokasiFrecuentes = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,5).map(e => e[0]);
+  renderLokasiChips('');
+}
+
+function renderLokasiChips(val) {
+  const container = document.getElementById('lokasiChips');
+  const s = lokasiFrecuentes.filter(l => !val || l.toLowerCase().includes(val.toLowerCase()));
+  container.innerHTML = s.map(l => `<button class="lokasi-chip" onclick="pickLokasi('${l.replace(/'/g, "\\'")}')">${escHtml(l)}</button>`).join('');
+}
+
+function updateLokasiChips() { renderLokasiChips(document.getElementById('fLokasi').value); }
+function pickLokasi(val) { document.getElementById('fLokasi').value = val; renderLokasiChips(''); }
+
+function openScanner() {
+  document.getElementById('scannerOverlay').classList.add('open');
+  html5QrScanner = new Html5Qrcode("html5-qrcode-container");
+  html5QrScanner.start({facingMode: "environment"}, {fps: 30, qrbox: 240}, (t) => { closeScanner(); document.getElementById('fBarcode').value = t; autoFill(t); showToast("Barcode terbaca"); });
+}
+
+function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
+function autoFill(val) { const found = dbItems.find(x => x.barcode === val); if (found) document.getElementById('fDesc').value = found.description || ''; }
+function switchTab(t) {
+  document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
+  document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
+}
+
+function changePullDate(val) {
+  selectedPullDate = val || getTodayStr();
+  renderPullList();
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+function openAdminLogin() {
+  document.getElementById('adminModal').classList.add('open');
+}
+
+function closeAdminLogin() {
+  document.getElementById('adminModal').classList.remove('open');
+}
+
+function loginAdmin() {
+  const pass = document.getElementById('adminPassword').value;
+
+  if (pass !== ADMIN_PASSWORD) {
+    return showToast("Password admin salah", "error");
+  }
+
+  isAdmin = true;
+
+  closeAdminLogin();
+
+  showToast("Login admin berhasil", "success");
+
+  document.getElementById('adminBtn').innerText = "Logout";
+  document.getElementById('adminBtn').onclick = logoutAdmin;
+  
+  document.getElementById('tabAdminDatabase').style.display = 'block';
+
+  renderAdminDatabase();
+  loadAdminInputs();
+  renderRecent();
+  renderPullList();
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  document.getElementById('tabAdminDatabase').style.display = 'none';
+  switchTab('input');
+  document.getElementById('adminPassword').value = '';
+  document.getElementById('adminBtn').innerText = "🔒 Admin";
+  document.getElementById('adminBtn').onclick = openAdminLogin;
+  renderRecent();
+  renderPullList();
+  showToast("Logout admin berhasil", "success");
+}
+
+function showAdminTab(tab) {
+
+  document.getElementById(
+    "adminInputsPage"
+  ).style.display = "none";
+
+  document.getElementById(
+    "adminDatabasePage"
+  ).style.display = "none";
+
+  document.getElementById(
+    "tabInputs"
+  ).classList.remove("active");
+
+  document.getElementById(
+    "tabDatabase"
+  ).classList.remove("active");
+
+  if (tab === "inputs") {
+
+    document.getElementById(
+      "adminInputsPage"
+    ).style.display = "block";
+
+    document.getElementById(
+      "tabInputs"
+    ).classList.add("active");
+
+    loadAdminInputs();
+
+  }
+
+  if (tab === "database") {
+
+    document.getElementById(
+      "adminDatabasePage"
+    ).style.display = "block";
+
+    document.getElementById(
+      "tabDatabase"
+    ).classList.add("active");
+
+    loadDatabaseAdmin();
+
+  }
+
+}
+
+function loadDatabaseAdmin() {
+  renderAdminDatabase();
+}
+
+async function loadAdminInputs() {
+  try {
+    const json = await callApi({ action: "getInputs" });
+    renderAdminInputs(json.data || []);
+  } catch(e) {
+    showToast("Error load data: " + e.message, "error");
+  }
+}
+
+function renderAdminInputs(data) {
+  const container = document.getElementById("adminInputsList");
+
+  if (!data.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        Tidak ada data
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = data.map(item => `
+    <div class="form-card" style="margin-bottom:8px;">
+      <div style="font-weight:bold;margin-bottom:4px;">
+        ${escHtml(item.description)}
+      </div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
+        Barcode: ${escHtml(item.barcode)}
+      </div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
+        Expired: ${escHtml(item.expiredDate)}
+      </div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
+        Lokasi: ${escHtml(item.lokasi)}
+      </div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;">
+        Input: ${escHtml(item.timestamp)}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-cancel" style="flex:1;padding:8px;" onclick='editInputData(${JSON.stringify(item)})'>
+          Edit
+        </button>
+        <button class="btn-cancel" style="flex:1;padding:8px;background:var(--red-light);color:var(--red);border:none;" onclick='deleteInputData(${item.rowIndex})'>
+          Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function deleteInputData(rowIndex) {
+  if (!confirm("Hapus data?")) {
+    return;
+  }
+  
+  showToast("Menghapus...", "");
+  try {
+    await callApi({ action: "deleteInput" }, { rowIndex });
+    showToast("Data dihapus", "success");
+    loadAdminInputs();
+    loadAll();
+  } catch(e) {
+    showToast("Gagal hapus: " + e.message, "error");
+  }
+}
+
+async function editInputData(item) {
+
+  const expiredDate = prompt(
+    "Expired Date (YYYY-MM-DD)",
+    item.expiredDate
+  );
+
+  if (expiredDate === null) return;
+
+  const lokasi = prompt(
+    "Lokasi",
+    item.lokasi
+  );
+
+  if (lokasi === null) return;
+
+  fetch(APPS_SCRIPT_URL, {
+
+    method: "POST",
+
+    body: JSON.stringify({
+
+      action: "updateInput",
+
+      token: API_TOKEN,
+
+      rowIndex: item.rowIndex,
+
+      barcode: item.barcode,
+
+      description: item.description,
+
+      expiredDate: expiredDate,
+
+      lokasi: lokasi
+
+    })
+
+  })
+  .then(r => r.json())
+  .then(() => {
+
+    loadAdminInputs();
+
+  });
+
+}
+
+function renderAdminDatabase() {
+
+  const q =
+    (
+      document.getElementById('dbSearch')?.value || ''
+    )
+    .toLowerCase()
+    .trim();
+
+  let data = [...dbItems];
+
+  // =========================================
+  // SEARCH
+  // =========================================
+
+  if (q) {
+
+    data = data.filter(i =>
+
+      (i.barcode || '')
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (i.description || '')
+        .toLowerCase()
+        .includes(q)
+
+    );
+
+  } else {
+
+    // =========================================
+    // DEFAULT LOAD 30 DATA SAJA
+    // =========================================
+
+    data = data.slice(0, 30);
+
+  }
+
+  // =========================================
+  // EMPTY
+  // =========================================
+
+  if (!data.length) {
+
+    document.getElementById('adminDatabaseList').innerHTML = `
+      <div class="empty-state">
+        Tidak ada data ditemukan
+      </div>
+    `;
+
+    return;
+
+  }
+
+  // =========================================
+  // RENDER
+  // =========================================
+
+  document.getElementById('adminDatabaseList').innerHTML =
+    data.map(i => `
+
+      <div class="recent-item">
+
+        <div class="ri-info">
+
+          <div class="ri-name">
+            ${escHtml(i.description)}
+          </div>
+
+          <div class="ri-meta">
+            ${escHtml(i.barcode)}
+            · H-${i.hMinus}
+          </div>
+
+        </div>
+
+        <div class="ri-actions">
+
+          <button
+            class="icon-btn"
+            onclick='openDatabaseEdit(${JSON.stringify(i)})'
+          >
+            ✏️
+          </button>
+
+          <button
+            class="icon-btn"
+            onclick="deleteDatabase('${i.barcode}')"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join('');
+
+}
+
+function editDatabase(barcode) {
+  const item = dbItems.find(i => i.barcode == barcode);
+
+  if (!item) {
+    return showToast("Data tidak ditemukan", "error");
+  }
+
+  document.getElementById('dbOldBarcode').value = item.barcode;
+
+  document.getElementById('dbBarcode').value =
+    item.barcode || '';
+
+  document.getElementById('dbDescription').value =
+    item.description || '';
+
+  document.getElementById('dbTarik').value =
+    item.hMinus || item['Ketentuan Tarik'] || '';
+
+  document.getElementById('modalDatabaseEdit')
+    .classList.add('open');
+}
+
+function openDatabaseEdit(item) {
+  document.getElementById('dbOldBarcode').value = item.barcode;
+  document.getElementById('dbBarcode').value = item.barcode || '';
+  document.getElementById('dbDescription').value = item.description || '';
+  document.getElementById('dbTarik').value = item.hMinus || item['Ketentuan Tarik'] || '';
+  document.getElementById('modalDatabaseEdit').classList.add('open');
+}
+
+function closeDatabaseEdit() {
+  document.getElementById('modalDatabaseEdit')
+    .classList.remove('open');
+}
+
+async function saveDatabaseEdit() {
+  const oldBarcode =
+    document.getElementById('dbOldBarcode').value;
+
+  const data = {
+    barcode:
+      document.getElementById('dbBarcode').value.trim(),
+
+    description:
+      document.getElementById('dbDescription').value.trim(),
+
+    hMinus:
+      document.getElementById('dbTarik').value.trim()
+  };
+
+  if (!data.barcode || !data.description || !data.hMinus) {
+    return showToast("Semua field wajib diisi", "error");
+  }
+
+  try {
+
+    await callApi(
+      { action:"updateDatabase" },
+      {
+        oldBarcode,
+        ...data
+      }
+    );
+
+    const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
+
+    if (idx !== -1) {
+      dbItems[idx] = {
+        ...dbItems[idx],
+        ...data
+      };
+    }
+
+    saveCache('cache_db', dbItems);
+
+    renderAdminDatabase();
+    renderPullList();
+
+    closeDatabaseEdit();
+
+    showToast("Database berhasil diupdate", "success");
+
+  } catch(err) {
+
+    showToast(
+      "Gagal update database: " + err.message,
+      "error"
+    );
+
+  }
+}
+
+async function deleteDatabase(barcode) {
+  if (!confirm("Hapus data database ini?")) return;
+
+  try {
+
+    await callApi(
+      { action:"deleteDatabase" },
+      { barcode }
+    );
+
+    dbItems = dbItems.filter(i => i.barcode != barcode);
+
+    saveCache('cache_db', dbItems);
+
+    renderAdminDatabase();
+    renderPullList();
+
+    showToast("Database berhasil dihapus", "success");
+
+  } catch(err) {
+
+    showToast(
+      "Gagal hapus database: " + err.message,
+      "error"
+    );
+
+  }
+}
+
+function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+window.onload = () => {
+  document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
+
+  document.getElementById('pullDateFilter').value = getTodayStr();
+  selectedPullDate = getTodayStr();
+
+  // tanggal dikosongkan, user wajib pilih sendiri
+  document.getElementById('fExp').value = "";
+
+  loadCache();
+  renderRecent();
+  renderPullList();
+  buildLokasiHistory();
+  loadAll();
+};
+</script>
+</body>
+</html>

@@ -375,18 +375,23 @@ const ADMIN_PASSWORD = "admin123";
 
 function getTodayStr() {
   const now = new Date();
+
   const jakarta = new Date(
     now.toLocaleString("en-US", {
       timeZone: "Asia/Jakarta"
     })
   );
+
   const year = jakarta.getFullYear();
+
   const month = String(
     jakarta.getMonth() + 1
   ).padStart(2, '0');
+
   const day = String(
     jakarta.getDate()
   ).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 }
 

@@ -336,7 +336,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
 
     <div id="adminInputsPage" style="display:none;">
+
+      <input
+        class="inp"
+        id="inputSearch"
+        placeholder="🔍 Cari barcode / nama barang..."
+        oninput="loadAdminInputs()"
+        style="margin-bottom:12px;"
+      >
+
       <div id="adminInputsList"></div>
+
     </div>
 
     <div id="adminDatabasePage" style="display:block;">
@@ -844,6 +854,35 @@ async function loadAdminInputs() {
 }
 
 function renderAdminInputs(data) {
+  const q =
+    (
+      document.getElementById('inputSearch')?.value || ''
+    )
+    .toLowerCase()
+    .trim();
+
+  if (q) {
+
+    data = data.filter(item =>
+
+      (item.barcode || '')
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (item.description || '')
+        .toLowerCase()
+        .includes(q)
+
+    );
+
+  } else {
+
+    data = data.slice(0, 30);
+
+  }
+
   const container = document.getElementById("adminInputsList");
 
   if (!data.length) {

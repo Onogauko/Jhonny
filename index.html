@@ -373,7 +373,27 @@ let lokasiFrecuentes = [];
 let isAdmin = false;
 const ADMIN_PASSWORD = "admin123";
 
-function getTodayStr() { return new Date().toISOString().split('T')[0]; }
+function getTodayStr() {
+  const now = new Date();
+
+  const jakarta = new Date(
+    now.toLocaleString("en-US", {
+      timeZone: "Asia/Jakarta"
+    })
+  );
+
+  const year = jakarta.getFullYear();
+
+  const month = String(
+    jakarta.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    jakarta.getDate()
+  ).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
 
 function getExpRaw(obj) {
   if (!obj) return null;
@@ -1030,28 +1050,6 @@ function renderAdminDatabase() {
 
 }
 
-function editDatabase(barcode) {
-  const item = dbItems.find(i => i.barcode == barcode);
-
-  if (!item) {
-    return showToast("Data tidak ditemukan", "error");
-  }
-
-  document.getElementById('dbOldBarcode').value = item.barcode;
-
-  document.getElementById('dbBarcode').value =
-    item.barcode || '';
-
-  document.getElementById('dbDescription').value =
-    item.description || '';
-
-  document.getElementById('dbTarik').value =
-    item.hMinus || item['Ketentuan Tarik'] || '';
-
-  document.getElementById('modalDatabaseEdit')
-    .classList.add('open');
-}
-
 function openDatabaseEdit(item) {
   document.getElementById('dbOldBarcode').value = item.barcode;
   document.getElementById('dbBarcode').value = item.barcode || '';
@@ -1063,6 +1061,20 @@ function openDatabaseEdit(item) {
 function closeDatabaseEdit() {
   document.getElementById('modalDatabaseEdit')
     .classList.remove('open');
+}
+
+function triggerSaveDatabaseEdit() {
+  closeDatabaseEdit();
+  showLoading("Menyimpan...");
+  saveDatabaseEdit()
+    .then(() => {
+      hideLoading();
+      showToast("Berhasil disimpan", "success");
+    })
+    .catch(err => {
+      hideLoading();
+      alert(err.message);
+    });
 }
 
 async function saveDatabaseEdit() {
@@ -1081,45 +1093,30 @@ async function saveDatabaseEdit() {
   };
 
   if (!data.barcode || !data.description || !data.hMinus) {
-    return showToast("Semua field wajib diisi", "error");
+    throw new Error("Semua field wajib diisi");
   }
 
-  try {
-
-    await callApi(
-      { action:"updateDatabase" },
-      {
-        oldBarcode,
-        ...data
-      }
-    );
-
-    const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
-
-    if (idx !== -1) {
-      dbItems[idx] = {
-        ...dbItems[idx],
-        ...data
-      };
+  await callApi(
+    { action:"updateDatabase" },
+    {
+      oldBarcode,
+      ...data
     }
+  );
 
-    saveCache('cache_db', dbItems);
+  const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
 
-    renderAdminDatabase();
-    renderPullList();
-
-    closeDatabaseEdit();
-
-    showToast("Database berhasil diupdate", "success");
-
-  } catch(err) {
-
-    showToast(
-      "Gagal update database: " + err.message,
-      "error"
-    );
-
+  if (idx !== -1) {
+    dbItems[idx] = {
+      ...dbItems[idx],
+      ...data
+    };
   }
+
+  saveCache('cache_db', dbItems);
+
+  renderAdminDatabase();
+  renderPullList();
 }
 
 async function deleteDatabase(barcode) {

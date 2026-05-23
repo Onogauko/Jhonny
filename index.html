@@ -375,23 +375,18 @@ const ADMIN_PASSWORD = "admin123";
 
 function getTodayStr() {
   const now = new Date();
-
   const jakarta = new Date(
     now.toLocaleString("en-US", {
       timeZone: "Asia/Jakarta"
     })
   );
-
   const year = jakarta.getFullYear();
-
   const month = String(
     jakarta.getMonth() + 1
   ).padStart(2, '0');
-
   const day = String(
     jakarta.getDate()
   ).padStart(2, '0');
-
   return `${year}-${month}-${day}`;
 }
 
@@ -1063,20 +1058,6 @@ function closeDatabaseEdit() {
     .classList.remove('open');
 }
 
-function triggerSaveDatabaseEdit() {
-  closeDatabaseEdit();
-  showLoading("Menyimpan...");
-  saveDatabaseEdit()
-    .then(() => {
-      hideLoading();
-      showToast("Berhasil disimpan", "success");
-    })
-    .catch(err => {
-      hideLoading();
-      alert(err.message);
-    });
-}
-
 async function saveDatabaseEdit() {
   const oldBarcode =
     document.getElementById('dbOldBarcode').value;
@@ -1093,30 +1074,45 @@ async function saveDatabaseEdit() {
   };
 
   if (!data.barcode || !data.description || !data.hMinus) {
-    throw new Error("Semua field wajib diisi");
+    return showToast("Semua field wajib diisi", "error");
   }
 
-  await callApi(
-    { action:"updateDatabase" },
-    {
-      oldBarcode,
-      ...data
+  try {
+
+    await callApi(
+      { action:"updateDatabase" },
+      {
+        oldBarcode,
+        ...data
+      }
+    );
+
+    const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
+
+    if (idx !== -1) {
+      dbItems[idx] = {
+        ...dbItems[idx],
+        ...data
+      };
     }
-  );
 
-  const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
+    saveCache('cache_db', dbItems);
 
-  if (idx !== -1) {
-    dbItems[idx] = {
-      ...dbItems[idx],
-      ...data
-    };
+    renderAdminDatabase();
+    renderPullList();
+
+    closeDatabaseEdit();
+
+    showToast("Database berhasil diupdate", "success");
+
+  } catch(err) {
+
+    showToast(
+      "Gagal update database: " + err.message,
+      "error"
+    );
+
   }
-
-  saveCache('cache_db', dbItems);
-
-  renderAdminDatabase();
-  renderPullList();
 }
 
 async function deleteDatabase(barcode) {

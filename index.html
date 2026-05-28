@@ -62,17 +62,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .ri-info { flex: 1; min-width: 0; }
 .ri-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-.ri-actions { display: flex; gap: 6px; }
-.icon-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
-.icon-btn:active { transform: scale(0.9); }
-
-/* TARIK PANEL */
-.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
-.stat-card:active { transform: scale(0.97); }
-.stat-card.active-filter { box-shadow: 0 0 0 2px var(--violet); }
-.stat-num { font-size: 22px; font-weight: 700; }
-.stat-lbl { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 
 /* PULL CARD */
 .pull-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; border-left: 4px solid var(--red); padding: 12px 13px; margin-bottom: 8px; transition: opacity 0.3s; }
@@ -106,13 +95,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; display: none; align-items: flex-end; justify-content: center; }
-.modal-overlay.open { display: flex; }
-.modal-card { background: white; width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px 20px 40px; }
-.modal-title { font-weight: 700; font-size: 16px; margin-bottom: 16px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 12px; }
-.btn-cancel { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text); }
-
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1c1033; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: #065f46; }
@@ -120,50 +102,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-
-.admin-tabs{
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-}
-
-.admin-tab{
-  border:none;
-  padding:10px 16px;
-  border-radius:10px;
-  background:#e5e7eb;
-  color:#111;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.admin-tab.active{
-  background:#111827;
-  color:white;
-}
 </style>
 </head>
 <body>
-
-<div class="modal-overlay" id="adminModal">
-  <div class="modal-card">
-    <div class="modal-title">Login Admin</div>
-    <input 
-      type="password"
-      class="inp"
-      id="adminPassword"
-      placeholder="Masukkan password admin"
-    >
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeAdminLogin()">
-        Batal
-      </button>
-      <button class="btn-primary" style="margin:0;flex:1;" onclick="loginAdmin()">
-        Login
-      </button>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -183,51 +124,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<div class="modal-overlay" id="modalEdit">
-  <div class="modal-card">
-    <div class="modal-title">Edit Data Barang</div>
-    <input type="hidden" id="editRowIndex">
-    <input class="inp" id="editBarcode" placeholder="Barcode">
-    <input class="inp" id="editDesc" placeholder="Nama Barang">
-    <input class="inp" id="editExp" type="date">
-    <input class="inp" id="editLokasi" placeholder="Lokasi (Rak/Area)">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
-      <button class="btn-primary" style="margin:0;flex:1.5" onclick="saveEdit()" id="btnSaveEdit">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalDatabaseEdit">
-  <div class="modal-card">
-    <div class="modal-title">Edit Database</div>
-    <input type="hidden" id="dbOldBarcode">
-    <input class="inp" id="dbBarcode" placeholder="Barcode">
-    <input class="inp" id="dbDescription" placeholder="Nama Barang">
-    <input 
-      class="inp"
-      id="dbTarik"
-      type="number"
-      placeholder="Ketentuan Tarik (hari)"
-    >
-    <div class="modal-actions">
-      <button 
-        class="btn-cancel"
-        onclick="closeDatabaseEdit()"
-      >
-        Batal
-      </button>
-      <button 
-        class="btn-primary"
-        style="margin:0;flex:1;"
-        onclick="saveDatabaseEdit()"
-      >
-        Simpan
-      </button>
-    </div>
-  </div>
-</div>
-
 <div class="header">
   <div class="header-top">
     <div>
@@ -236,12 +132,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     
     <div style="display:flex;gap:8px;align-items:center;">
-      <!-- TOMBOL ADMIN PANEL UNTUK AKSES KE admin.html -->
+      <!-- TOMBOL ADMIN PANEL LANGSUNG KE admin.html -->
       <button class="sync-btn" onclick="window.location.href='admin.html'">
         ⚙️ Admin Panel
-      </button>
-      <button class="sync-btn" onclick="openAdminLogin()" id="adminBtn">
-        🔒 Login Admin
       </button>
       <button class="sync-btn" onclick="loadAll()" id="syncBtn">
         ↻ Sync
@@ -251,19 +144,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
   <div class="tabs">
     <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">Input</button>
-    
-    <button class="tab-btn" id="tabTarik" onclick="switchTab('tarik')">
-      Tarik
-    </button>
-    <button 
-      class="tab-btn"
-      id="tabAdminDatabase"
-      onclick="switchTab('database')"
-      style="display:none;"
-    >
-      Database
-    </button>
-
+    <button class="tab-btn" id="tabTarik" onclick="switchTab('tarik')">Tarik</button>
   </div>
 </div>
 
@@ -290,90 +171,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
   <div class="panel" id="panelTarik">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;">
-      
-      <div class="section-label" style="margin:0;">
-        List barang yg harus ditarik
-      </div>
-      <div
-        id="pullTotalInfo"
-        style="
-          margin-top:6px;
-          font-size:11px;
-          color:var(--text-2);
-          font-weight:600;
-          white-space:nowrap;
-          min-width:max-content;
-        "
-      >
-        Total: 0
-      </div>
-
-      <input 
-        type="date"
-        id="pullDateFilter"
-        class="inp"
-        style="width:auto;margin:0;padding:8px 10px;font-size:12px;"
-        onchange="changePullDate(this.value)"
-      >
-
+      <div class="section-label" style="margin:0;">List barang yg harus ditarik</div>
+      <div id="pullTotalInfo" style="margin-top:6px; font-size:11px; color:var(--text-2); font-weight:600; white-space:nowrap; min-width:max-content;">Total: 0</div>
+      <input type="date" id="pullDateFilter" class="inp" style="width:auto;margin:0;padding:8px 10px;font-size:12px;" onchange="changePullDate(this.value)">
     </div>
-
     <div id="pullList"></div>
   </div>
-  
-  <div class="panel" id="panelDatabase">
-    
-    <div class="admin-tabs">
-
-      <button
-        id="tabInputs"
-        class="admin-tab active"
-        onclick="showAdminTab('inputs')"
-      >
-        Data Input
-      </button>
-
-      <button
-        id="tabDatabase"
-        class="admin-tab"
-        onclick="showAdminTab('database')"
-      >
-        Database
-      </button>
-
-    </div>
-
-    <div id="adminInputsPage" style="display:none;">
-
-      <input
-        class="inp"
-        id="inputSearch"
-        placeholder="🔍 Cari barcode / nama barang..."
-        oninput="loadAdminInputs()"
-        style="margin-bottom:12px;"
-      >
-
-      <div id="adminInputsList"></div>
-
-    </div>
-
-    <div id="adminDatabasePage" style="display:block;">
-      <div class="section-label">
-        DATABASE MASTER
-      </div>
-      
-      <input
-        class="inp"
-        id="dbSearch"
-        placeholder="🔍 Cari barcode / nama barang..."
-        oninput="renderAdminDatabase()"
-        style="margin-bottom:12px;"
-      >
-      <div id="adminDatabaseList"></div>
-    </div>
-
-  </div>
-
 </div>
 
 <script>
@@ -388,29 +191,13 @@ let checkedRows = new Set();
 let selectedPullDate = getTodayStr();
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
-let isAdmin = false;
-const ADMIN_PASSWORD = "admin123";
 
 function getTodayStr() {
-
   const now = new Date();
-
-  const jakarta = new Date(
-    now.toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta"
-    })
-  );
-
+  const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   const year = jakarta.getFullYear();
-
-  const month = String(
-    jakarta.getMonth() + 1
-  ).padStart(2, '0');
-
-  const day = String(
-    jakarta.getDate()
-  ).padStart(2, '0');
-
+  const month = String(jakarta.getMonth() + 1).padStart(2, '0');
+  const day = String(jakarta.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
@@ -496,14 +283,9 @@ async function loadAll() {
   try {
     const [dbRes, inRes] = await Promise.all([callApi({action:"getDatabase"}), callApi({action:"getInputs"})]);
     dbItems = dbRes.data;
-    console.log('DATA DARI SPREADSHEET:', inRes.data);
     inItems = inRes.data;
     saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
     renderRecent(); renderPullList(); buildLokasiHistory();
-    if(isAdmin) {
-      renderAdminDatabase();
-      loadAdminInputs();
-    }
     showToast("Data diperbarui ✓", "success");
   } catch(e) { showToast("Gagal sync: " + e.message, "error"); }
   syncBtn.innerText = "↻ Sync"; syncBtn.disabled = false;
@@ -524,80 +306,19 @@ async function submitInput() {
   btn.innerText = "Menyimpan...";
 
   try {
-    const res = await callApi(
-      { action:"addInput" },
-      {
-        barcode: b,
-        description: d,
-        expiredDate: e,
-        lokasi: l
-      }
-    );
-
-    inItems.push({
-      rowIndex: res.rowIndex,
-      barcode: b,
-      description: d,
-      expiredDate: e,
-      lokasi: l,
-      timestamp: getTodayStr()
-    });
-
+    const res = await callApi({ action:"addInput" }, { barcode: b, description: d, expiredDate: e, lokasi: l });
+    inItems.push({ rowIndex: res.rowIndex, barcode: b, description: d, expiredDate: e, lokasi: l, timestamp: getTodayStr() });
     saveCache('cache_in', inItems);
-
     renderRecent();
     renderPullList();
-
     document.getElementById('fBarcode').value = "";
     document.getElementById('fDesc').value = "";
     document.getElementById('fExp').value = "";
     document.getElementById('fLokasi').value = "";
-
     showToast("Berhasil disimpan ✓", "success");
-
-  } catch(x) {
-    showToast("Gagal simpan: " + x.message, "error");
-  }
-
+  } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
   btn.disabled = false;
   btn.innerText = "💾 Simpan Ke Spreadsheet";
-}
-
-function openEdit(idx) {
-  const item = inItems.find(i => i.rowIndex == idx);
-  if (!item) return;
-  document.getElementById('editRowIndex').value = idx;
-  document.getElementById('editBarcode').value = item.barcode;
-  document.getElementById('editDesc').value = item.description;
-  document.getElementById('editExp').value = parseToISO(getExpRaw(item));
-  document.getElementById('editLokasi').value = item.lokasi || '';
-  document.getElementById('modalEdit').classList.add('open');
-}
-
-function closeEditModal() { document.getElementById('modalEdit').classList.remove('open'); }
-
-async function saveEdit() {
-  const idx = document.getElementById('editRowIndex').value;
-  const data = { rowIndex:idx, barcode:document.getElementById('editBarcode').value.trim(), description:document.getElementById('editDesc').value.trim(), expiredDate:document.getElementById('editExp').value, lokasi:document.getElementById('editLokasi').value.trim() };
-  try {
-    await callApi({action:"updateInput"}, data);
-    const i = inItems.findIndex(x => x.rowIndex == idx);
-    inItems[i] = {...inItems[i], ...data};
-    saveCache('cache_in', inItems); renderRecent(); renderPullList(); closeEditModal();
-    if(isAdmin) loadAdminInputs();
-    showToast("Berhasil diupdate ✓", "success");
-  } catch(x) { showToast("Gagal update: " + x.message, "error"); }
-}
-
-async function delItem(idx) {
-  if (!confirm("Hapus data ini?")) return;
-  try {
-    await callApi({action:"deleteInput"}, {rowIndex:idx});
-    inItems = inItems.filter(x => x.rowIndex != idx);
-    saveCache('cache_in', inItems); renderRecent(); renderPullList();
-    if(isAdmin) loadAdminInputs();
-    showToast("Data dihapus", "success");
-  } catch(x) { showToast("Gagal hapus: " + x.message, "error"); }
 }
 
 function formatDateIndo(raw) {
@@ -618,76 +339,34 @@ function renderRecent() {
         <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
         <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>
       </div>
-      ${isAdmin ? `
-      <div class="ri-actions">
-        <button class="icon-btn" onclick="openEdit(${i.rowIndex})">✏️</button>
-        <button class="icon-btn" onclick="delItem(${i.rowIndex})">🗑️</button>
-      </div>
-      ` : ``}
     </div>`).join('');
 }
 
 function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
-  let h = 0, m = 0, a = 0;
   
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
-    
-    const rawExp =
-      getExpRaw(i) ||
-      i.expiredDate ||
-      i['Expired Date'] ||
-      i['expired_date'] ||
-      i['exp_date'] ||
-      i['Tanggal Expired'] ||
-      i['tanggal_expired'];
-
+    const rawExp = getExpRaw(i) || i.expiredDate;
     const isoExp = parseToISO(rawExp); 
-
-    if (!isoExp) { 
-      a++; 
-      return {...i, status:'green', daysUntilPull:9999, daysUntilExp:9999, isTodayPull: false}; 
-    }
-    
+    if (!isoExp) return {...i, isTodayPull: false}; 
     const daysUntilExp = daysDiff(isoExp, today) + 1;
     const daysUntilPull = daysUntilExp - (hMin - 1);
     let status = (daysUntilPull <= 0) ? 'red' : (daysUntilPull <= 3) ? 'amber' : 'green';
-    if (status === 'red') h++; else if (status === 'amber') m++; else a++;
-
     const pullDate = new Date(isoExp);
     pullDate.setDate(pullDate.getDate() - (hMin - 1));
-
     const filterDate = selectedPullDate || getTodayStr();
     const todayDate = new Date(filterDate);
-
-    const isTodayPull =
-      pullDate.getFullYear() === todayDate.getFullYear() &&
-      pullDate.getMonth() === todayDate.getMonth() &&
-      pullDate.getDate() === todayDate.getDate();
-
-    return {
-      ...i,
-      isoExp,
-      status,
-      daysUntilExp,
-      isTodayPull
-    };
-  }).sort((a, b) => a.daysUntilExp - b.daysUntilExp);
+    const isTodayPull = pullDate.getFullYear() === todayDate.getFullYear() && pullDate.getMonth() === todayDate.getMonth() && pullDate.getDate() === todayDate.getDate();
+    return { ...i, isoExp, status, daysUntilExp, isTodayPull };
+  }).sort((a, b) => (a.daysUntilExp || 9999) - (b.daysUntilExp || 9999));
   
   const filtered = list.filter(i => i.isTodayPull);
-
-  document.getElementById('pullTotalInfo').innerText =
-    `Total: ${filtered.length}`;
+  document.getElementById('pullTotalInfo').innerText = `Total: ${filtered.length}`;
 
   if (!filtered.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📦</div>
-        Tidak ada barang yg wajib ditarik di tanggal ini
-      </div>
-    `;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div>Tidak ada barang yg wajib ditarik di tanggal ini</div>`;
     return;
   }
 
@@ -732,16 +411,14 @@ function openScanner() {
 
 function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
 function autoFill(val) { const found = dbItems.find(x => x.barcode === val); if (found) document.getElementById('fDesc').value = found.description || ''; }
+
 function switchTab(t) {
   document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
   document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
 }
 
-function changePullDate(val) {
-  selectedPullDate = val || getTodayStr();
-  renderPullList();
-}
+function changePullDate(val) { selectedPullDate = val || getTodayStr(); renderPullList(); }
 
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
@@ -749,454 +426,13 @@ function showToast(msg, type = '') {
   setTimeout(() => { t.className = 'toast'; }, 3000);
 }
 
-function openAdminLogin() {
-  document.getElementById('adminModal').classList.add('open');
-}
-
-function closeAdminLogin() {
-  document.getElementById('adminModal').classList.remove('open');
-}
-
-// =====================================================
-// FUNGSI LOGIN ADMIN YANG SUDAH DIMODIFIKASI
-// =====================================================
-function loginAdmin() {
-  const pass = document.getElementById('adminPassword').value;
-
-  if (pass !== ADMIN_PASSWORD) {
-    return showToast("Password admin salah", "error");
-  }
-
-  isAdmin = true;
-  
-  // TAMBAHKAN INI - SIMPAN STATUS LOGIN KE LOCALSTORAGE
-  localStorage.setItem('admin_logged_in', 'true');
-
-  closeAdminLogin();
-
-  showToast("Login admin berhasil", "success");
-
-  document.getElementById('adminBtn').innerText = "Logout";
-  document.getElementById('adminBtn').onclick = logoutAdmin;
-  
-  document.getElementById('tabAdminDatabase').style.display = 'block';
-
-  renderAdminDatabase();
-  loadAdminInputs();
-  renderRecent();
-  renderPullList();
-}
-
-// =====================================================
-// FUNGSI LOGOUT ADMIN YANG SUDAH DIMODIFIKASI
-// =====================================================
-function logoutAdmin() {
-  isAdmin = false;
-  
-  // TAMBAHKAN INI - HAPUS STATUS LOGIN DARI LOCALSTORAGE
-  localStorage.removeItem('admin_logged_in');
-  
-  document.getElementById('tabAdminDatabase').style.display = 'none';
-  switchTab('input');
-  document.getElementById('adminPassword').value = '';
-  document.getElementById('adminBtn').innerText = "🔒 Admin";
-  document.getElementById('adminBtn').onclick = openAdminLogin;
-  renderRecent();
-  renderPullList();
-  showToast("Logout admin berhasil", "success");
-}
-
-function showAdminTab(tab) {
-
-  document.getElementById(
-    "adminInputsPage"
-  ).style.display = "none";
-
-  document.getElementById(
-    "adminDatabasePage"
-  ).style.display = "none";
-
-  document.getElementById(
-    "tabInputs"
-  ).classList.remove("active");
-
-  document.getElementById(
-    "tabDatabase"
-  ).classList.remove("active");
-
-  if (tab === "inputs") {
-
-    document.getElementById(
-      "adminInputsPage"
-    ).style.display = "block";
-
-    document.getElementById(
-      "tabInputs"
-    ).classList.add("active");
-
-    loadAdminInputs();
-
-  }
-
-  if (tab === "database") {
-
-    document.getElementById(
-      "adminDatabasePage"
-    ).style.display = "block";
-
-    document.getElementById(
-      "tabDatabase"
-    ).classList.add("active");
-
-    loadDatabaseAdmin();
-
-  }
-
-}
-
-function loadDatabaseAdmin() {
-  renderAdminDatabase();
-}
-
-async function loadAdminInputs() {
-  try {
-    const json = await callApi({ action: "getInputs" });
-    renderAdminInputs(json.data || []);
-  } catch(e) {
-    showToast("Error load data: " + e.message, "error");
-  }
-}
-
-function renderAdminInputs(data) {
-  const q =
-    (
-      document.getElementById('inputSearch')?.value || ''
-    )
-    .toLowerCase()
-    .trim();
-
-  if (q) {
-
-    data = data.filter(item =>
-
-      (item.barcode || '')
-        .toLowerCase()
-        .includes(q)
-
-      ||
-
-      (item.description || '')
-        .toLowerCase()
-        .includes(q)
-
-    );
-
-  } else {
-
-    data = data.slice(0, 30);
-
-  }
-
-  const container = document.getElementById("adminInputsList");
-
-  if (!data.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        Tidak ada data
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = data.map(item => `
-    <div class="form-card" style="margin-bottom:8px;">
-      <div style="font-weight:bold;margin-bottom:4px;">
-        ${escHtml(item.description)}
-      </div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
-        Barcode: ${escHtml(item.barcode)}
-      </div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
-        Expired: ${escHtml(item.expiredDate)}
-      </div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:2px;">
-        Lokasi: ${escHtml(item.lokasi)}
-      </div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:8px;">
-        Input: ${escHtml(item.timestamp)}
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-cancel" style="flex:1;padding:8px;" onclick='editInputData(${JSON.stringify(item)})'>
-          Edit
-        </button>
-        <button class="btn-cancel" style="flex:1;padding:8px;background:var(--red-light);color:var(--red);border:none;" onclick='deleteInputData(${item.rowIndex})'>
-          Delete
-        </button>
-      </div>
-    </div>
-  `).join("");
-}
-
-async function deleteInputData(rowIndex) {
-  if (!confirm("Hapus data?")) {
-    return;
-  }
-  
-  showToast("Menghapus...", "");
-  try {
-    await callApi({ action: "deleteInput" }, { rowIndex });
-    showToast("Data dihapus", "success");
-    loadAdminInputs();
-    loadAll();
-  } catch(e) {
-    showToast("Gagal hapus: " + e.message, "error");
-  }
-}
-
-async function editInputData(item) {
-
-  const expiredDate = prompt(
-    "Expired Date (YYYY-MM-DD)",
-    item.expiredDate
-  );
-
-  if (expiredDate === null) return;
-
-  const lokasi = prompt(
-    "Lokasi",
-    item.lokasi
-  );
-
-  if (lokasi === null) return;
-
-  fetch(APPS_SCRIPT_URL, {
-
-    method: "POST",
-
-    body: JSON.stringify({
-
-      action: "updateInput",
-
-      token: API_TOKEN,
-
-      rowIndex: item.rowIndex,
-
-      barcode: item.barcode,
-
-      description: item.description,
-
-      expiredDate: expiredDate,
-
-      lokasi: lokasi
-
-    })
-
-  })
-  .then(r => r.json())
-  .then(() => {
-
-    loadAdminInputs();
-
-  });
-
-}
-
-function renderAdminDatabase() {
-
-  const q =
-    (
-      document.getElementById('dbSearch')?.value || ''
-    )
-    .toLowerCase()
-    .trim();
-
-  let data = [...dbItems];
-
-  if (q) {
-
-    data = data.filter(i =>
-
-      (i.barcode || '')
-        .toLowerCase()
-        .includes(q)
-
-      ||
-
-      (i.description || '')
-        .toLowerCase()
-        .includes(q)
-
-    );
-
-  } else {
-
-    data = data.slice(0, 30);
-
-  }
-
-  if (!data.length) {
-
-    document.getElementById('adminDatabaseList').innerHTML = `
-      <div class="empty-state">
-        Tidak ada data ditemukan
-      </div>
-    `;
-
-    return;
-
-  }
-
-  document.getElementById('adminDatabaseList').innerHTML =
-    data.map(i => `
-
-      <div class="recent-item">
-
-        <div class="ri-info">
-
-          <div class="ri-name">
-            ${escHtml(i.description)}
-          </div>
-
-          <div class="ri-meta">
-            ${escHtml(i.barcode)}
-            · H-${i.hMinus}
-          </div>
-
-        </div>
-
-        <div class="ri-actions">
-
-          <button
-            class="icon-btn"
-            onclick='openDatabaseEdit(${JSON.stringify(i)})'
-          >
-            ✏️
-          </button>
-
-          <button
-            class="icon-btn"
-            onclick="deleteDatabase('${i.barcode}')"
-          >
-            🗑️
-          </button>
-
-        </div>
-
-      </div>
-
-    `).join('');
-
-}
-
-function openDatabaseEdit(item) {
-  document.getElementById('dbOldBarcode').value = item.barcode;
-  document.getElementById('dbBarcode').value = item.barcode || '';
-  document.getElementById('dbDescription').value = item.description || '';
-  document.getElementById('dbTarik').value = item.hMinus || item['Ketentuan Tarik'] || '';
-  document.getElementById('modalDatabaseEdit').classList.add('open');
-}
-
-function closeDatabaseEdit() {
-  document.getElementById('modalDatabaseEdit')
-    .classList.remove('open');
-}
-
-async function saveDatabaseEdit() {
-  const oldBarcode =
-    document.getElementById('dbOldBarcode').value;
-
-  const data = {
-    barcode:
-      document.getElementById('dbBarcode').value.trim(),
-
-    description:
-      document.getElementById('dbDescription').value.trim(),
-
-    hMinus:
-      document.getElementById('dbTarik').value.trim()
-  };
-
-  if (!data.barcode || !data.description || !data.hMinus) {
-    return showToast("Semua field wajib diisi", "error");
-  }
-
-  try {
-
-    await callApi(
-      { action:"updateDatabase" },
-      {
-        oldBarcode,
-        ...data
-      }
-    );
-
-    const idx = dbItems.findIndex(i => i.barcode == oldBarcode);
-
-    if (idx !== -1) {
-      dbItems[idx] = {
-        ...dbItems[idx],
-        ...data
-      };
-    }
-
-    saveCache('cache_db', dbItems);
-
-    renderAdminDatabase();
-    renderPullList();
-
-    closeDatabaseEdit();
-
-    showToast("Database berhasil diupdate", "success");
-
-  } catch(err) {
-
-    showToast(
-      "Gagal update database: " + err.message,
-      "error"
-    );
-
-  }
-}
-
-async function deleteDatabase(barcode) {
-  if (!confirm("Hapus data database ini?")) return;
-
-  try {
-
-    await callApi(
-      { action:"deleteDatabase" },
-      { barcode }
-    );
-
-    dbItems = dbItems.filter(i => i.barcode != barcode);
-
-    saveCache('cache_db', dbItems);
-
-    renderAdminDatabase();
-    renderPullList();
-
-    showToast("Database berhasil dihapus", "success");
-
-  } catch(err) {
-
-    showToast(
-      "Gagal hapus database: " + err.message,
-      "error"
-    );
-
-  }
-}
-
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 window.onload = () => {
   document.getElementById('headerDate').innerText = formatDateIndo(getTodayStr());
-
   document.getElementById('pullDateFilter').value = getTodayStr();
   selectedPullDate = getTodayStr();
-
   document.getElementById('fExp').value = "";
-
   loadCache();
   renderRecent();
   renderPullList();

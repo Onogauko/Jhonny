@@ -10,151 +10,91 @@
 :root {
   --violet: #6d28d9;
   --violet-light: #ede9fe;
-  --violet-mid: #8b5cf6;
   --red: #dc2626;
   --red-light: #fee2e2;
   --green: #059669;
-  --green-light: #d1fae5;
   --surface: #ffffff;
   --bg: #f5f3ff;
   --border: #e8e3f7;
   --text: #1c1033;
   --text-2: #6b7280;
   --radius: 16px;
-  --radius-sm: 10px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); max-width: 430px; margin: 0 auto; min-height: 100vh; }
 
-/* HEADER */
-.header { background: var(--violet); padding: 50px 20px 20px; position: sticky; top: 0; z-index: 50; }
+.header { background: var(--violet); padding: 50px 20px 20px; }
 .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.header-title { color: #fff; font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
+.header-title { color: #fff; font-size: 20px; font-weight: 600; }
 .header-sub { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; }
-.logout-btn { background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
-.logout-btn:active { background: rgba(255,255,255,0.25); }
+.back-btn { background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-/* TABS */
-.tabs { display: flex; gap: 8px; margin-top: 20px; }
-.tab-btn { flex: 1; background: rgba(255,255,255,0.2); border: none; color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 600; padding: 10px 0; border-radius: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-.tab-btn.active { background: white; color: var(--violet); }
-
-/* CONTENT */
 .main { padding: 16px; }
+.inp { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 13px; margin-bottom: 8px; outline: none; }
 
-/* CARD */
-.card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden; }
-.card-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
-.card-body { padding: 16px; }
-
-/* STATS */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
-.stat-box { background: var(--bg); border-radius: 12px; padding: 12px; text-align: center; }
+.stat-box { background: white; border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--border); }
 .stat-number { font-size: 28px; font-weight: 700; color: var(--violet); }
-.stat-label { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+.stat-label { font-size: 11px; color: var(--text-2); }
 
-/* SEARCH */
-.search-box { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 15px; font-size: 14px; margin-bottom: 16px; outline: none; font-family: 'DM Sans', sans-serif; }
-.search-box:focus { border-color: var(--violet-mid); background: #faf8ff; }
+.search-box { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; font-size: 14px; margin-bottom: 16px; outline: none; }
 
-/* LIST ITEM */
-.data-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; transition: all 0.2s; }
-.data-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.data-name { font-size: 15px; font-weight: 700; }
+.data-item { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.data-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .data-barcode { font-size: 11px; color: var(--text-2); margin-bottom: 6px; font-family: monospace; }
-.data-detail { font-size: 12px; color: var(--text-2); margin-bottom: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
-.data-detail span { background: var(--bg); padding: 2px 8px; border-radius: 6px; }
-.data-actions { display: flex; gap: 8px; margin-top: 12px; }
-.btn-edit { flex: 1; background: var(--violet-light); border: none; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600; color: var(--violet); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: transform 0.15s; }
-.btn-delete { flex: 1; background: var(--red-light); border: none; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600; color: var(--red); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: transform 0.15s; }
-.btn-edit:active, .btn-delete:active { transform: scale(0.97); }
+.data-detail { font-size: 12px; color: var(--text-2); margin-bottom: 8px; }
+.data-actions { display: flex; gap: 8px; }
+.btn-edit { flex: 1; background: var(--violet-light); border: none; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600; color: var(--violet); cursor: pointer; }
+.btn-delete { flex: 1; background: var(--red-light); border: none; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600; color: var(--red); cursor: pointer; }
+.btn-add { background: var(--violet); color: white; border: none; border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
 
-/* MODAL */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; display: none; align-items: flex-end; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal-card { background: white; width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px 20px 40px; }
+.modal-card { background: white; width: 100%; max-width: 430px; border-radius: 20px 20px 0 0; padding: 20px; }
 .modal-title { font-weight: 700; font-size: 18px; margin-bottom: 20px; }
 .modal-field { margin-bottom: 16px; }
 .modal-field label { font-size: 12px; font-weight: 600; color: var(--text-2); display: block; margin-bottom: 6px; }
-.modal-field input, .modal-field select { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; font-family: 'DM Sans', sans-serif; }
-.modal-field input:focus { border-color: var(--violet-mid); }
+.modal-field input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; font-size: 14px; outline: none; }
 .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
-.btn-cancel { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-.btn-save { flex: 1; background: var(--violet); border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; color: white; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.btn-cancel { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-weight: 600; cursor: pointer; }
+.btn-save { flex: 1; background: var(--violet); border: none; border-radius: 10px; padding: 12px; font-weight: 600; color: white; cursor: pointer; }
 
-/* BUTTON ADD */
-.btn-add { background: var(--violet); color: white; border: none; border-radius: 12px; padding: 12px 16px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'DM Sans', sans-serif; transition: transform 0.15s; }
-.btn-add:active { transform: scale(0.98); }
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn { flex: 1; background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-2); }
+.tab-btn.active { background: var(--violet); color: white; border-color: var(--violet); }
 
-/* EMPTY */
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+.page-btn { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.page-btn.active { background: var(--violet); color: white; }
+
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text-2); }
-.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-
-/* TOAST */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1c1033; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1c1033; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transition: transform 0.3s; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.success { background: #065f46; }
 .toast.error { background: #7f1d1d; }
-
-/* PAGINATION */
-.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
-.page-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-.page-btn.active { background: var(--violet); color: white; border-color: var(--violet); }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-title">⚙️ Admin Panel</div>
-      <div class="header-sub">Manajemen Database & Data Input</div>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-card">
+    <div class="modal-title">🔐 Login Admin Panel</div>
+    <div class="modal-field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Masukkan password admin">
     </div>
-    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-  </div>
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('inputs')">📋 Data Input</button>
-    <button class="tab-btn" onclick="switchTab('database')">🗄️ Database Master</button>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLoginModal()">Batal</button>
+      <button class="btn-save" onclick="doLogin()">Login</button>
+    </div>
   </div>
 </div>
 
-<div class="main">
-  <!-- TAB DATA INPUT -->
-  <div id="tabInputs" class="tab-content active">
-    <div class="stats-grid">
-      <div class="stat-box">
-        <div class="stat-number" id="totalInputs">0</div>
-        <div class="stat-label">Total Input</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="todayInputs">0</div>
-        <div class="stat-label">Input Hari Ini</div>
-      </div>
-    </div>
-    
-    <input type="text" class="search-box" id="searchInputs" placeholder="🔍 Cari barcode / nama barang..." oninput="renderInputs()">
-    
-    <div id="inputsList"></div>
-    
-    <div id="inputsPagination" class="pagination"></div>
-  </div>
-
-  <!-- TAB DATABASE MASTER -->
-  <div id="tabDatabase" class="tab-content" style="display:none;">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-      <button class="btn-add" onclick="openAddDatabaseModal()">+ Tambah Database</button>
-    </div>
-    
-    <input type="text" class="search-box" id="searchDatabase" placeholder="🔍 Cari barcode / nama barang..." oninput="renderDatabase()">
-    
-    <div id="databaseList"></div>
-    
-    <div id="databasePagination" class="pagination"></div>
-  </div>
-</div>
-
-<!-- MODAL EDIT INPUT -->
+<!-- EDIT INPUT MODAL -->
 <div class="modal-overlay" id="modalEditInput">
   <div class="modal-card">
     <div class="modal-title">✏️ Edit Data Input</div>
@@ -164,7 +104,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     <div class="modal-field">
       <label>Nama Barang</label>
-      <input type="text" id="editInputDesc" placeholder="Nama Barang">
+      <input type="text" id="editInputDesc">
     </div>
     <div class="modal-field">
       <label>Tanggal Expired</label>
@@ -172,7 +112,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     <div class="modal-field">
       <label>Lokasi</label>
-      <input type="text" id="editInputLokasi" placeholder="Lokasi (Rak/Area)">
+      <input type="text" id="editInputLokasi">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modalEditInput')">Batal</button>
@@ -181,22 +121,22 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- MODAL EDIT DATABASE -->
+<!-- EDIT DATABASE MODAL -->
 <div class="modal-overlay" id="modalEditDatabase">
   <div class="modal-card">
     <div class="modal-title">✏️ Edit Database</div>
     <input type="hidden" id="editDbOldBarcode">
     <div class="modal-field">
       <label>Barcode</label>
-      <input type="text" id="editDbBarcode" placeholder="Barcode">
+      <input type="text" id="editDbBarcode">
     </div>
     <div class="modal-field">
       <label>Nama Barang</label>
-      <input type="text" id="editDbDesc" placeholder="Nama Barang">
+      <input type="text" id="editDbDesc">
     </div>
     <div class="modal-field">
       <label>Ketentuan Tarik (H-)</label>
-      <input type="number" id="editDbTarik" placeholder="Contoh: 7" min="0">
+      <input type="number" id="editDbTarik" min="0">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modalEditDatabase')">Batal</button>
@@ -205,21 +145,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- MODAL TAMBAH DATABASE -->
+<!-- ADD DATABASE MODAL -->
 <div class="modal-overlay" id="modalAddDatabase">
   <div class="modal-card">
     <div class="modal-title">➕ Tambah Database Baru</div>
     <div class="modal-field">
       <label>Barcode</label>
-      <input type="text" id="addDbBarcode" placeholder="Barcode">
+      <input type="text" id="addDbBarcode">
     </div>
     <div class="modal-field">
       <label>Nama Barang</label>
-      <input type="text" id="addDbDesc" placeholder="Nama Barang">
+      <input type="text" id="addDbDesc">
     </div>
     <div class="modal-field">
       <label>Ketentuan Tarik (H-)</label>
-      <input type="number" id="addDbTarik" placeholder="Contoh: 7" min="0">
+      <input type="number" id="addDbTarik" min="0">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('modalAddDatabase')">Batal</button>
@@ -228,38 +168,77 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">⚙️ Admin Panel</div>
+      <div class="header-sub">Manajemen Database & Data Input</div>
+    </div>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Kembali</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('inputs')">📋 Data Input</button>
+    <button class="tab-btn" onclick="switchTab('database')">🗄️ Database Master</button>
+  </div>
+
+  <div id="tabInputs">
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-number" id="totalInputs">0</div><div class="stat-label">Total Input</div></div>
+      <div class="stat-box"><div class="stat-number" id="todayInputs">0</div><div class="stat-label">Input Hari Ini</div></div>
+    </div>
+    <input type="text" class="search-box" id="searchInputs" placeholder="🔍 Cari barcode / nama barang..." oninput="renderInputs()">
+    <div id="inputsList"></div>
+    <div id="inputsPagination" class="pagination"></div>
+  </div>
+
+  <div id="tabDatabase" style="display:none;">
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn-add" onclick="openAddDatabaseModal()">+ Tambah Database</button>
+    </div>
+    <input type="text" class="search-box" id="searchDatabase" placeholder="🔍 Cari barcode / nama barang..." oninput="renderDatabase()">
+    <div id="databaseList"></div>
+    <div id="databasePagination" class="pagination"></div>
+  </div>
+</div>
 
 <script>
 const PROXY_URL = "/api/proxy";
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAUZU8sXxjAfd8_pWPR0fybYWp2yxIBgvIR57ml25i5bDDDDHvk2ENIfsAw0lgrWMv/exec";
 const API_TOKEN = "RAHASIA_123";
+const ADMIN_PASSWORD = "admin123";
 
 let inputsData = [];
 let databaseData = [];
 let inputsPage = 1;
 let databasePage = 1;
 const ITEMS_PER_PAGE = 20;
-
-// ============ HELPER FUNCTIONS ============
-function getTodayStr() {
-  const now = new Date();
-  const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-  const year = jakarta.getFullYear();
-  const month = String(jakarta.getMonth() + 1).padStart(2, '0');
-  const day = String(jakarta.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+let currentEditInput = null;
+let currentEditDb = null;
+let isLoggedIn = false;
 
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast show ' + type;
+  t.innerText = msg; t.className = 'toast show ' + type;
   setTimeout(() => { t.className = 'toast'; }, 3000);
 }
 
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function getTodayStr() {
+  const now = new Date();
+  const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+  return `${jakarta.getFullYear()}-${String(jakarta.getMonth()+1).padStart(2,'0')}-${String(jakarta.getDate()).padStart(2,'0')}`;
+}
+
+function formatDateIndo(raw) {
+  if (!raw) return '-';
+  const parts = raw.split('-');
+  if (parts.length !== 3) return raw;
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
 }
 
 async function callApi(params, body = null) {
@@ -284,7 +263,6 @@ async function callApi(params, body = null) {
   }
 }
 
-// ============ LOAD DATA ============
 async function loadAllData() {
   try {
     const [dbRes, inRes] = await Promise.all([
@@ -293,7 +271,6 @@ async function loadAllData() {
     ]);
     databaseData = dbRes.data || [];
     inputsData = inRes.data || [];
-    
     updateStats();
     renderInputs();
     renderDatabase();
@@ -309,130 +286,93 @@ function updateStats() {
   document.getElementById('todayInputs').innerText = todayInputs;
 }
 
-// ============ RENDER INPUTS ============
 function renderInputs() {
   const search = document.getElementById('searchInputs')?.value.toLowerCase() || '';
   let filtered = [...inputsData];
-  
   if (search) {
     filtered = filtered.filter(item => 
       (item.barcode || '').toLowerCase().includes(search) ||
       (item.description || '').toLowerCase().includes(search)
     );
   }
-  
   filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   if (inputsPage > totalPages && totalPages > 0) inputsPage = totalPages;
-  
   const start = (inputsPage - 1) * ITEMS_PER_PAGE;
   const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
   
   const container = document.getElementById('inputsList');
-  
   if (paginated.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>Tidak ada data input</div>`;
+    container.innerHTML = `<div class="empty-state">📭 Tidak ada data input</div>`;
   } else {
     container.innerHTML = paginated.map(item => `
       <div class="data-item">
-        <div class="data-item-header">
-          <div class="data-name">${escHtml(item.description)}</div>
-        </div>
+        <div class="data-name">${escHtml(item.description)}</div>
         <div class="data-barcode">📦 ${escHtml(item.barcode)}</div>
-        <div class="data-detail">
-          <span>📅 Exp: ${formatDate(item.expiredDate)}</span>
-          <span>📍 ${escHtml(item.lokasi || '-')}</span>
-          <span>🕐 Input: ${formatDateShort(item.timestamp)}</span>
-        </div>
+        <div class="data-detail">📅 Exp: ${formatDateIndo(item.expiredDate)} &nbsp;|&nbsp; 📍 ${escHtml(item.lokasi || '-')}</div>
         <div class="data-actions">
-          <button class="btn-edit" onclick="openEditInput(${JSON.stringify(item).replace(/"/g, '&quot;')})">✏️ Edit</button>
+          <button class="btn-edit" onclick='openEditInputModal(${JSON.stringify(item).replace(/"/g, '&quot;')})'>✏️ Edit</button>
           <button class="btn-delete" onclick="deleteInput(${item.rowIndex})">🗑️ Hapus</button>
         </div>
       </div>
     `).join('');
   }
-  
-  renderPagination('inputsPagination', totalPages, inputsPage, (page) => {
-    inputsPage = page;
-    renderInputs();
-  });
+  renderPagination('inputsPagination', totalPages, inputsPage, (page) => { inputsPage = page; renderInputs(); });
 }
 
-// ============ RENDER DATABASE ============
 function renderDatabase() {
   const search = document.getElementById('searchDatabase')?.value.toLowerCase() || '';
   let filtered = [...databaseData];
-  
   if (search) {
     filtered = filtered.filter(item => 
       (item.barcode || '').toLowerCase().includes(search) ||
       (item.description || '').toLowerCase().includes(search)
     );
   }
-  
   filtered.sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   if (databasePage > totalPages && totalPages > 0) databasePage = totalPages;
-  
   const start = (databasePage - 1) * ITEMS_PER_PAGE;
   const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
   
   const container = document.getElementById('databaseList');
-  
   if (paginated.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🗄️</div>Tidak ada data database</div>`;
+    container.innerHTML = `<div class="empty-state">🗄️ Tidak ada data database</div>`;
   } else {
     container.innerHTML = paginated.map(item => `
       <div class="data-item">
-        <div class="data-item-header">
-          <div class="data-name">${escHtml(item.description)}</div>
-        </div>
+        <div class="data-name">${escHtml(item.description)}</div>
         <div class="data-barcode">🔖 ${escHtml(item.barcode)}</div>
-        <div class="data-detail">
-          <span>⏰ Tarik: H-${item.hMinus || item['Ketentuan Tarik'] || 0}</span>
-        </div>
+        <div class="data-detail">⏰ Tarik: H-${item.hMinus || 0}</div>
         <div class="data-actions">
-          <button class="btn-edit" onclick="openEditDatabase(${JSON.stringify(item).replace(/"/g, '&quot;')})">✏️ Edit</button>
+          <button class="btn-edit" onclick='openEditDatabaseModal(${JSON.stringify(item).replace(/"/g, '&quot;')})'>✏️ Edit</button>
           <button class="btn-delete" onclick="deleteDatabase('${item.barcode}')">🗑️ Hapus</button>
         </div>
       </div>
     `).join('');
   }
-  
-  renderPagination('databasePagination', totalPages, databasePage, (page) => {
-    databasePage = page;
-    renderDatabase();
-  });
+  renderPagination('databasePagination', totalPages, databasePage, (page) => { databasePage = page; renderDatabase(); });
 }
 
 function renderPagination(containerId, totalPages, currentPage, onPageChange) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
-  if (totalPages <= 1) {
-    container.innerHTML = '';
-    return;
-  }
-  
+  if (totalPages <= 1) { container.innerHTML = ''; return; }
   let html = '';
   for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="onPageChange(${i})">${i}</button>`;
+    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="window._pageCallback(${i})">${i}</button>`;
   }
   if (totalPages > 5) {
     html += `<span style="padding: 8px;">...</span>`;
-    html += `<button class="page-btn" onclick="onPageChange(${totalPages})">${totalPages}</button>`;
+    html += `<button class="page-btn" onclick="window._pageCallback(${totalPages})">${totalPages}</button>`;
   }
-  
   container.innerHTML = html;
-  window.onPageChange = onPageChange;
+  window._pageCallback = onPageChange;
 }
 
-// ============ EDIT INPUT ============
-let currentEditInput = null;
-
-function openEditInput(item) {
+function openEditInputModal(item) {
   currentEditInput = item;
   document.getElementById('editInputBarcode').value = item.barcode || '';
   document.getElementById('editInputDesc').value = item.description || '';
@@ -443,7 +383,6 @@ function openEditInput(item) {
 
 async function saveEditInput() {
   if (!currentEditInput) return;
-  
   const data = {
     rowIndex: currentEditInput.rowIndex,
     barcode: document.getElementById('editInputBarcode').value.trim(),
@@ -451,84 +390,71 @@ async function saveEditInput() {
     expiredDate: document.getElementById('editInputExp').value,
     lokasi: document.getElementById('editInputLokasi').value.trim()
   };
-  
   if (!data.barcode || !data.description || !data.expiredDate || !data.lokasi) {
-    showToast("Semua field wajib diisi!", "error");
-    return;
+    return showToast("Semua field wajib diisi!", "error");
   }
-  
   try {
     await callApi({ action: "updateInput" }, data);
+    const idx = inputsData.findIndex(x => x.rowIndex == currentEditInput.rowIndex);
+    if (idx !== -1) inputsData[idx] = { ...inputsData[idx], ...data };
     showToast("Data berhasil diupdate", "success");
     closeModal('modalEditInput');
-    await loadAllData();
-  } catch(e) {
-    showToast("Gagal update: " + e.message, "error");
-  }
+    updateStats();
+    renderInputs();
+  } catch(e) { showToast("Gagal update: " + e.message, "error"); }
 }
 
 async function deleteInput(rowIndex) {
   if (!confirm("Yakin ingin menghapus data input ini?")) return;
-  
   try {
     await callApi({ action: "deleteInput" }, { rowIndex });
+    inputsData = inputsData.filter(x => x.rowIndex != rowIndex);
     showToast("Data berhasil dihapus", "success");
-    await loadAllData();
-  } catch(e) {
-    showToast("Gagal hapus: " + e.message, "error");
-  }
+    updateStats();
+    renderInputs();
+  } catch(e) { showToast("Gagal hapus: " + e.message, "error"); }
 }
 
-// ============ EDIT DATABASE ============
-let currentEditDb = null;
-
-function openEditDatabase(item) {
+function openEditDatabaseModal(item) {
   currentEditDb = item;
   document.getElementById('editDbOldBarcode').value = item.barcode;
   document.getElementById('editDbBarcode').value = item.barcode || '';
   document.getElementById('editDbDesc').value = item.description || '';
-  document.getElementById('editDbTarik').value = item.hMinus || item['Ketentuan Tarik'] || 0;
+  document.getElementById('editDbTarik').value = item.hMinus || 0;
   document.getElementById('modalEditDatabase').classList.add('open');
 }
 
 async function saveEditDatabase() {
   if (!currentEditDb) return;
-  
   const data = {
     oldBarcode: document.getElementById('editDbOldBarcode').value,
     barcode: document.getElementById('editDbBarcode').value.trim(),
     description: document.getElementById('editDbDesc').value.trim(),
     hMinus: document.getElementById('editDbTarik').value
   };
-  
   if (!data.barcode || !data.description || !data.hMinus) {
-    showToast("Semua field wajib diisi!", "error");
-    return;
+    return showToast("Semua field wajib diisi!", "error");
   }
-  
   try {
     await callApi({ action: "updateDatabase" }, data);
+    const idx = databaseData.findIndex(i => i.barcode == data.oldBarcode);
+    if (idx !== -1) databaseData[idx] = { ...databaseData[idx], barcode: data.barcode, description: data.description, hMinus: data.hMinus };
     showToast("Database berhasil diupdate", "success");
     closeModal('modalEditDatabase');
-    await loadAllData();
-  } catch(e) {
-    showToast("Gagal update: " + e.message, "error");
-  }
+    renderDatabase();
+  } catch(e) { showToast("Gagal update: " + e.message, "error"); }
 }
 
 async function deleteDatabase(barcode) {
   if (!confirm("Yakin ingin menghapus data database ini?")) return;
-  
   try {
     await callApi({ action: "deleteDatabase" }, { barcode });
+    databaseData = databaseData.filter(i => i.barcode != barcode);
     showToast("Database berhasil dihapus", "success");
-    await loadAllData();
-  } catch(e) {
-    showToast("Gagal hapus: " + e.message, "error");
-  }
+    renderDatabase();
+  } catch(e) { showToast("Gagal hapus: " + e.message, "error"); }
 }
 
-// ============ TAMBAH DATABASE ============
 function openAddDatabaseModal() {
   document.getElementById('addDbBarcode').value = '';
   document.getElementById('addDbDesc').value = '';
@@ -540,96 +466,69 @@ async function saveAddDatabase() {
   const barcode = document.getElementById('addDbBarcode').value.trim();
   const description = document.getElementById('addDbDesc').value.trim();
   const hMinus = document.getElementById('addDbTarik').value;
-  
-  if (!barcode || !description || !hMinus) {
-    showToast("Semua field wajib diisi!", "error");
-    return;
-  }
-  
-  // Cek duplikat
-  if (databaseData.some(item => item.barcode === barcode)) {
-    showToast("Barcode sudah ada di database!", "error");
-    return;
-  }
-  
+  if (!barcode || !description || !hMinus) return showToast("Semua field wajib diisi!", "error");
+  if (databaseData.some(item => item.barcode === barcode)) return showToast("Barcode sudah ada!", "error");
   try {
     await callApi({ action: "addDatabase" }, { barcode, description, hMinus });
+    databaseData.push({ barcode, description, hMinus });
     showToast("Database berhasil ditambahkan", "success");
     closeModal('modalAddDatabase');
-    await loadAllData();
-  } catch(e) {
-    showToast("Gagal tambah: " + e.message, "error");
-  }
-}
-
-// ============ UTILITY ============
-function formatDate(dateStr) {
-  if (!dateStr) return '-';
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return dateStr;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
-}
-
-function formatDateShort(dateStr) {
-  if (!dateStr) return '-';
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return dateStr;
-  return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
-}
-
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove('open');
+    renderDatabase();
+  } catch(e) { showToast("Gagal tambah: " + e.message, "error"); }
 }
 
 function switchTab(tab) {
   const tabInputs = document.getElementById('tabInputs');
   const tabDatabase = document.getElementById('tabDatabase');
-  const btnInputs = document.querySelectorAll('.tab-btn')[0];
-  const btnDatabase = document.querySelectorAll('.tab-btn')[1];
+  const btns = document.querySelectorAll('.tab-btn');
+  
+  btns.forEach((btn, i) => {
+    if ((tab === 'inputs' && i === 0) || (tab === 'database' && i === 1)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
   
   if (tab === 'inputs') {
     tabInputs.style.display = 'block';
     tabDatabase.style.display = 'none';
-    btnInputs.classList.add('active');
-    btnDatabase.classList.remove('active');
     inputsPage = 1;
     renderInputs();
   } else {
     tabInputs.style.display = 'none';
     tabDatabase.style.display = 'block';
-    btnInputs.classList.remove('active');
-    btnDatabase.classList.add('active');
     databasePage = 1;
     renderDatabase();
   }
 }
 
-function logout() {
-  localStorage.removeItem('admin_logged_in');
-  window.location.href = 'index.html';
-}
+function closeModal(modalId) { document.getElementById(modalId).classList.remove('open'); }
 
-function checkAuth() {
-  const isLoggedIn = localStorage.getItem('admin_logged_in');
-  if (!isLoggedIn) {
-    window.location.href = 'index.html';
+// LOGIN FUNCTIONS
+function openLoginModal() { document.getElementById('loginModal').classList.add('open'); }
+function closeLoginModal() { document.getElementById('loginModal').classList.remove('open'); }
+
+function doLogin() {
+  const pass = document.getElementById('loginPassword').value;
+  if (pass !== ADMIN_PASSWORD) {
+    showToast("Password salah!", "error");
+    return;
   }
+  isLoggedIn = true;
+  closeLoginModal();
+  document.getElementById('loginPassword').value = '';
+  loadAllData();
+  showToast("Login berhasil!", "success");
 }
 
-// ============ INIT ============
+// TAMPILKAN LOGIN SAAT PERTAMA BUKA - TIDAK ADA REDIRECT
 window.onload = () => {
-  checkAuth();
-  loadAllData();
+  openLoginModal();
 };
 
-// Close modal when clicking outside
 document.querySelectorAll('.modal-overlay').forEach(modal => {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.remove('open');
-    }
-  });
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
 });
 </script>
 </body>

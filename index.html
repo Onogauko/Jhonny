@@ -299,17 +299,19 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="section-label" style="margin:0;">
         List barang yg harus ditarik
       </div>
-      <!-- TAMBAHAN pullTotalInfo -->
+      <!-- TAMBAHAN pullTotalInfo (UPDATED) -->
       <div
         id="pullTotalInfo"
         style="
           margin-top:6px;
-          font-size:12px;
+          font-size:11px;
           color:var(--text-2);
           font-weight:600;
+          white-space:nowrap;
+          min-width:max-content;
         "
       >
-        Total barang tarik: 0
+        Total: 0
       </div>
 
       <input 
@@ -692,9 +694,9 @@ function renderPullList() {
   
   const filtered = list.filter(i => i.isTodayPull);
 
-  // UPDATE TOTAL JUMLAH
+  // UPDATE TOTAL JUMLAH (UPDATED)
   document.getElementById('pullTotalInfo').innerText =
-    `Total barang yg harus ditarik: ${filtered.length}`;
+    `Total: ${filtered.length}`;
 
   if (!filtered.length) {
     container.innerHTML = `

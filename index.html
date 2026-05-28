@@ -66,18 +66,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
 .icon-btn:active { transform: scale(0.9); }
 
-/* TARIK PANEL (Updated) */
+/* TARIK PANEL */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
 .stat-card:active { transform: scale(0.97); }
 .stat-card.active-filter { box-shadow: 0 0 0 2px var(--violet); }
 .stat-num { font-size: 22px; font-weight: 700; }
 .stat-lbl { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-
-/* FILTER TABS (in tarik) */
-.filter-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.filter-chip { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-2); transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
-.filter-chip.active { background: var(--violet); border-color: var(--violet); color: white; }
 
 /* PULL CARD */
 .pull-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; border-left: 4px solid var(--red); padding: 12px 13px; margin-bottom: 8px; transition: opacity 0.3s; }
@@ -87,10 +82,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .pull-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .pull-name { font-size: 13px; font-weight: 600; }
 .pull-meta { font-size: 11px; color: var(--text-2); margin-top: 3px; }
-.pull-status-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; margin-top: 5px; display: inline-block; }
-.pull-status-badge.red { background: var(--red-light); color: var(--red); }
-.pull-status-badge.amber { background: var(--amber-light); color: var(--amber); }
-.pull-status-badge.green { background: var(--green-light); color: var(--green); }
 .check-box { min-width: 28px; height: 28px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; }
 .check-box.checked { background: var(--green); border-color: var(--green); }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-2); font-size: 13px; }
@@ -245,8 +236,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     
     <div style="display:flex;gap:8px;align-items:center;">
+      <!-- TOMBOL ADMIN PANEL UNTUK AKSES KE admin.html -->
+      <button class="sync-btn" onclick="window.location.href='admin.html'">
+        ⚙️ Admin Panel
+      </button>
       <button class="sync-btn" onclick="openAdminLogin()" id="adminBtn">
-        🔒 Admin
+        🔒 Login Admin
       </button>
       <button class="sync-btn" onclick="loadAll()" id="syncBtn">
         ↻ Sync
@@ -299,7 +294,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="section-label" style="margin:0;">
         List barang yg harus ditarik
       </div>
-      <!-- TAMBAHAN pullTotalInfo (UPDATED) -->
       <div
         id="pullTotalInfo"
         style="
@@ -521,7 +515,6 @@ async function submitInput() {
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
 
-  // VALIDASI SEMUA FIELD WAJIB
   if (!b || !d || !e || !l) {
     return showToast("Semua field wajib diisi!", "error");
   }
@@ -555,7 +548,6 @@ async function submitInput() {
     renderRecent();
     renderPullList();
 
-    // kosongkan form setelah berhasil simpan
     document.getElementById('fBarcode').value = "";
     document.getElementById('fDesc').value = "";
     document.getElementById('fExp').value = "";
@@ -635,12 +627,6 @@ function renderRecent() {
     </div>`).join('');
 }
 
-function setFilter(filter) {
-  // Function maintained to prevent referencing errors, although the buttons were removed
-  selectedPullDate = getTodayStr();
-  renderPullList();
-}
-
 function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
@@ -657,8 +643,6 @@ function renderPullList() {
       i['exp_date'] ||
       i['Tanggal Expired'] ||
       i['tanggal_expired'];
-
-    console.log('RAW EXP:', rawExp, i);
 
     const isoExp = parseToISO(rawExp); 
 
@@ -694,7 +678,6 @@ function renderPullList() {
   
   const filtered = list.filter(i => i.isTodayPull);
 
-  // UPDATE TOTAL JUMLAH (UPDATED)
   document.getElementById('pullTotalInfo').innerText =
     `Total: ${filtered.length}`;
 
@@ -774,6 +757,9 @@ function closeAdminLogin() {
   document.getElementById('adminModal').classList.remove('open');
 }
 
+// =====================================================
+// FUNGSI LOGIN ADMIN YANG SUDAH DIMODIFIKASI
+// =====================================================
 function loginAdmin() {
   const pass = document.getElementById('adminPassword').value;
 
@@ -782,6 +768,9 @@ function loginAdmin() {
   }
 
   isAdmin = true;
+  
+  // TAMBAHKAN INI - SIMPAN STATUS LOGIN KE LOCALSTORAGE
+  localStorage.setItem('admin_logged_in', 'true');
 
   closeAdminLogin();
 
@@ -798,8 +787,15 @@ function loginAdmin() {
   renderPullList();
 }
 
+// =====================================================
+// FUNGSI LOGOUT ADMIN YANG SUDAH DIMODIFIKASI
+// =====================================================
 function logoutAdmin() {
   isAdmin = false;
+  
+  // TAMBAHKAN INI - HAPUS STATUS LOGIN DARI LOCALSTORAGE
+  localStorage.removeItem('admin_logged_in');
+  
   document.getElementById('tabAdminDatabase').style.display = 'none';
   switchTab('input');
   document.getElementById('adminPassword').value = '';
@@ -1016,10 +1012,6 @@ function renderAdminDatabase() {
 
   let data = [...dbItems];
 
-  // =========================================
-  // SEARCH
-  // =========================================
-
   if (q) {
 
     data = data.filter(i =>
@@ -1038,17 +1030,9 @@ function renderAdminDatabase() {
 
   } else {
 
-    // =========================================
-    // DEFAULT LOAD 30 DATA SAJA
-    // =========================================
-
     data = data.slice(0, 30);
 
   }
-
-  // =========================================
-  // EMPTY
-  // =========================================
 
   if (!data.length) {
 
@@ -1061,10 +1045,6 @@ function renderAdminDatabase() {
     return;
 
   }
-
-  // =========================================
-  // RENDER
-  // =========================================
 
   document.getElementById('adminDatabaseList').innerHTML =
     data.map(i => `
@@ -1106,28 +1086,6 @@ function renderAdminDatabase() {
 
     `).join('');
 
-}
-
-function editDatabase(barcode) {
-  const item = dbItems.find(i => i.barcode == barcode);
-
-  if (!item) {
-    return showToast("Data tidak ditemukan", "error");
-  }
-
-  document.getElementById('dbOldBarcode').value = item.barcode;
-
-  document.getElementById('dbBarcode').value =
-    item.barcode || '';
-
-  document.getElementById('dbDescription').value =
-    item.description || '';
-
-  document.getElementById('dbTarik').value =
-    item.hMinus || item['Ketentuan Tarik'] || '';
-
-  document.getElementById('modalDatabaseEdit')
-    .classList.add('open');
 }
 
 function openDatabaseEdit(item) {
@@ -1237,7 +1195,6 @@ window.onload = () => {
   document.getElementById('pullDateFilter').value = getTodayStr();
   selectedPullDate = getTodayStr();
 
-  // tanggal dikosongkan, user wajib pilih sendiri
   document.getElementById('fExp').value = "";
 
   loadCache();

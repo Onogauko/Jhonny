@@ -190,6 +190,7 @@ let checkedRows = new Set();
 let selectedPullDate = getTodayStr();
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
+let barcodeNotFoundShown = false;
 
 function getTodayStr() {
   const now = new Date();
@@ -323,7 +324,9 @@ async function submitInput() {
     document.getElementById('fDesc').value = "";
     document.getElementById('fExp').value = "";
     document.getElementById('fLokasi').value = "";
+
     document.getElementById('submitBtn').disabled = true;
+    barcodeNotFoundShown = false;
     showToast("Berhasil disimpan ✓", "success");
   } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
   btn.disabled = false;
@@ -427,17 +430,26 @@ function autoFill(val) {
   if (found) {
     document.getElementById('fDesc').value = found.description || '';
     submitBtn.disabled = false;
+
+    barcodeNotFoundShown = false;
+
   } else {
     document.getElementById('fDesc').value = '';
+    submitBtn.disabled = true;
 
-    if (val.trim()) {
-      submitBtn.disabled = true;
+    if (val.trim().length >= 6 && !barcodeNotFoundShown) {
+      barcodeNotFoundShown = true;
 
       showToast(
         "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
         "error"
       );
     }
+  }
+
+  if (!val.trim()) {
+    barcodeNotFoundShown = false;
+    submitBtn.disabled = true;
   }
 }
 

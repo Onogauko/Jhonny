@@ -335,6 +335,29 @@ async function submitInput() {
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
 
+  // CEK DUPLIKAT INPUT HARI INI
+  const today = getTodayStr();
+
+  const duplicate = inItems.find(item =>
+    (item.timestamp || '').startsWith(today) &&
+    item.barcode === b &&
+    parseToISO(item.expiredDate) === e &&
+    (item.lokasi || '').toLowerCase() === l.toLowerCase()
+  );
+
+  if (duplicate) {
+
+    const lanjut = confirm(
+      "⚠️ Data serupa sudah pernah diinput hari ini.\n\n" +
+      d + "\n" +
+      "Exp: " + formatDateIndo(e) + "\n" +
+      "Lokasi: " + l + "\n\n" +
+      "Lanjut simpan?"
+    );
+
+    if (!lanjut) return;
+  }
+
   const found = dbItems.find(x => x.barcode === b);
 
   if (!found) {

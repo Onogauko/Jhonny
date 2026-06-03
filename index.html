@@ -102,6 +102,34 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+.search-results {
+  margin-bottom: 8px;
+}
+
+.search-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: var(--violet-light);
+}
+
+.search-item-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.search-item-barcode {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
 </style>
 </head>
 <body>
@@ -156,6 +184,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
 
     <div class="form-card" id="formCard">
+
+      <input
+        class="inp"
+        id="searchProduct"
+        placeholder="🔍 Cari nama barang atau barcode"
+        oninput="searchProductList(this.value)"
+      >
+
+      <div id="searchResults"></div>
+
       <input class="inp" id="fBarcode" placeholder="Barcode (atau scan)" oninput="autoFill(this.value)">
       <input class="inp" id="fDesc" placeholder="Nama Barang">
       <input class="inp" id="fExp" type="date">
@@ -324,6 +362,8 @@ async function submitInput() {
     document.getElementById('fDesc').value = "";
     document.getElementById('fExp').value = "";
     document.getElementById('fLokasi').value = "";
+    document.getElementById('searchProduct').value = "";
+    document.getElementById('searchResults').innerHTML = "";
 
     document.getElementById('submitBtn').disabled = true;
     barcodeNotFoundShown = false;
@@ -451,6 +491,59 @@ function autoFill(val) {
     barcodeNotFoundShown = false;
     submitBtn.disabled = true;
   }
+}
+
+function searchProductList(keyword) {
+
+  const container = document.getElementById('searchResults');
+
+  if (!keyword.trim()) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const search = keyword.toLowerCase();
+
+  const results = dbItems
+    .filter(item =>
+      (item.description || '').toLowerCase().includes(search) ||
+      (item.barcode || '').toLowerCase().includes(search)
+    )
+    .slice(0, 10);
+
+  container.className = "search-results";
+
+  container.innerHTML = results.map(item => `
+    <div class="search-item"
+         onclick="selectProduct('${item.barcode}')">
+
+      <div class="search-item-name">
+        ${escHtml(item.description)}
+      </div>
+
+      <div class="search-item-barcode">
+        ${escHtml(item.barcode)}
+      </div>
+
+    </div>
+  `).join('');
+}
+
+function selectProduct(barcode) {
+
+  const item = dbItems.find(x => x.barcode === barcode);
+
+  if (!item) return;
+
+  document.getElementById('fBarcode').value = item.barcode;
+  document.getElementById('fDesc').value = item.description || '';
+
+  document.getElementById('searchProduct').value = item.description || '';
+  document.getElementById('searchResults').innerHTML = '';
+
+  document.getElementById('submitBtn').disabled = false;
+
+  barcodeNotFoundShown = false;
 }
 
 function switchTab(t) {

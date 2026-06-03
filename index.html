@@ -161,7 +161,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <input class="inp" id="fExp" type="date">
       <div class="lokasi-chips" id="lokasiChips"></div>
       <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)" oninput="updateLokasiChips()">
-      <button class="btn-primary" onclick="submitInput()" id="submitBtn">💾 Simpan Ke Spreadsheet</button>
+      <button class="btn-primary" onclick="submitInput()" id="submitBtn" disabled>💾 Simpan Ke Spreadsheet</button>
     </div>
 
     <div class="section-label">INPUT HARI INI</div>
@@ -296,6 +296,15 @@ async function submitInput() {
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
 
+  const found = dbItems.find(x => x.barcode === b);
+
+  if (!found) {
+    return showToast(
+      "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
+      "error"
+    );
+  }
+
   if (!b || !d || !e || !l) {
     return showToast("Semua field wajib diisi!", "error");
   }
@@ -314,6 +323,7 @@ async function submitInput() {
     document.getElementById('fDesc').value = "";
     document.getElementById('fExp').value = "";
     document.getElementById('fLokasi').value = "";
+    document.getElementById('submitBtn').disabled = true;
     showToast("Berhasil disimpan ✓", "success");
   } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
   btn.disabled = false;
@@ -409,7 +419,27 @@ function openScanner() {
 }
 
 function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
-function autoFill(val) { const found = dbItems.find(x => x.barcode === val); if (found) document.getElementById('fDesc').value = found.description || ''; }
+
+function autoFill(val) {
+  const found = dbItems.find(x => x.barcode === val);
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (found) {
+    document.getElementById('fDesc').value = found.description || '';
+    submitBtn.disabled = false;
+  } else {
+    document.getElementById('fDesc').value = '';
+
+    if (val.trim()) {
+      submitBtn.disabled = true;
+
+      showToast(
+        "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
+        "error"
+      );
+    }
+  }
+}
 
 function switchTab(t) {
   document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));

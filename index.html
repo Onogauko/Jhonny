@@ -95,7 +95,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-/* TOAST - DIUBAH SESUAI INSTRUKSI */
+/* TOAST */
 .toast {
   position: fixed;
   top: 80px;
@@ -122,6 +122,23 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .toast.error {
   background: #7f1d1d;
+}
+
+/* TAMBAHAN CSS UNTUK CARD MERAH */
+.not-registered {
+  border: 2px solid #fca5a5 !important;
+  background: #fef2f2 !important;
+}
+
+.not-registered-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #dc2626;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -254,6 +271,9 @@ let html5QrScanner = null;
 let lokasiFrecuentes = [];
 let barcodeNotFoundShown = false;
 
+// VARIABEL databaseData UNTUK DATA MASTER
+let databaseData = [];
+
 function getTodayStr() {
   const now = new Date();
   const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
@@ -312,6 +332,13 @@ function daysDiff(rawA, rawB) {
   return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
+// FUNGSI CEK BARCODE APAKAH TERDAFTAR DI DATABASE MASTER
+function isBarcodeRegistered(barcode) {
+  return databaseData.some(
+    item => String(item.barcode).trim() === String(barcode).trim()
+  );
+}
+
 function loadCache() {
   try {
     const dbRaw = localStorage.getItem('cache_db'), inRaw = localStorage.getItem('cache_in'), chkRaw = localStorage.getItem('cache_checked');
@@ -345,6 +372,8 @@ async function loadAll() {
   try {
     const [dbRes, inRes] = await Promise.all([callApi({action:"getDatabase"}), callApi({action:"getInputs"})]);
     dbItems = dbRes.data;
+    // SIMPAN KE databaseData JUGA
+    databaseData = dbRes.data || [];
     inItems = inRes.data;
     saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
     renderRecent(); renderPullList(); buildLokasiHistory();
@@ -430,13 +459,25 @@ function renderRecent() {
   const today = getTodayStr();
   const filtered = inItems.filter(i => (i.timestamp || "").startsWith(today)).reverse();
   if (!filtered.length) { container.innerHTML = `<div class="empty-state">Belum ada input hari ini</div>`; return; }
-  container.innerHTML = filtered.map(i => `
-    <div class="recent-item">
+  
+  container.innerHTML = filtered.map(i => {
+    // CEK APAKAH BARCODE TERDAFTAR
+    const registered = isBarcodeRegistered(i.barcode);
+    const notRegisteredClass = !registered ? 'not-registered' : '';
+    
+    return `
+    <div class="recent-item ${notRegisteredClass}">
       <div class="ri-info">
         <div class="ri-name">${escHtml(i.description || i.barcode)}</div>
         <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>
+        ${!registered ? `
+        <div class="not-registered-badge">
+          ⚠️ Belum Terdaftar di Database Master
+        </div>
+        ` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderPullList() {
@@ -467,16 +508,27 @@ function renderPullList() {
     return;
   }
 
-  container.innerHTML = filtered.map(i => `
-    <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''}">
+  container.innerHTML = filtered.map(i => {
+    // CEK APAKAH BARCODE TERDAFTAR
+    const registered = isBarcodeRegistered(i.barcode);
+    const notRegisteredClass = !registered ? 'not-registered' : '';
+    
+    return `
+    <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''} ${notRegisteredClass}">
       <div class="pull-card-top">
         <div style="flex:1">
           <div class="pull-name">${escHtml(i.description || i.barcode)}</div>
           <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hari menuju expired)</div>
+          ${!registered ? `
+          <div class="not-registered-badge">
+            ⚠️ Belum Terdaftar di Database Master
+          </div>
+          ` : ''}
         </div>
         <div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function toggleCheck(idx) {
@@ -593,6 +645,10 @@ window.onload = () => {
   selectedPullDate = getTodayStr();
   document.getElementById('fExp').value = "";
   loadCache();
+  // Inisialisasi databaseData dari cache jika ada
+  if (dbItems.length > 0) {
+    databaseData = dbItems;
+  }
   renderRecent();
   renderPullList();
   buildLokasiHistory();

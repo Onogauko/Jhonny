@@ -30,19 +30,33 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); max-width: 430px; margin: 0 auto; min-height: 100vh; }
 
-/* HEADER */
+/* HEADER - STRUKTUR BARU */
 .header { background: var(--violet); padding: 50px 20px 0; position: sticky; top: 0; z-index: 50; }
-.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.header-title { color: #fff; font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
-.header-date { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; }
-.sync-btn { background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
-.sync-btn:active { background: rgba(255,255,255,0.25); }
 
-/* ADMIN CONTACTS */
+/* Baris 1 - Title Tengah */
+.header-title-center {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.header-title-center h1 {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+/* Baris 2 - Kontak Kiri & Tombol Kanan */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ADMIN CONTACTS - DI KIRI */
 .admin-contacts {
   display: flex;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .admin-avatar {
@@ -108,6 +122,38 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   font-weight: 600;
 }
 
+/* TOMBOL DI KANAN */
+.header-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sync-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.sync-btn:active {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Baris 3 - Tanggal */
+.header-date {
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+}
+
 /* TABS */
 .tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 10px; }
 .tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; padding: 10px 0 12px; border-radius: 9px 9px 0 0; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; position: relative; }
@@ -137,10 +183,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* CARD & INPUT - DENGAN PERUBAHAN */
+/* CARD & INPUT */
 .form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
 
-/* SEARCH BAR - STICKY DI ATAS SCANNER */
 .search-sticky {
   margin-bottom: 12px;
   position: sticky;
@@ -154,7 +199,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   margin-bottom: 0;
 }
 
-/* SCAN AREA - DIPERKECIL */
 .scan-area { 
   background: var(--violet); 
   border-radius: 12px; 
@@ -338,35 +382,42 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-title">Expired Control D&D</div>
-      <div class="header-date" id="headerDate"></div>
-    </div>
-    
-    <div style="display:flex;gap:8px;align-items:center;">
-      <div class="admin-contacts">
-        <div class="admin-avatar" onclick="toggleContact('pic1')">
-          <img src="foto1.jpeg" alt="Admin 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <div class="avatar-placeholder" style="display:none;">JK</div>
-          <div class="contact-popup" id="pic1">
-            <div class="contact-name">👤 Joni Kuswanto</div>
-            <button onclick="openWA('628979778571')">📞 Hubungi</button>
-          </div>
-        </div>
-        <div class="admin-avatar" onclick="toggleContact('pic2')">
-          <img src="foto2.jpeg" alt="Admin 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <div class="avatar-placeholder" style="display:none;">AS</div>
-          <div class="contact-popup" id="pic2">
-            <div class="contact-name">👤 Akbar Setyawan</div>
-            <button onclick="openWA('628987596408')">📞 Hubungi</button>
-          </div>
+  <!-- Baris 1: Title Tengah -->
+  <div class="header-title-center">
+    <h1>Expired Control D&D</h1>
+  </div>
+
+  <!-- Baris 2: Foto Admin di Kiri, Tombol di Kanan -->
+  <div class="header-row">
+    <div class="admin-contacts">
+      <div class="admin-avatar" onclick="toggleContact('pic1')">
+        <img src="foto1.jpeg" alt="Admin 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-placeholder" style="display:none;">JK</div>
+        <div class="contact-popup" id="pic1">
+          <div class="contact-name">👤 Joni Kuswanto</div>
+          <button onclick="openWA('628979778571')">📞 Hubungi</button>
         </div>
       </div>
+      <div class="admin-avatar" onclick="toggleContact('pic2')">
+        <img src="foto2.jpeg" alt="Admin 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-placeholder" style="display:none;">AS</div>
+        <div class="contact-popup" id="pic2">
+          <div class="contact-name">👤 Akbar Setyawan</div>
+          <button onclick="openWA('628987596408')">📞 Hubungi</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="header-buttons">
       <button class="sync-btn" onclick="window.location.href='admin.html'">⚙️ Admin Panel</button>
       <button class="sync-btn" onclick="loadAll()" id="syncBtn">↻ Sync</button>
     </div>
   </div>
+
+  <!-- Baris 3: Tanggal -->
+  <div class="header-date" id="headerDate"></div>
+
+  <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">
       Input
@@ -383,13 +434,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   <div class="panel active" id="panelInput">
     <div class="form-card" id="formCard">
       
-      <!-- SEARCH BAR - STICKY DI ATAS (TIDAK IKUT SCROLL) -->
       <div class="search-sticky">
         <input class="inp" id="searchProduct" placeholder="🔍 Cari nama barang atau barcode" oninput="searchProductList(this.value)">
         <div id="searchResults"></div>
       </div>
 
-      <!-- SCANNER - DIPERKECIL -->
       <div class="scan-area" onclick="openScanner()" id="scanArea">
         <span class="scan-area-icon">📷</span>
         <span class="scan-area-text">Scan Barcode</span>

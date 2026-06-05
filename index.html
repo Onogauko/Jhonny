@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-<!-- PWA Manifest -->
+<!-- PWA Manifest & Theme -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#6d28d9">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -146,12 +146,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .scan-area-text { font-weight: 700; font-size: 14px; color: #fff; }
 .scan-area-sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; }
 
-.form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; transition: transform 0.2s, box-shadow 0.2s; }
+.form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; transition: transform 0.2s; }
 .form-card:active { transform: scale(0.99); }
 
-.inp { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 13px; margin-bottom: 8px; outline: none; font-family: 'DM Sans', sans-serif; color: var(--text); transition: border-color 0.2s, transform 0.1s; }
+.inp { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 13px; margin-bottom: 8px; outline: none; font-family: 'DM Sans', sans-serif; color: var(--text); transition: border-color 0.2s; }
 .inp:focus { border-color: var(--violet-mid); background: #faf8ff; }
-.inp:active { transform: scale(0.99); }
 .inp:last-of-type { margin-bottom: 0; }
 .btn-primary { background: var(--violet); color: white; border: none; border-radius: 10px; padding: 13px; width: 100%; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'DM Sans', sans-serif; margin-top: 10px; transition: opacity 0.2s, transform 0.15s; }
 .btn-primary:active { transform: scale(0.98); }
@@ -163,14 +162,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .recent-item:active { transform: scale(0.98); background: var(--violet-light); }
 
 @keyframes fadeInUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(12px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .ri-info { flex: 1; min-width: 0; }
@@ -180,16 +178,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 /* PULL CARD - ANIMASI LEBIH HALUS */
 .pull-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; border-left: 4px solid var(--red); padding: 12px 13px; margin-bottom: 8px; transition: all 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); animation: slideInLeft 0.3s ease; }
 .pull-card:active { transform: scale(0.98); }
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 .pull-card.amber { border-left-color: var(--amber); }
 .pull-card.green { border-left-color: var(--green); }
 .pull-card.done { opacity: 0.38; }
@@ -261,35 +249,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .lokasi-chip:active { transform: scale(0.95); background: var(--violet-mid); color: white; }
 
-.search-results {
-  margin-bottom: 8px;
-}
-
-.search-item {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.search-item:active {
-  transform: scale(0.98);
-  background: var(--violet-light);
-}
-
-.search-item-name {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.search-item-barcode {
-  font-size: 11px;
-  color: var(--text-2);
-  margin-top: 2px;
-}
+.search-results { margin-bottom: 8px; }
+.search-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 4px; cursor: pointer; transition: all 0.15s; }
+.search-item:active { transform: scale(0.98); background: var(--violet-light); }
+.search-item-name { font-size: 13px; font-weight: 600; }
+.search-item-barcode { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 
 /* OFFLINE INDICATOR */
 .offline-indicator {
@@ -307,11 +271,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   transition: transform 0.3s ease;
   z-index: 1000;
 }
-
-.offline-indicator.show {
-  transform: translateY(0);
-}
-
+.offline-indicator.show { transform: translateY(0); }
 .online-indicator {
   position: fixed;
   bottom: 0;
@@ -327,10 +287,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   transition: transform 0.3s ease;
   z-index: 1000;
 }
-
-.online-indicator.show {
-  transform: translateY(0);
-}
+.online-indicator.show { transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -363,16 +320,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     
     <div style="display:flex;gap:8px;align-items:center;">
-      <!-- ADMIN CONTACTS -->
       <div class="admin-contacts">
         <div class="admin-avatar" onclick="toggleContact('pic1')">
           <img src="foto1.jpeg" alt="Admin 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <div class="avatar-placeholder" style="display:none;">JK</div>
           <div class="contact-popup" id="pic1">
             <div class="contact-name">👤 Joni Kuswanto</div>
-            <button onclick="openWA('628979778571')">
-              📞 Hubungi
-            </button>
+            <button onclick="openWA('628979778571')">📞 Hubungi</button>
           </div>
         </div>
         <div class="admin-avatar" onclick="toggleContact('pic2')">
@@ -380,20 +334,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
           <div class="avatar-placeholder" style="display:none;">AS</div>
           <div class="contact-popup" id="pic2">
             <div class="contact-name">👤 Akbar Setyawan</div>
-            <button onclick="openWA('628987596408')">
-              📞 Hubungi
-            </button>
+            <button onclick="openWA('628987596408')">📞 Hubungi</button>
           </div>
         </div>
       </div>
-      <button class="sync-btn" onclick="window.location.href='admin.html'">
-        ⚙️ Admin Panel
-      </button>
-      <button class="sync-btn" onclick="loadAll()" id="syncBtn">
-        ↻ Sync
-      </button>
+      <button class="sync-btn" onclick="window.location.href='admin.html'">⚙️ Admin Panel</button>
+      <button class="sync-btn" onclick="loadAll()" id="syncBtn">↻ Sync</button>
     </div>
-    
   </div>
   <div class="tabs">
     <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">
@@ -414,18 +361,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <div class="scan-area-text">Klik untuk Scan Barcode</div>
       <div class="scan-area-sub">Kamera belakang • Auto-detect • Langsung isi form</div>
     </div>
-
     <div class="form-card" id="formCard">
-
-      <input
-        class="inp"
-        id="searchProduct"
-        placeholder="🔍 Cari nama barang atau barcode"
-        oninput="searchProductList(this.value)"
-      >
-
+      <input class="inp" id="searchProduct" placeholder="🔍 Cari nama barang atau barcode" oninput="searchProductList(this.value)">
       <div id="searchResults"></div>
-
       <input class="inp" id="fBarcode" placeholder="Barcode (atau scan)" oninput="autoFill(this.value)">
       <input class="inp" id="fDesc" placeholder="Nama Barang">
       <input class="inp" id="fExp" type="date">
@@ -433,11 +371,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)" oninput="updateLokasiChips()">
       <button class="btn-primary" onclick="submitInput()" id="submitBtn" disabled>💾 Simpan Ke Spreadsheet</button>
     </div>
-
     <div class="section-label">INPUT HARI INI</div>
     <div id="recentList"></div>
   </div>
-
   <div class="panel" id="panelTarik">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;">
       <div class="section-label" style="margin:0;">List barang yg harus ditarik</div>
@@ -461,16 +397,10 @@ let selectedPullDate = getTodayStr();
 let html5QrScanner = null;
 let lokasiFrecuentes = [];
 let barcodeNotFoundShown = false;
-
-// VARIABEL databaseData UNTUK DATA MASTER
 let databaseData = [];
-
-// VARIABEL UNTUK TOAST TIMER
 let toastTimer = null;
-
-// VARIABEL UNTUK OFFLINE MODE
 let isOnline = navigator.onLine;
-let offlineQueue = []; // Antrian input saat offline
+let offlineQueue = [];
 
 function getTodayStr() {
   const now = new Date();
@@ -530,11 +460,8 @@ function daysDiff(rawA, rawB) {
   return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
-// FUNGSI CEK BARCODE APAKAH TERDAFTAR DI DATABASE MASTER
 function isBarcodeRegistered(barcode) {
-  return databaseData.some(
-    item => String(item.barcode).trim() === String(barcode).trim()
-  );
+  return databaseData.some(item => String(item.barcode).trim() === String(barcode).trim());
 }
 
 function loadCache() {
@@ -544,8 +471,6 @@ function loadCache() {
     dbItems = (dbRaw && (now - parseInt(localStorage.getItem('cache_db_ts') || '0')) < CACHE_TTL_MS) ? JSON.parse(dbRaw) : [];
     inItems = (inRaw && (now - parseInt(localStorage.getItem('cache_in_ts') || '0')) < CACHE_TTL_MS) ? JSON.parse(inRaw) : [];
     checkedRows = new Set(chkRaw ? JSON.parse(chkRaw) : []);
-    
-    // Load offline queue
     const queueRaw = localStorage.getItem('offline_queue');
     if (queueRaw) offlineQueue = JSON.parse(queueRaw);
   } catch(e) { dbItems = []; inItems = []; checkedRows = new Set(); offlineQueue = []; }
@@ -556,7 +481,6 @@ function saveOfflineQueue() { localStorage.setItem('offline_queue', JSON.stringi
 
 async function callApi(params, body = null) {
   if (!isOnline) {
-    // Jika offline, simpan ke antrian
     if (body && params.action === "addInput") {
       offlineQueue.push({ params, body, timestamp: Date.now() });
       saveOfflineQueue();
@@ -565,7 +489,6 @@ async function callApi(params, body = null) {
     }
     throw new Error("Tidak ada koneksi internet");
   }
-  
   try {
     const res = await fetch(PROXY_URL + "?" + new URLSearchParams(params), { method: body ? 'POST' : 'GET', headers: {'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : null });
     const json = await res.json();
@@ -580,28 +503,19 @@ async function callApi(params, body = null) {
   }
 }
 
-// Sinkronisasi antrian offline saat online kembali
 async function syncOfflineQueue() {
   if (!isOnline || offlineQueue.length === 0) return;
-  
   showToast(`🔄 Sinkronisasi ${offlineQueue.length} data offline...`, "info");
-  
   for (let i = 0; i < offlineQueue.length; i++) {
     const item = offlineQueue[i];
-    try {
-      await callApi(item.params, item.body);
-    } catch(e) {
-      console.error("Gagal sync offline item:", e);
-    }
+    try { await callApi(item.params, item.body); } catch(e) { console.error(e); }
   }
-  
   offlineQueue = [];
   saveOfflineQueue();
   await loadAll();
   showToast("✅ Semua data offline berhasil disinkronkan", "success");
 }
 
-// Update badge count di tab
 function updateTabBadges() {
   const today = getTodayStr();
   const todayInputs = inItems.filter(i => (i.timestamp || "").startsWith(today)).length;
@@ -609,11 +523,8 @@ function updateTabBadges() {
   if (todayInputs > 0) {
     inputBadge.innerText = todayInputs > 9 ? '9+' : todayInputs;
     inputBadge.classList.add('show');
-  } else {
-    inputBadge.classList.remove('show');
-  }
+  } else { inputBadge.classList.remove('show'); }
   
-  // Hitung tarik badge berdasarkan pull date
   const pullList = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
     const rawExp = getExpRaw(i) || i.expiredDate;
@@ -630,12 +541,9 @@ function updateTabBadges() {
   if (pullList > 0) {
     tarikBadge.innerText = pullList > 9 ? '9+' : pullList;
     tarikBadge.classList.add('show');
-  } else {
-    tarikBadge.classList.remove('show');
-  }
+  } else { tarikBadge.classList.remove('show'); }
 }
 
-// Monitor koneksi online/offline
 function initOfflineDetection() {
   window.addEventListener('online', async () => {
     isOnline = true;
@@ -645,7 +553,6 @@ function initOfflineDetection() {
     await syncOfflineQueue();
     await loadAll();
   });
-  
   window.addEventListener('offline', () => {
     isOnline = false;
     const indicator = document.getElementById('offlineIndicator');
@@ -658,13 +565,9 @@ function initOfflineDetection() {
 async function loadAll() {
   if (!isOnline) {
     showToast("📡 Mode Offline - Menampilkan data dari cache", "warning");
-    renderRecent();
-    renderPullList();
-    buildLokasiHistory();
-    updateTabBadges();
+    renderRecent(); renderPullList(); buildLokasiHistory(); updateTabBadges();
     return;
   }
-  
   const syncBtn = document.getElementById('syncBtn');
   syncBtn.innerText = "Sync..."; syncBtn.disabled = true;
   try {
@@ -673,8 +576,7 @@ async function loadAll() {
     databaseData = dbRes.data || [];
     inItems = inRes.data;
     saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
-    renderRecent(); renderPullList(); buildLokasiHistory();
-    updateTabBadges();
+    renderRecent(); renderPullList(); buildLokasiHistory(); updateTabBadges();
     showToast("Data diperbarui ✓", "success");
   } catch(e) { showToast("Gagal sync: " + e.message, "error"); }
   syncBtn.innerText = "↻ Sync"; syncBtn.disabled = false;
@@ -685,75 +587,37 @@ async function submitInput() {
   const d = document.getElementById('fDesc').value.trim();
   const e = document.getElementById('fExp').value;
   const l = document.getElementById('fLokasi').value.trim();
-
   const today = getTodayStr();
 
-  const duplicate = inItems.find(item =>
-    (item.timestamp || '').startsWith(today) &&
-    item.barcode === b &&
-    parseToISO(item.expiredDate) === e &&
-    (item.lokasi || '').toLowerCase() === l.toLowerCase()
-  );
-
+  const duplicate = inItems.find(item => (item.timestamp || '').startsWith(today) && item.barcode === b && parseToISO(item.expiredDate) === e && (item.lokasi || '').toLowerCase() === l.toLowerCase());
   if (duplicate) {
-    const lanjut = confirm(
-      "⚠️ Data serupa sudah pernah diinput hari ini.\n\n" +
-      d + "\n" +
-      "Exp: " + formatDateIndo(e) + "\n" +
-      "Lokasi: " + l + "\n\n" +
-      "Lanjut simpan?"
-    );
+    const lanjut = confirm("⚠️ Data serupa sudah pernah diinput hari ini.\n\n" + d + "\nExp: " + formatDateIndo(e) + "\nLokasi: " + l + "\n\nLanjut simpan?");
     if (!lanjut) return;
   }
 
   const found = dbItems.find(x => x.barcode === b);
-
-  if (!found) {
-    return showToast(
-      "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
-      "error"
-    );
-  }
-
-  if (!b || !d || !e || !l) {
-    return showToast("Semua field wajib diisi!", "error");
-  }
+  if (!found) return showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error");
+  if (!b || !d || !e || !l) return showToast("Semua field wajib diisi!", "error");
 
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerText = "Menyimpan...";
-
+  btn.disabled = true; btn.innerText = "Menyimpan...";
   try {
     const res = await callApi({ action:"addInput" }, { barcode: b, description: d, expiredDate: e, lokasi: l });
-    
     if (res.offline) {
-      // Simpan offline ke cache lokal
-      const tempInput = { rowIndex: res.rowIndex, barcode: b, description: d, expiredDate: e, lokasi: l, timestamp: getTodayStr(), offline: true };
-      inItems.push(tempInput);
+      inItems.push({ rowIndex: res.rowIndex, barcode: b, description: d, expiredDate: e, lokasi: l, timestamp: getTodayStr(), offline: true });
       saveCache('cache_in', inItems);
-      showToast("📡 Disimpan offline - Akan sync otomatis saat online", "warning");
+      showToast("📡 Disimpan offline - Akan sync otomatis", "warning");
     } else {
       inItems.push({ rowIndex: res.rowIndex, barcode: b, description: d, expiredDate: e, lokasi: l, timestamp: getTodayStr() });
       saveCache('cache_in', inItems);
       showToast("Berhasil disimpan ✓", "success");
     }
-    
-    renderRecent();
-    renderPullList();
-    updateTabBadges();
-    
-    document.getElementById('fBarcode').value = "";
-    document.getElementById('fDesc').value = "";
-    document.getElementById('fExp').value = "";
-    document.getElementById('fLokasi').value = "";
-    document.getElementById('searchProduct').value = "";
-    document.getElementById('searchResults').innerHTML = "";
-
+    renderRecent(); renderPullList(); updateTabBadges();
+    document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = ""; document.getElementById('fExp').value = ""; document.getElementById('fLokasi').value = ""; document.getElementById('searchProduct').value = ""; document.getElementById('searchResults').innerHTML = "";
     document.getElementById('submitBtn').disabled = true;
     barcodeNotFoundShown = false;
   } catch(x) { showToast("Gagal simpan: " + x.message, "error"); }
-  btn.disabled = false;
-  btn.innerText = "💾 Simpan Ke Spreadsheet";
+  btn.disabled = false; btn.innerText = "💾 Simpan Ke Spreadsheet";
 }
 
 function formatDateIndo(raw) {
@@ -768,24 +632,11 @@ function renderRecent() {
   const today = getTodayStr();
   const filtered = inItems.filter(i => (i.timestamp || "").startsWith(today)).reverse();
   if (!filtered.length) { container.innerHTML = `<div class="empty-state">Belum ada input hari ini</div>`; return; }
-  
   container.innerHTML = filtered.map(i => {
     const registered = isBarcodeRegistered(i.barcode);
     const notRegisteredClass = !registered ? 'not-registered' : '';
     const offlineBadge = i.offline ? '<span style="background:#d97706; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:6px;">📡 Offline</span>' : '';
-    
-    return `
-    <div class="recent-item ${notRegisteredClass}">
-      <div class="ri-info">
-        <div class="ri-name">${escHtml(i.description || i.barcode)}${offlineBadge}</div>
-        <div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>
-        ${!registered ? `
-        <div class="not-registered-badge">
-          ⚠️ Belum Terdaftar di Database Master
-        </div>
-        ` : ''}
-      </div>
-    </div>`;
+    return `<div class="recent-item ${notRegisteredClass}"><div class="ri-info"><div class="ri-name">${escHtml(i.description || i.barcode)}${offlineBadge}</div><div class="ri-meta">${escHtml(i.barcode)} · Exp: ${formatDateIndo(getExpRaw(i))}</div>${!registered ? `<div class="not-registered-badge">⚠️ Belum Terdaftar di Database Master</div>` : ''}</div></div>`;
   }).join('');
   updateTabBadges();
 }
@@ -793,7 +644,6 @@ function renderRecent() {
 function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
-  
   const list = inItems.map(i => {
     const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
     const rawExp = getExpRaw(i) || i.expiredDate;
@@ -809,36 +659,14 @@ function renderPullList() {
     const isTodayPull = pullDate.getFullYear() === todayDate.getFullYear() && pullDate.getMonth() === todayDate.getMonth() && pullDate.getDate() === todayDate.getDate();
     return { ...i, isoExp, status, daysUntilExp, isTodayPull };
   }).sort((a, b) => (a.daysUntilExp || 9999) - (b.daysUntilExp || 9999));
-  
   const filtered = list.filter(i => i.isTodayPull);
   document.getElementById('pullTotalInfo').innerText = `Total: ${filtered.length}`;
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div>Tidak ada barang yg wajib ditarik di tanggal ini</div>`;
-    updateTabBadges();
-    return;
-  }
-
+  if (!filtered.length) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div>Tidak ada barang yg wajib ditarik di tanggal ini</div>`; updateTabBadges(); return; }
   container.innerHTML = filtered.map(i => {
     const registered = isBarcodeRegistered(i.barcode);
     const notRegisteredClass = !registered ? 'not-registered' : '';
     const offlineBadge = i.offline ? '<span style="background:#d97706; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:6px;">📡 Offline</span>' : '';
-    
-    return `
-    <div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''} ${notRegisteredClass}">
-      <div class="pull-card-top">
-        <div style="flex:1">
-          <div class="pull-name">${escHtml(i.description || i.barcode)}${offlineBadge}</div>
-          <div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hari menuju expired)</div>
-          ${!registered ? `
-          <div class="not-registered-badge">
-            ⚠️ Belum Terdaftar di Database Master
-          </div>
-          ` : ''}
-        </div>
-        <div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div>
-      </div>
-    </div>`;
+    return `<div class="pull-card ${i.status} ${checkedRows.has(i.rowIndex) ? 'done' : ''} ${notRegisteredClass}"><div class="pull-card-top"><div style="flex:1"><div class="pull-name">${escHtml(i.description || i.barcode)}${offlineBadge}</div><div class="pull-meta">Exp: ${formatDateIndo(i.isoExp)} (${i.daysUntilExp} hari menuju expired)</div>${!registered ? `<div class="not-registered-badge">⚠️ Belum Terdaftar di Database Master</div>` : ''}</div><div class="check-box ${checkedRows.has(i.rowIndex) ? 'checked' : ''}" onclick="toggleCheck(${i.rowIndex})">${checkedRows.has(i.rowIndex) ? '✔️' : ''}</div></div></div>`;
   }).join('');
   updateTabBadges();
 }
@@ -875,53 +703,18 @@ function closeScanner() { document.getElementById('scannerOverlay').classList.re
 function autoFill(val) {
   const found = dbItems.find(x => x.barcode === val);
   const submitBtn = document.getElementById('submitBtn');
-
-  if (found) {
-    document.getElementById('fDesc').value = found.description || '';
-    submitBtn.disabled = false;
-    barcodeNotFoundShown = false;
-  } else {
-    document.getElementById('fDesc').value = '';
-    submitBtn.disabled = true;
-    if (val.trim().length >= 6 && !barcodeNotFoundShown) {
-      barcodeNotFoundShown = true;
-      showToast(
-        "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
-        "error"
-      );
-    }
-  }
-  if (!val.trim()) {
-    barcodeNotFoundShown = false;
-    submitBtn.disabled = true;
-  }
+  if (found) { document.getElementById('fDesc').value = found.description || ''; submitBtn.disabled = false; barcodeNotFoundShown = false; }
+  else { document.getElementById('fDesc').value = ''; submitBtn.disabled = true; if (val.trim().length >= 6 && !barcodeNotFoundShown) { barcodeNotFoundShown = true; showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error"); } }
+  if (!val.trim()) { barcodeNotFoundShown = false; submitBtn.disabled = true; }
 }
 
 function searchProductList(keyword) {
   const container = document.getElementById('searchResults');
-  if (!keyword.trim()) {
-    container.innerHTML = '';
-    return;
-  }
+  if (!keyword.trim()) { container.innerHTML = ''; return; }
   const search = keyword.toLowerCase();
-  const results = dbItems
-    .filter(item =>
-      (item.description || '').toLowerCase().includes(search) ||
-      (item.barcode || '').toLowerCase().includes(search)
-    )
-    .slice(0, 10);
+  const results = dbItems.filter(item => (item.description || '').toLowerCase().includes(search) || (item.barcode || '').toLowerCase().includes(search)).slice(0, 10);
   container.className = "search-results";
-  container.innerHTML = results.map(item => `
-    <div class="search-item"
-         onclick="selectProduct('${item.barcode}')">
-      <div class="search-item-name">
-        ${escHtml(item.description)}
-      </div>
-      <div class="search-item-barcode">
-        ${escHtml(item.barcode)}
-      </div>
-    </div>
-  `).join('');
+  container.innerHTML = results.map(item => `<div class="search-item" onclick="selectProduct('${item.barcode}')"><div class="search-item-name">${escHtml(item.description)}</div><div class="search-item-barcode">${escHtml(item.barcode)}</div></div>`).join('');
 }
 
 function selectProduct(barcode) {
@@ -945,55 +738,24 @@ function changePullDate(val) { selectedPullDate = val || getTodayStr(); renderPu
 
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
-
-  if (toastTimer) {
-    clearTimeout(toastTimer);
-    toastTimer = null;
-  }
-  
+  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
   t.innerText = msg;
-  
-  t.style.transform = 'translateX(-50%) translateY(-100px)';
-  t.style.opacity = '0';
-  t.style.visibility = 'hidden';
-  
-  if (type === 'success') {
-    t.style.background = '#065f46';
-  } else if (type === 'error') {
-    t.style.background = '#7f1d1d';
-  } else if (type === 'warning') {
-    t.style.background = '#d97706';
-  } else {
-    t.style.background = '#1c1033';
-  }
-  
+  t.style.transform = 'translateX(-50%) translateY(-100px)'; t.style.opacity = '0'; t.style.visibility = 'hidden';
+  if (type === 'success') t.style.background = '#065f46';
+  else if (type === 'error') t.style.background = '#7f1d1d';
+  else if (type === 'warning') t.style.background = '#d97706';
+  else t.style.background = '#1c1033';
   void t.offsetWidth;
-  
-  t.style.transform = 'translateX(-50%) translateY(0)';
-  t.style.opacity = '1';
-  t.style.visibility = 'visible';
-  
-  toastTimer = setTimeout(() => {
-    t.style.transform = 'translateX(-50%) translateY(-100px)';
-    t.style.opacity = '0';
-    t.style.visibility = 'hidden';
-    toastTimer = null;
-  }, 3000);
+  t.style.transform = 'translateX(-50%) translateY(0)'; t.style.opacity = '1'; t.style.visibility = 'visible';
+  toastTimer = setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(-100px)'; t.style.opacity = '0'; t.style.visibility = 'hidden'; toastTimer = null; }, 3000);
 }
 
 function toggleContact(id) {
-  document.querySelectorAll('.contact-popup').forEach(el => {
-    if (el.id !== id) {
-      el.classList.remove('show');
-    }
-  });
+  document.querySelectorAll('.contact-popup').forEach(el => { if (el.id !== id) el.classList.remove('show'); });
   document.getElementById(id).classList.toggle('show');
 }
 
-function openWA(number) {
-  window.open('https://wa.me/' + number, '_blank');
-}
-
+function openWA(number) { window.open('https://wa.me/' + number, '_blank'); }
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // PWA Service Worker Registration
@@ -1011,15 +773,8 @@ window.onload = () => {
   selectedPullDate = getTodayStr();
   document.getElementById('fExp').value = "";
   loadCache();
-  if (dbItems.length > 0) {
-    databaseData = dbItems;
-  }
-  renderRecent();
-  renderPullList();
-  buildLokasiHistory();
-  loadAll();
-  initOfflineDetection();
-  updateTabBadges();
+  if (dbItems.length > 0) databaseData = dbItems;
+  renderRecent(); renderPullList(); buildLokasiHistory(); loadAll(); initOfflineDetection(); updateTabBadges();
 };
 </script>
 </body>

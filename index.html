@@ -30,6 +30,61 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .sync-btn { background: rgba(255,255,255,0.15); border: none; color: white; border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
 .sync-btn:active { background: rgba(255,255,255,0.25); }
 
+/* ADMIN CONTACTS */
+.admin-contacts {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-avatar {
+  position: relative;
+}
+
+.admin-avatar img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.4);
+  cursor: pointer;
+}
+
+.contact-popup {
+  display: none;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 150px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+.contact-popup.show {
+  display: block;
+}
+
+.contact-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.contact-popup button {
+  width: 100%;
+  border: none;
+  background: #25D366;
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 /* TABS */
 .tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 10px; }
 .tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; padding: 10px 0 12px; border-radius: 9px 9px 0 0; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
@@ -191,6 +246,27 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     </div>
     
     <div style="display:flex;gap:8px;align-items:center;">
+      <!-- ADMIN CONTACTS -->
+      <div class="admin-contacts">
+        <div class="admin-avatar" onclick="toggleContact('pic1')">
+          <img src="foto1.jpg" alt="Admin 1">
+          <div class="contact-popup" id="pic1">
+            <div class="contact-name">👤 Joni Kuswanto</div>
+            <button onclick="openWA('628979778571')">
+              📞 Hubungi
+            </button>
+          </div>
+        </div>
+        <div class="admin-avatar" onclick="toggleContact('pic2')">
+          <img src="foto2.jpg" alt="Admin 2">
+          <div class="contact-popup" id="pic2">
+            <div class="contact-name">👤 Akbar Setyawan</div>
+            <button onclick="openWA('628987596408')">
+              📞 Hubungi
+            </button>
+          </div>
+        </div>
+      </div>
       <button class="sync-btn" onclick="window.location.href='admin.html'">
         ⚙️ Admin Panel
       </button>
@@ -666,6 +742,21 @@ function showToast(msg, type = '') {
     t.style.visibility = 'hidden';
     toastTimer = null;
   }, 3000);
+}
+
+// FUNGSI UNTUK TOGGLE POPUP KONTAK ADMIN
+function toggleContact(id) {
+  document.querySelectorAll('.contact-popup').forEach(el => {
+    if (el.id !== id) {
+      el.classList.remove('show');
+    }
+  });
+  document.getElementById(id).classList.toggle('show');
+}
+
+// FUNGSI UNTUK BUKA WHATSAPP
+function openWA(number) {
+  window.open('https://wa.me/' + number, '_blank');
 }
 
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

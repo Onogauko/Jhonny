@@ -274,6 +274,9 @@ let barcodeNotFoundShown = false;
 // VARIABEL databaseData UNTUK DATA MASTER
 let databaseData = [];
 
+// VARIABEL UNTUK TOAST TIMER
+let toastTimer;
+
 function getTodayStr() {
   const now = new Date();
   const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
@@ -631,10 +634,18 @@ function switchTab(t) {
 
 function changePullDate(val) { selectedPullDate = val || getTodayStr(); renderPullList(); }
 
+// FUNGSI SHOW TOAST YANG SUDAH DIPERBAIKI
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
-  t.innerText = msg; t.className = 'toast show ' + type;
-  setTimeout(() => { t.className = 'toast'; }, 3000);
+
+  clearTimeout(toastTimer);
+
+  t.innerText = msg;
+  t.className = 'toast show ' + type;
+
+  toastTimer = setTimeout(() => {
+    t.className = 'toast';
+  }, 3000);
 }
 
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

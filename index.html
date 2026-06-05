@@ -58,7 +58,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   cursor: pointer;
 }
 
-/* PLACEHOLDER AVATAR ADMIN - FALLBACK jika gambar gagal load */
 .admin-avatar .avatar-placeholder {
   width: 42px;
   height: 42px;
@@ -109,12 +108,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   font-weight: 600;
 }
 
-/* TABS - DENGAN BADGE COUNT */
+/* TABS */
 .tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0; padding: 5px 5px 0; margin-top: 10px; }
 .tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; padding: 10px 0 12px; border-radius: 9px 9px 0 0; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; position: relative; }
 .tab-btn.active { background: var(--bg); color: var(--violet); font-weight: 700; }
 
-/* BADGE COUNT DI TAB */
 .tab-badge {
   position: absolute;
   top: 6px;
@@ -139,15 +137,42 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* CARD & INPUT */
-.scan-area { background: var(--violet); border-radius: var(--radius); padding: 20px; text-align: center; margin-bottom: 14px; cursor: pointer; transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s; box-shadow: 0 4px 20px rgba(109,40,217,0.3); }
-.scan-area:active { transform: scale(0.97); }
-.scan-area-icon { font-size: 28px; margin-bottom: 6px; }
-.scan-area-text { font-weight: 700; font-size: 14px; color: #fff; }
-.scan-area-sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+/* CARD & INPUT - DENGAN PERUBAHAN */
+.form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
 
-.form-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; transition: transform 0.2s; }
-.form-card:active { transform: scale(0.99); }
+/* SEARCH BAR - STICKY DI ATAS SCANNER */
+.search-sticky {
+  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 10;
+  padding: 0 0 4px 0;
+}
+
+.search-sticky .inp {
+  margin-bottom: 0;
+}
+
+/* SCAN AREA - DIPERKECIL */
+.scan-area { 
+  background: var(--violet); 
+  border-radius: 12px; 
+  padding: 12px; 
+  text-align: center; 
+  margin-bottom: 14px; 
+  cursor: pointer; 
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.2s; 
+  box-shadow: 0 2px 12px rgba(109,40,217,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.scan-area:active { transform: scale(0.97); }
+.scan-area-icon { font-size: 20px; margin-bottom: 0; }
+.scan-area-text { font-weight: 600; font-size: 13px; color: #fff; }
+.scan-area-sub { font-size: 10px; color: rgba(255,255,255,0.65); margin-left: 4px; }
 
 .inp { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; font-size: 13px; margin-bottom: 8px; outline: none; font-family: 'DM Sans', sans-serif; color: var(--text); transition: border-color 0.2s; }
 .inp:focus { border-color: var(--violet-mid); background: #faf8ff; }
@@ -156,7 +181,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.55; }
 
-/* LIST ITEM - ANIMASI LEBIH HALUS */
+/* LIST ITEM */
 .section-label { font-size: 11px; font-weight: 700; color: var(--text-3); margin-bottom: 10px; letter-spacing: 0.05em; }
 .recent-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px; animation: fadeInUp 0.3s cubic-bezier(0.2, 0.8, 0.4, 1); transition: all 0.2s ease; }
 .recent-item:active { transform: scale(0.98); background: var(--violet-light); }
@@ -175,7 +200,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .ri-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ri-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 
-/* PULL CARD - ANIMASI LEBIH HALUS */
+/* PULL CARD */
 .pull-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; border-left: 4px solid var(--red); padding: 12px 13px; margin-bottom: 8px; transition: all 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); animation: slideInLeft 0.3s ease; }
 .pull-card:active { transform: scale(0.98); }
 .pull-card.amber { border-left-color: var(--amber); }
@@ -209,7 +234,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-/* TOAST - CSS DASAR (style utama akan diatur via inline style) */
+/* TOAST */
 .toast {
   position: fixed;
   top: 80px;
@@ -356,14 +381,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 <div class="main">
   <div class="panel active" id="panelInput">
-    <div class="scan-area" onclick="openScanner()" id="scanArea">
-      <div class="scan-area-icon">📷</div>
-      <div class="scan-area-text">Klik untuk Scan Barcode</div>
-      <div class="scan-area-sub">Kamera belakang • Auto-detect • Langsung isi form</div>
-    </div>
     <div class="form-card" id="formCard">
-      <input class="inp" id="searchProduct" placeholder="🔍 Cari nama barang atau barcode" oninput="searchProductList(this.value)">
-      <div id="searchResults"></div>
+      
+      <!-- SEARCH BAR - STICKY DI ATAS (TIDAK IKUT SCROLL) -->
+      <div class="search-sticky">
+        <input class="inp" id="searchProduct" placeholder="🔍 Cari nama barang atau barcode" oninput="searchProductList(this.value)">
+        <div id="searchResults"></div>
+      </div>
+
+      <!-- SCANNER - DIPERKECIL -->
+      <div class="scan-area" onclick="openScanner()" id="scanArea">
+        <span class="scan-area-icon">📷</span>
+        <span class="scan-area-text">Scan Barcode</span>
+        <span class="scan-area-sub">Klik</span>
+      </div>
+
       <input class="inp" id="fBarcode" placeholder="Barcode (atau scan)" oninput="autoFill(this.value)">
       <input class="inp" id="fDesc" placeholder="Nama Barang">
       <input class="inp" id="fExp" type="date">
@@ -371,9 +403,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <input class="inp" id="fLokasi" placeholder="Lokasi (Rak/Area)" oninput="updateLokasiChips()">
       <button class="btn-primary" onclick="submitInput()" id="submitBtn" disabled>💾 Simpan Ke Spreadsheet</button>
     </div>
+
     <div class="section-label">INPUT HARI INI</div>
     <div id="recentList"></div>
   </div>
+
   <div class="panel" id="panelTarik">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;">
       <div class="section-label" style="margin:0;">List barang yg harus ditarik</div>
@@ -521,7 +555,7 @@ function updateTabBadges() {
   const todayInputs = inItems.filter(i => (i.timestamp || "").startsWith(today)).length;
   const inputBadge = document.getElementById('inputBadge');
   if (todayInputs > 0) {
-    inputBadge.innerText = todayInputs > 999 ? '999+' : todayInputs;
+    inputBadge.innerText = todayInputs > 99 ? '99+' : todayInputs;
     inputBadge.classList.add('show');
   } else { inputBadge.classList.remove('show'); }
   
@@ -539,7 +573,7 @@ function updateTabBadges() {
   
   const tarikBadge = document.getElementById('tarikBadge');
   if (pullList > 0) {
-    tarikBadge.innerText = pullList > 999 ? '999+' : pullList;
+    tarikBadge.innerText = pullList > 99 ? '99+' : pullList;
     tarikBadge.classList.add('show');
   } else { tarikBadge.classList.remove('show'); }
 }

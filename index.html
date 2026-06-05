@@ -95,10 +95,34 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1c1033; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.success { background: #065f46; }
-.toast.error { background: #7f1d1d; }
+/* TOAST - DIUBAH SESUAI INSTRUKSI */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: #1c1033;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: transform 0.3s;
+  max-width: 90%;
+  text-align: center;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+  background: #065f46;
+}
+.toast.error {
+  background: #7f1d1d;
+}
 
 .lokasi-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
@@ -346,7 +370,6 @@ async function submitInput() {
   );
 
   if (duplicate) {
-
     const lanjut = confirm(
       "⚠️ Data serupa sudah pernah diinput hari ini.\n\n" +
       d + "\n" +
@@ -354,7 +377,6 @@ async function submitInput() {
       "Lokasi: " + l + "\n\n" +
       "Lanjut simpan?"
     );
-
     if (!lanjut) return;
   }
 
@@ -493,23 +515,18 @@ function autoFill(val) {
   if (found) {
     document.getElementById('fDesc').value = found.description || '';
     submitBtn.disabled = false;
-
     barcodeNotFoundShown = false;
-
   } else {
     document.getElementById('fDesc').value = '';
     submitBtn.disabled = true;
-
     if (val.trim().length >= 6 && !barcodeNotFoundShown) {
       barcodeNotFoundShown = true;
-
       showToast(
         "⚠️ Barcode tidak ditemukan. Hubungi Admin untuk menambahkan produk ini ke Database Master.",
         "error"
       );
     }
   }
-
   if (!val.trim()) {
     barcodeNotFoundShown = false;
     submitBtn.disabled = true;
@@ -517,55 +534,40 @@ function autoFill(val) {
 }
 
 function searchProductList(keyword) {
-
   const container = document.getElementById('searchResults');
-
   if (!keyword.trim()) {
     container.innerHTML = '';
     return;
   }
-
   const search = keyword.toLowerCase();
-
   const results = dbItems
     .filter(item =>
       (item.description || '').toLowerCase().includes(search) ||
       (item.barcode || '').toLowerCase().includes(search)
     )
     .slice(0, 10);
-
   container.className = "search-results";
-
   container.innerHTML = results.map(item => `
     <div class="search-item"
          onclick="selectProduct('${item.barcode}')">
-
       <div class="search-item-name">
         ${escHtml(item.description)}
       </div>
-
       <div class="search-item-barcode">
         ${escHtml(item.barcode)}
       </div>
-
     </div>
   `).join('');
 }
 
 function selectProduct(barcode) {
-
   const item = dbItems.find(x => x.barcode === barcode);
-
   if (!item) return;
-
   document.getElementById('fBarcode').value = item.barcode;
   document.getElementById('fDesc').value = item.description || '';
-
   document.getElementById('searchProduct').value = item.description || '';
   document.getElementById('searchResults').innerHTML = '';
-
   document.getElementById('submitBtn').disabled = false;
-
   barcodeNotFoundShown = false;
 }
 

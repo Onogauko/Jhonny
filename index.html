@@ -154,6 +154,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   margin-bottom: 0;
 }
 
+/* TAMBAHAN CSS UNTUK SEARCH RESULTS SCROLL - OPSI 4 */
+.search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
 /* SCAN AREA - DIPERKECIL */
 .scan-area { 
   background: var(--violet); 
@@ -274,7 +281,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .lokasi-chip { background: var(--violet-light); color: var(--violet); border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .lokasi-chip:active { transform: scale(0.95); background: var(--violet-mid); color: white; }
 
-.search-results { margin-bottom: 8px; }
 .search-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 4px; cursor: pointer; transition: all 0.15s; }
 .search-item:active { transform: scale(0.98); background: var(--violet-light); }
 .search-item-name { font-size: 13px; font-weight: 600; }
@@ -742,13 +748,31 @@ function autoFill(val) {
   if (!val.trim()) { barcodeNotFoundShown = false; submitBtn.disabled = true; }
 }
 
+// FUNGSI SEARCH YANG SUDAH DIUPDATE - OPSI 4 + OPSI 2 (tanpa batasan jumlah)
 function searchProductList(keyword) {
   const container = document.getElementById('searchResults');
   if (!keyword.trim()) { container.innerHTML = ''; return; }
+  
   const search = keyword.toLowerCase();
-  const results = dbItems.filter(item => (item.description || '').toLowerCase().includes(search) || (item.barcode || '').toLowerCase().includes(search)).slice(0, 10);
+  // OPSI 2: Menampilkan SEMUA hasil (tanpa slice)
+  const results = dbItems.filter(item => 
+      (item.description || '').toLowerCase().includes(search) || 
+      (item.barcode || '').toLowerCase().includes(search)
+  );
+  
+  // OPSI 4: CSS sudah ditambahkan di style untuk overflow-y auto dan max-height
   container.className = "search-results";
-  container.innerHTML = results.map(item => `<div class="search-item" onclick="selectProduct('${item.barcode}')"><div class="search-item-name">${escHtml(item.description)}</div><div class="search-item-barcode">${escHtml(item.barcode)}</div></div>`).join('');
+  if (results.length === 0) {
+    container.innerHTML = `<div class="search-item" style="text-align:center; color:var(--text-2);">Tidak ditemukan</div>`;
+    return;
+  }
+  
+  container.innerHTML = results.map(item => 
+      `<div class="search-item" onclick="selectProduct('${item.barcode}')">
+          <div class="search-item-name">${escHtml(item.description)}</div>
+          <div class="search-item-barcode">${escHtml(item.barcode)}</div>
+      </div>`
+  ).join('');
 }
 
 function selectProduct(barcode) {

@@ -95,33 +95,23 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 @keyframes scanLine { 0% { top: 10%; } 100% { top: 90%; } }
 .scan-line { position: absolute; left: 5%; right: 5%; height: 2px; background: linear-gradient(90deg, transparent, #6d28d9, #a78bfa, #6d28d9, transparent); border-radius: 2px; animation: scanLine 1.8s ease-in-out infinite alternate; z-index: 211; }
 
-/* TOAST */
+/* TOAST - CSS DASAR (style utama akan diatur via inline style) */
 .toast {
   position: fixed;
   top: 80px;
   left: 50%;
   transform: translateX(-50%) translateY(-100px);
-  background: #1c1033;
-  color: white;
   padding: 12px 20px;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
   z-index: 1000;
-  transition: transform 0.3s;
   max-width: 90%;
   text-align: center;
-}
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
-
-.toast.success {
-  background: #065f46;
-}
-.toast.error {
-  background: #7f1d1d;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* TAMBAHAN CSS UNTUK CARD MERAH */
@@ -275,7 +265,7 @@ let barcodeNotFoundShown = false;
 let databaseData = [];
 
 // VARIABEL UNTUK TOAST TIMER
-let toastTimer;
+let toastTimer = null;
 
 function getTodayStr() {
   const now = new Date();
@@ -634,17 +624,47 @@ function switchTab(t) {
 
 function changePullDate(val) { selectedPullDate = val || getTodayStr(); renderPullList(); }
 
-// FUNGSI SHOW TOAST YANG SUDAH DIPERBAIKI
+// FUNGSI SHOW TOAST YANG SUDAH DIPERBAIKI - VERSI PALING AMAN (menggunakan inline style)
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
 
-  clearTimeout(toastTimer);
-
+  // Matikan timeout sebelumnya jika ada
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+    toastTimer = null;
+  }
+  
+  // Set teks
   t.innerText = msg;
-  t.className = 'toast show ' + type;
-
+  
+  // Reset style ke posisi tersembunyi
+  t.style.transform = 'translateX(-50%) translateY(-100px)';
+  t.style.opacity = '0';
+  t.style.visibility = 'hidden';
+  
+  // Atur background sesuai type
+  if (type === 'success') {
+    t.style.background = '#065f46';
+  } else if (type === 'error') {
+    t.style.background = '#7f1d1d';
+  } else {
+    t.style.background = '#1c1033';
+  }
+  
+  // Force reflow agar transisi berfungsi
+  void t.offsetWidth;
+  
+  // Tampilkan toast
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  t.style.opacity = '1';
+  t.style.visibility = 'visible';
+  
+  // Sembunyikan setelah 3 detik
   toastTimer = setTimeout(() => {
-    t.className = 'toast';
+    t.style.transform = 'translateX(-50%) translateY(-100px)';
+    t.style.opacity = '0';
+    t.style.visibility = 'hidden';
+    toastTimer = null;
   }, 3000);
 }
 

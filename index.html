@@ -521,7 +521,7 @@ function updateTabBadges() {
   const todayInputs = inItems.filter(i => (i.timestamp || "").startsWith(today)).length;
   const inputBadge = document.getElementById('inputBadge');
   if (todayInputs > 0) {
-    inputBadge.innerText = todayInputs > 9 ? '9+' : todayInputs;
+    inputBadge.innerText = todayInputs > 999 ? '999+' : todayInputs;
     inputBadge.classList.add('show');
   } else { inputBadge.classList.remove('show'); }
   
@@ -539,7 +539,7 @@ function updateTabBadges() {
   
   const tarikBadge = document.getElementById('tarikBadge');
   if (pullList > 0) {
-    tarikBadge.innerText = pullList > 9 ? '9+' : pullList;
+    tarikBadge.innerText = pullList > 999 ? '999+' : pullList;
     tarikBadge.classList.add('show');
   } else { tarikBadge.classList.remove('show'); }
 }

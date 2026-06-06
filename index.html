@@ -319,6 +319,30 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   z-index: 1000;
 }
 .online-indicator.show { transform: translateY(0); }
+
+/* EXPIRED CARD */
+.expired-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  border-left: 4px solid var(--red);
+  padding: 12px 13px;
+  margin-bottom: 8px;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation: slideInLeft 0.3s ease;
+}
+.expired-card:active { transform: scale(0.98); }
+.expired-name { font-size: 13px; font-weight: 600; }
+.expired-meta { font-size: 11px; color: var(--text-2); margin-top: 3px; }
+.expired-badge {
+  background: var(--red);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  margin-left: 8px;
+}
 </style>
 </head>
 <body>
@@ -382,6 +406,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       Tarik
       <span class="tab-badge" id="tarikBadge"></span>
     </button>
+    <button class="tab-btn" id="tabExpToday" onclick="switchTab('expToday')">
+      Exp hari ini
+      <span class="tab-badge" id="expTodayBadge"></span>
+    </button>
   </div>
 </div>
 
@@ -421,6 +449,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
       <input type="date" id="pullDateFilter" class="inp" style="width:auto;margin:0;padding:8px 10px;font-size:12px;" onchange="changePullDate(this.value)">
     </div>
     <div id="pullList"></div>
+  </div>
+
+  <!-- PANEL BARU: EXPIRED HARI INI -->
+  <div class="panel" id="panelExpToday">
+    <div class="section-label">📅 BARANG YANG EXPIRED HARI INI</div>
+    <div id="expTodayList"></div>
   </div>
 </div>
 
@@ -582,6 +616,60 @@ function updateTabBadges() {
     tarikBadge.innerText = pullList > 99 ? '99+' : pullList;
     tarikBadge.classList.add('show');
   } else { tarikBadge.classList.remove('show'); }
+
+  // Badge untuk tab Exp hari ini
+  const expiredTodayCount = inItems.filter(i => {
+    const rawExp = getExpRaw(i) || i.expiredDate;
+    const isoExp = parseToISO(rawExp);
+    if (!isoExp) return false;
+    return isoExp === today;
+  }).length;
+  
+  const expTodayBadge = document.getElementById('expTodayBadge');
+  if (expiredTodayCount > 0) {
+    expTodayBadge.innerText = expiredTodayCount > 99 ? '99+' : expiredTodayCount;
+    expTodayBadge.classList.add('show');
+  } else { expTodayBadge.classList.remove('show'); }
+}
+
+function renderExpTodayList() {
+  const container = document.getElementById('expTodayList');
+  const today = getTodayStr();
+  
+  // Filter item yang expired date-nya sama dengan hari ini
+  const expiredToday = inItems.filter(i => {
+    const rawExp = getExpRaw(i) || i.expiredDate;
+    const isoExp = parseToISO(rawExp);
+    if (!isoExp) return false;
+    return isoExp === today;
+  });
+  
+  if (expiredToday.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div>Tidak ada barang yang expired hari ini</div>`;
+    return;
+  }
+  
+  container.innerHTML = expiredToday.map(i => {
+    const registered = isBarcodeRegistered(i.barcode);
+    const notRegisteredClass = !registered ? 'not-registered' : '';
+    const offlineBadge = i.offline ? '<span style="background:#d97706; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:6px;">📡 Offline</span>' : '';
+    const rawExp = getExpRaw(i) || i.expiredDate;
+    
+    return `<div class="expired-card ${notRegisteredClass}">
+      <div class="pull-card-top">
+        <div style="flex:1">
+          <div class="expired-name">
+            ${escHtml(i.description || i.barcode)}${offlineBadge}
+            <span class="expired-badge">EXPIRED HARI INI</span>
+          </div>
+          <div class="expired-meta">
+            ${escHtml(i.barcode)} · Exp: ${formatDateIndo(rawExp)} · Lokasi: ${escHtml(i.lokasi || '-')}
+          </div>
+          ${!registered ? `<div class="not-registered-badge">⚠️ Belum Terdaftar di Database Master</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function initOfflineDetection() {
@@ -605,7 +693,7 @@ function initOfflineDetection() {
 async function loadAll() {
   if (!isOnline) {
     showToast("📡 Mode Offline - Menampilkan data dari cache", "warning");
-    renderRecent(); renderPullList(); buildLokasiHistory(); updateTabBadges();
+    renderRecent(); renderPullList(); renderExpTodayList(); buildLokasiHistory(); updateTabBadges();
     return;
   }
   const syncBtn = document.getElementById('syncBtn');
@@ -616,7 +704,7 @@ async function loadAll() {
     databaseData = dbRes.data || [];
     inItems = inRes.data;
     saveCache('cache_db', dbItems); saveCache('cache_in', inItems);
-    renderRecent(); renderPullList(); buildLokasiHistory(); updateTabBadges();
+    renderRecent(); renderPullList(); renderExpTodayList(); buildLokasiHistory(); updateTabBadges();
     showToast("Data diperbarui ✓", "success");
   } catch(e) { showToast("Gagal sync: " + e.message, "error"); }
   syncBtn.innerText = "↻ Sync"; syncBtn.disabled = false;
@@ -652,7 +740,7 @@ async function submitInput() {
       saveCache('cache_in', inItems);
       showToast("Berhasil disimpan ✓", "success");
     }
-    renderRecent(); renderPullList(); updateTabBadges();
+    renderRecent(); renderPullList(); renderExpTodayList(); updateTabBadges();
     document.getElementById('fBarcode').value = ""; document.getElementById('fDesc').value = ""; document.getElementById('fExp').value = ""; document.getElementById('fLokasi').value = ""; document.getElementById('searchProduct').value = ""; document.getElementById('searchResults').innerHTML = "";
     document.getElementById('submitBtn').disabled = true;
     barcodeNotFoundShown = false;
@@ -790,6 +878,11 @@ function switchTab(t) {
   document.querySelectorAll('.panel, .tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
   document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
+  
+  // Refresh data saat pindah ke tab Exp hari ini
+  if (t === 'expToday') {
+    renderExpTodayList();
+  }
 }
 
 function changePullDate(val) { selectedPullDate = val || getTodayStr(); renderPullList(); updateTabBadges(); }
@@ -832,7 +925,7 @@ window.onload = () => {
   document.getElementById('fExp').value = "";
   loadCache();
   if (dbItems.length > 0) databaseData = dbItems;
-  renderRecent(); renderPullList(); buildLokasiHistory(); loadAll(); initOfflineDetection(); updateTabBadges();
+  renderRecent(); renderPullList(); renderExpTodayList(); buildLokasiHistory(); loadAll(); initOfflineDetection(); updateTabBadges();
 };
 </script>
 </body>

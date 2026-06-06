@@ -481,25 +481,23 @@ function normalizeBarcode(barcode) {
   if (!barcode) return '';
   return String(barcode)
     .trim()
-    .replace(/[^0-9]/g, ''); // Hanya menyisakan angka
+    .replace(/[^0-9]/g, '');
 }
 // ========== END NORMALISASI BARCODE ==========
 
 // ========== SESSION TIMEOUT ==========
 let inactivityTimer;
-const INACTIVITY_DURATION = 30 * 60 * 1000; // 30 menit
+const INACTIVITY_DURATION = 30 * 60 * 1000;
 
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
-    // Cek apakah user sedang di tab input dan form tidak kosong
     const activeTab = document.querySelector('.panel.active')?.id;
     const hasBarcode = document.getElementById('fBarcode')?.value.trim() !== '';
     const hasDesc = document.getElementById('fDesc')?.value.trim() !== '';
     const hasFormData = hasBarcode || hasDesc;
     
     if (activeTab === 'panelInput' && hasFormData) {
-      // Reset form input
       document.getElementById('fBarcode').value = '';
       document.getElementById('fDesc').value = '';
       document.getElementById('fExp').value = '';
@@ -508,33 +506,19 @@ function resetInactivityTimer() {
       document.getElementById('searchResults').innerHTML = '';
       document.getElementById('submitBtn').disabled = true;
       barcodeNotFoundShown = false;
-      
-      // Reset display produk
-      document.getElementById('displaySku')?.remove();
-      document.getElementById('displayDesc')?.remove();
-      
-      // Tampilkan notifikasi
       showToast("⏰ Form direset karena tidak ada aktivitas selama 30 menit", "warning");
     } else if (activeTab === 'panelInput') {
-      // Kembalikan ke tab input
       switchTab('input');
       showToast("⏰ Kembali ke tab Input karena tidak ada aktivitas", "warning");
     }
-    
   }, INACTIVITY_DURATION);
 }
 
-// Daftar event yang akan mereset timer
 const resetEvents = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart', 'touchend', 'focus', 'input'];
-
 resetEvents.forEach(event => {
   document.addEventListener(event, resetInactivityTimer);
 });
-
-// Start timer saat halaman dimuat
 resetInactivityTimer();
-
-// Cleanup timer saat halaman ditutup (opsional)
 window.addEventListener('beforeunload', () => {
   if (inactivityTimer) clearTimeout(inactivityTimer);
 });
@@ -598,7 +582,6 @@ function daysDiff(rawA, rawB) {
   return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
-// UPDATE: Fungsi isBarcodeRegistered dengan normalisasi
 function isBarcodeRegistered(barcode) {
   const normalizedBarcode = normalizeBarcode(barcode);
   return databaseData.some(item => {
@@ -686,7 +669,6 @@ function updateTabBadges() {
     tarikBadge.classList.add('show');
   } else { tarikBadge.classList.remove('show'); }
 
-  // Badge untuk tab Exp hari ini
   const expiredTodayCount = inItems.filter(i => {
     const rawExp = getExpRaw(i) || i.expiredDate;
     const isoExp = parseToISO(rawExp);
@@ -705,7 +687,6 @@ function renderExpTodayList() {
   const container = document.getElementById('expTodayList');
   const today = getTodayStr();
   
-  // Filter item yang expired date-nya sama dengan hari ini
   const expiredToday = inItems.filter(i => {
     const rawExp = getExpRaw(i) || i.expiredDate;
     const isoExp = parseToISO(rawExp);
@@ -792,7 +773,6 @@ async function submitInput() {
     if (!lanjut) return;
   }
 
-  // UPDATE: Pencarian dengan normalisasi
   const found = dbItems.find(x => normalizeBarcode(x.barcode) === normalizeBarcode(b));
   if (!found) return showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error");
   if (!b || !d || !e || !l) return showToast("Semua field wajib diisi!", "error");
@@ -898,44 +878,53 @@ function openScanner() {
 
 function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
 
-// UPDATE: Fungsi autoFill dengan normalisasi
+// ========== FUNGSI AUTOFILL YANG DIPERBAIKI ==========
+// LOGIKA SAMA PERSIS DENGAN SEARCH BAR
 function autoFill(val) {
-  const normalizedVal = normalizeBarcode(val);
-  const found = dbItems.find(x => normalizeBarcode(x.barcode) === normalizedVal);
   const submitBtn = document.getElementById('submitBtn');
-  if (found) { 
-    document.getElementById('fDesc').value = found.description || ''; 
-    submitBtn.disabled = false; 
-    barcodeNotFoundShown = false; 
+  
+  if (!val || val.trim() === '') {
+    document.getElementById('fDesc').value = '';
+    submitBtn.disabled = true;
+    barcodeNotFoundShown = false;
+    return;
   }
-  else { 
-    document.getElementById('fDesc').value = ''; 
-    submitBtn.disabled = true; 
-    if (val.trim().length >= 6 && !barcodeNotFoundShown) { 
-      barcodeNotFoundShown = true; 
-      showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error"); 
-    } 
-  }
-  if (!val.trim()) { 
-    barcodeNotFoundShown = false; 
-    submitBtn.disabled = true; 
+  
+  // LOGIKA SAMA PERSIS DENGAN SEARCH BAR
+  const searchVal = val.trim();
+  const found = dbItems.find(item => 
+    item.barcode === searchVal ||
+    item.barcode?.toLowerCase() === searchVal.toLowerCase() ||
+    item.barcode?.includes(searchVal) ||
+    searchVal.includes(item.barcode)
+  );
+  
+  if (found) {
+    document.getElementById('fDesc').value = found.description || '';
+    submitBtn.disabled = false;
+    barcodeNotFoundShown = false;
+    showToast("✓ Barcode ditemukan: " + (found.description || found.barcode), "success");
+  } else {
+    document.getElementById('fDesc').value = '';
+    submitBtn.disabled = true;
+    if (!barcodeNotFoundShown && val.trim().length >= 4) {
+      barcodeNotFoundShown = true;
+      showToast("⚠️ Barcode tidak ditemukan. Cari via search bar.", "error");
+    }
   }
 }
+// ========== END FUNGSI AUTOFILL ==========
 
-// FUNGSI SEARCH YANG SUDAH DIUPDATE - OPSI 4 + OPSI 2 (tanpa batasan jumlah)
 function searchProductList(keyword) {
   const container = document.getElementById('searchResults');
   if (!keyword.trim()) { container.innerHTML = ''; return; }
   
   const search = keyword.toLowerCase();
-  // OPSI 2: Menampilkan SEMUA hasil (tanpa slice)
   const results = dbItems.filter(item => 
       (item.description || '').toLowerCase().includes(search) || 
-      normalizeBarcode(item.barcode).includes(search) ||
       (item.barcode || '').toLowerCase().includes(search)
   );
   
-  // OPSI 4: CSS sudah ditambahkan di style untuk overflow-y auto dan max-height
   container.className = "search-results";
   if (results.length === 0) {
     container.innerHTML = `<div class="search-item" style="text-align:center; color:var(--text-2);">Tidak ditemukan</div>`;
@@ -966,7 +955,6 @@ function switchTab(t) {
   document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
   document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.add('active');
   
-  // Refresh data saat pindah ke tab Exp hari ini
   if (t === 'expToday') {
     renderExpTodayList();
   }
@@ -1013,7 +1001,6 @@ window.onload = () => {
   loadCache();
   if (dbItems.length > 0) databaseData = dbItems;
   renderRecent(); renderPullList(); renderExpTodayList(); buildLokasiHistory(); loadAll(); initOfflineDetection(); updateTabBadges();
-  // Reset inactivity timer saat halaman dimuat
   resetInactivityTimer();
 };
 </script>

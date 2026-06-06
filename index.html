@@ -476,6 +476,15 @@ let toastTimer = null;
 let isOnline = navigator.onLine;
 let offlineQueue = [];
 
+// ========== FUNGSI NORMALISASI BARCODE ==========
+function normalizeBarcode(barcode) {
+  if (!barcode) return '';
+  return String(barcode)
+    .trim()
+    .replace(/[^0-9]/g, ''); // Hanya menyisakan angka
+}
+// ========== END NORMALISASI BARCODE ==========
+
 // ========== SESSION TIMEOUT ==========
 let inactivityTimer;
 const INACTIVITY_DURATION = 30 * 60 * 1000; // 30 menit
@@ -589,8 +598,13 @@ function daysDiff(rawA, rawB) {
   return Math.round((new Date(y1,m1-1,d1) - new Date(y2,m2-1,d2)) / 86400000);
 }
 
+// UPDATE: Fungsi isBarcodeRegistered dengan normalisasi
 function isBarcodeRegistered(barcode) {
-  return databaseData.some(item => String(item.barcode).trim() === String(barcode).trim());
+  const normalizedBarcode = normalizeBarcode(barcode);
+  return databaseData.some(item => {
+    const normalizedDbBarcode = normalizeBarcode(item.barcode);
+    return normalizedDbBarcode === normalizedBarcode;
+  });
 }
 
 function loadCache() {
@@ -655,7 +669,7 @@ function updateTabBadges() {
   } else { inputBadge.classList.remove('show'); }
   
   const pullList = inItems.map(i => {
-    const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
+    const db = dbItems.find(x => normalizeBarcode(x.barcode) === normalizeBarcode(i.barcode)), hMin = db ? (db.hMinus || 0) : 0;
     const rawExp = getExpRaw(i) || i.expiredDate;
     const isoExp = parseToISO(rawExp);
     if (!isoExp) return false;
@@ -772,13 +786,14 @@ async function submitInput() {
   const l = document.getElementById('fLokasi').value.trim();
   const today = getTodayStr();
 
-  const duplicate = inItems.find(item => (item.timestamp || '').startsWith(today) && item.barcode === b && parseToISO(item.expiredDate) === e && (item.lokasi || '').toLowerCase() === l.toLowerCase());
+  const duplicate = inItems.find(item => (item.timestamp || '').startsWith(today) && normalizeBarcode(item.barcode) === normalizeBarcode(b) && parseToISO(item.expiredDate) === e && (item.lokasi || '').toLowerCase() === l.toLowerCase());
   if (duplicate) {
     const lanjut = confirm("⚠️ Data serupa sudah pernah diinput hari ini.\n\n" + d + "\nExp: " + formatDateIndo(e) + "\nLokasi: " + l + "\n\nLanjut simpan?");
     if (!lanjut) return;
   }
 
-  const found = dbItems.find(x => x.barcode === b);
+  // UPDATE: Pencarian dengan normalisasi
+  const found = dbItems.find(x => normalizeBarcode(x.barcode) === normalizeBarcode(b));
   if (!found) return showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error");
   if (!b || !d || !e || !l) return showToast("Semua field wajib diisi!", "error");
 
@@ -828,7 +843,7 @@ function renderPullList() {
   const container = document.getElementById('pullList');
   const today = getTodayStr();
   const list = inItems.map(i => {
-    const db = dbItems.find(x => x.barcode === i.barcode), hMin = db ? (db.hMinus || 0) : 0;
+    const db = dbItems.find(x => normalizeBarcode(x.barcode) === normalizeBarcode(i.barcode)), hMin = db ? (db.hMinus || 0) : 0;
     const rawExp = getExpRaw(i) || i.expiredDate;
     const isoExp = parseToISO(rawExp); 
     if (!isoExp) return {...i, isTodayPull: false}; 
@@ -883,12 +898,28 @@ function openScanner() {
 
 function closeScanner() { document.getElementById('scannerOverlay').classList.remove('open'); if(html5QrScanner) html5QrScanner.stop(); }
 
+// UPDATE: Fungsi autoFill dengan normalisasi
 function autoFill(val) {
-  const found = dbItems.find(x => x.barcode === val);
+  const normalizedVal = normalizeBarcode(val);
+  const found = dbItems.find(x => normalizeBarcode(x.barcode) === normalizedVal);
   const submitBtn = document.getElementById('submitBtn');
-  if (found) { document.getElementById('fDesc').value = found.description || ''; submitBtn.disabled = false; barcodeNotFoundShown = false; }
-  else { document.getElementById('fDesc').value = ''; submitBtn.disabled = true; if (val.trim().length >= 6 && !barcodeNotFoundShown) { barcodeNotFoundShown = true; showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error"); } }
-  if (!val.trim()) { barcodeNotFoundShown = false; submitBtn.disabled = true; }
+  if (found) { 
+    document.getElementById('fDesc').value = found.description || ''; 
+    submitBtn.disabled = false; 
+    barcodeNotFoundShown = false; 
+  }
+  else { 
+    document.getElementById('fDesc').value = ''; 
+    submitBtn.disabled = true; 
+    if (val.trim().length >= 6 && !barcodeNotFoundShown) { 
+      barcodeNotFoundShown = true; 
+      showToast("⚠️ Barcode tidak ditemukan. Hubungi Admin.", "error"); 
+    } 
+  }
+  if (!val.trim()) { 
+    barcodeNotFoundShown = false; 
+    submitBtn.disabled = true; 
+  }
 }
 
 // FUNGSI SEARCH YANG SUDAH DIUPDATE - OPSI 4 + OPSI 2 (tanpa batasan jumlah)
@@ -900,6 +931,7 @@ function searchProductList(keyword) {
   // OPSI 2: Menampilkan SEMUA hasil (tanpa slice)
   const results = dbItems.filter(item => 
       (item.description || '').toLowerCase().includes(search) || 
+      normalizeBarcode(item.barcode).includes(search) ||
       (item.barcode || '').toLowerCase().includes(search)
   );
   

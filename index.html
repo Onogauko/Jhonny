@@ -476,6 +476,61 @@ let toastTimer = null;
 let isOnline = navigator.onLine;
 let offlineQueue = [];
 
+// ========== SESSION TIMEOUT ==========
+let inactivityTimer;
+const INACTIVITY_DURATION = 30 * 60 * 1000; // 30 menit
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    // Cek apakah user sedang di tab input dan form tidak kosong
+    const activeTab = document.querySelector('.panel.active')?.id;
+    const hasBarcode = document.getElementById('fBarcode')?.value.trim() !== '';
+    const hasDesc = document.getElementById('fDesc')?.value.trim() !== '';
+    const hasFormData = hasBarcode || hasDesc;
+    
+    if (activeTab === 'panelInput' && hasFormData) {
+      // Reset form input
+      document.getElementById('fBarcode').value = '';
+      document.getElementById('fDesc').value = '';
+      document.getElementById('fExp').value = '';
+      document.getElementById('fLokasi').value = '';
+      document.getElementById('searchProduct').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+      document.getElementById('submitBtn').disabled = true;
+      barcodeNotFoundShown = false;
+      
+      // Reset display produk
+      document.getElementById('displaySku')?.remove();
+      document.getElementById('displayDesc')?.remove();
+      
+      // Tampilkan notifikasi
+      showToast("⏰ Form direset karena tidak ada aktivitas selama 30 menit", "warning");
+    } else if (activeTab === 'panelInput') {
+      // Kembalikan ke tab input
+      switchTab('input');
+      showToast("⏰ Kembali ke tab Input karena tidak ada aktivitas", "warning");
+    }
+    
+  }, INACTIVITY_DURATION);
+}
+
+// Daftar event yang akan mereset timer
+const resetEvents = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart', 'touchend', 'focus', 'input'];
+
+resetEvents.forEach(event => {
+  document.addEventListener(event, resetInactivityTimer);
+});
+
+// Start timer saat halaman dimuat
+resetInactivityTimer();
+
+// Cleanup timer saat halaman ditutup (opsional)
+window.addEventListener('beforeunload', () => {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+});
+// ========== END SESSION TIMEOUT ==========
+
 function getTodayStr() {
   const now = new Date();
   const jakarta = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
@@ -926,6 +981,8 @@ window.onload = () => {
   loadCache();
   if (dbItems.length > 0) databaseData = dbItems;
   renderRecent(); renderPullList(); renderExpTodayList(); buildLokasiHistory(); loadAll(); initOfflineDetection(); updateTabBadges();
+  // Reset inactivity timer saat halaman dimuat
+  resetInactivityTimer();
 };
 </script>
 </body>
